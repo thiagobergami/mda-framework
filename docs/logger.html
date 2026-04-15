@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MDA Logger - MDA Spec Framework</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header class="site-header">
+    <button class="menu-toggle" aria-label="Toggle menu">
+      <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 010 2H4a1 1 0 01-1-1zm0 5a1 1 0 011-1h12a1 1 0 010 2H4a1 1 0 01-1-1zm0 5a1 1 0 011-1h12a1 1 0 010 2H4a1 1 0 01-1-1z" clip-rule="evenodd"/></svg>
+    </button>
+    <a href="index.html" class="header-logo"><span class="logo-icon">M</span> MDA Framework</a>
+    <nav class="header-nav"><a href="getting-started.html">Guide</a><a href="cli.html">CLI</a><a href="logger.html">Logger API</a></nav>
+  </header>
+  <div class="layout">
+    <aside class="sidebar">
+      <nav>
+        <div class="nav-group"><div class="nav-group-title"><svg class="chevron" viewBox="0 0 12 12" fill="currentColor"><path d="M4.7 2.3a1 1 0 00-1.4 1.4L6.6 7l-3.3 3.3a1 1 0 001.4 1.4l4-4a1 1 0 000-1.4l-4-4z"/></svg> Introduction</div><ul class="nav-items"><li><a href="index.html">Overview</a></li><li><a href="getting-started.html">Getting Started</a></li><li><a href="concepts.html">Core Concepts</a></li></ul></div>
+        <div class="nav-group"><div class="nav-group-title"><svg class="chevron" viewBox="0 0 12 12" fill="currentColor"><path d="M4.7 2.3a1 1 0 00-1.4 1.4L6.6 7l-3.3 3.3a1 1 0 001.4 1.4l4-4a1 1 0 000-1.4l-4-4z"/></svg> Workflow</div><ul class="nav-items"><li><a href="workflow.html">8-Step Process</a></li><li><a href="example.html">Walkthrough Example</a></li></ul></div>
+        <div class="nav-group"><div class="nav-group-title"><svg class="chevron" viewBox="0 0 12 12" fill="currentColor"><path d="M4.7 2.3a1 1 0 00-1.4 1.4L6.6 7l-3.3 3.3a1 1 0 001.4 1.4l4-4a1 1 0 000-1.4l-4-4z"/></svg> Spec Schemas</div><ul class="nav-items"><li><a href="spec-concept.html">Game Concept</a></li><li><a href="spec-aesthetics.html">Aesthetics</a></li><li><a href="spec-dynamics.html">Dynamics</a></li><li><a href="spec-mechanics.html">Mechanics</a></li><li><a href="spec-tuning.html">Tuning</a></li><li><a href="spec-assets.html">Assets</a></li><li><a href="spec-bindings.html">Engine Bindings</a></li></ul></div>
+        <div class="nav-group"><div class="nav-group-title"><svg class="chevron" viewBox="0 0 12 12" fill="currentColor"><path d="M4.7 2.3a1 1 0 00-1.4 1.4L6.6 7l-3.3 3.3a1 1 0 001.4 1.4l4-4a1 1 0 000-1.4l-4-4z"/></svg> Tools</div><ul class="nav-items"><li><a href="cli.html">CLI Reference</a></li><li><a href="logger.html">MDA Logger</a></li><li><a href="multi-engine.html">Multi-Engine Support</a></li></ul></div>
+        <div class="nav-group"><div class="nav-group-title"><svg class="chevron" viewBox="0 0 12 12" fill="currentColor"><path d="M4.7 2.3a1 1 0 00-1.4 1.4L6.6 7l-3.3 3.3a1 1 0 001.4 1.4l4-4a1 1 0 000-1.4l-4-4z"/></svg> Community</div><ul class="nav-items"><li><a href="contributing.html">Contributing</a></li></ul></div>
+      </nav>
+    </aside>
+
+    <main class="content">
+      <h1>MDA Logger</h1>
+      <p class="subtitle">
+        Structured runtime logging for Roblox (Luau). Tags every runtime event with its MDA layer and spec ID,
+        enabling traceable debugging from Aesthetics down to Mechanics.
+      </p>
+
+      <p>
+        <strong>Module:</strong> <code>src/shared/MDALogger.luau</code><br>
+        <strong>Spec:</strong> MEC-003
+      </p>
+
+      <h2>Log Format</h2>
+      <pre><code>[MM:SS.mmm] [LAYER:SPEC_ID] [LEVEL] [EVENT_TYPE] key=value key=value ...</code></pre>
+
+      <p>Example output:</p>
+      <pre><code>[00:15.234] [M:MEC-001] [INFO]  [HINT_FIRED]    cid=3 tier=1 elapsed=15.2s
+[00:25.891] [M:MEC-001] [INFO]  [DISCOVERY]     cid=7 spot=kitchen time=25.8s
+[00:25.891] [M:MEC-002] [INFO]  [EXPRESSION]    cid=7 emotion=Giggle anim=giggle_02
+[00:25.892] [D:DYN-001] [PASS]  [INVARIANT]     cid=7 inv=INV-1 detail="25.8s &lt; 50s"
+[03:12.000] [A:AES-001] [PASS]  [PROXY_CHECK]   proxy=discovery_rate value=24.1 target=25</code></pre>
+
+      <h2>Log Levels</h2>
+      <table>
+        <thead><tr><th>Level</th><th>Purpose</th><th>When to use</th></tr></thead>
+        <tbody>
+          <tr><td><code>TRACE</code></td><td>Per-frame data, very verbose</td><td>Position updates, continuous state (disabled by default)</td></tr>
+          <tr><td><code>DEBUG</code></td><td>Internal state changes</td><td>Variable assignments, branch decisions</td></tr>
+          <tr><td><code>INFO</code></td><td>Game events</td><td>Discoveries, hints, state transitions</td></tr>
+          <tr><td><code>WARN</code></td><td>Degraded behavior</td><td>Near-miss invariants, metrics drifting</td></tr>
+          <tr><td><code>ERROR</code></td><td>Broken contract</td><td>Invariant violations, impossible states</td></tr>
+          <tr><td><code>PASS</code></td><td>Validated check</td><td>Invariant or proxy confirmed</td></tr>
+          <tr><td><code>FAIL</code></td><td>Violated check</td><td>Invariant or proxy broken</td></tr>
+        </tbody>
+      </table>
+
+      <h2>Core API</h2>
+
+      <h3>Setup</h3>
+      <pre><code>local Log = require(path.to.MDALogger)</code></pre>
+
+      <h3>Logging Events</h3>
+      <pre><code>-- Convenience methods at each level
+Log.trace("M", "MEC-001", "POSITION_UPDATE", { x = 10, y = 5, z = 20 })
+Log.debug("M", "MEC-001", "STATE_CHANGE", { from = "idle", to = "searching" })
+Log.info("M", "MEC-001", "DISCOVERY", { spot = "kitchen", time = 25.8 })
+Log.warn("D", "DYN-001", "METRIC_DRIFT", { metric = "reveal_rate", value = 45 })
+Log.err("M", "MEC-001", "IMPOSSIBLE_STATE", { state = "negative_health" })
+
+-- Full signature
+Log.log(layer, specId, level, eventType, data, correlationId)</code></pre>
+
+      <h3>Correlation IDs</h3>
+      <p>Events that happen in the same logical moment share a correlation ID. This lets you trace full causal chains across specs.</p>
+      <pre><code>local cid = Log.correlate()
+Log.info("M", "MEC-001", "DISCOVERY", { spot = "kitchen", time = 25.8 }, cid)
+Log.info("M", "MEC-002", "EXPRESSION", { emotion = "Giggle" }, cid)
+Log.info("D", "DYN-001", "FEEDBACK", { loop = "DiscoveryAssistance" }, cid)</code></pre>
+
+      <h3>Invariant Checking</h3>
+      <p>Validate dynamic invariants at runtime. Failures ALWAYS log at ERROR level.</p>
+      <pre><code>Log.checkInvariant(
+  "DYN-001",       -- spec ID
+  "INV-1",         -- invariant ID
+  time &lt; 50,       -- boolean condition
+  "discovery in " .. time .. "s &lt; 50s cap"  -- detail string
+)</code></pre>
+
+      <h3>Proxy Checking</h3>
+      <p>Validate aesthetic observable proxies. Logs PASS, WARN (drifting), or FAIL.</p>
+      <pre><code>Log.checkProxy(
+  "AES-001",         -- spec ID
+  "discovery_rate",  -- proxy name
+  24.1,              -- measured value
+  25,                -- target value
+  10                 -- tolerance
+)</code></pre>
+
+      <h3>Metric Tracking</h3>
+      <p>Track metrics over time for session summary computation.</p>
+      <pre><code>Log.trackMetric("AES-001", "discovery_rate", measuredTime, 25, 10)</code></pre>
+
+      <h3>Session Summary</h3>
+      <p>Emits aggregate metrics and auto-checks all tracked proxies.</p>
+      <pre><code>Log.summary()</code></pre>
+      <p>Output includes median, min, max for each metric plus PASS/FAIL for each proxy.</p>
+
+      <h2>Configuration</h2>
+      <pre><code>-- Set minimum log level
+Log.setLevel(Log.Level.DEBUG)    -- Show DEBUG and above
+Log.setLevel(Log.Level.TRACE)    -- Show everything
+Log.setLevel(Log.Level.NONE)     -- Disable all output
+
+-- Enable/disable
+Log.enable()
+Log.disable()
+
+-- Control buffer size (ring buffer, default 2000)
+Log.setBufferSize(5000)
+
+-- Control print output
+Log.setPrintToOutput(false)  -- Buffer only, no console output</code></pre>
+
+      <h2>Buffer &amp; Filtering</h2>
+      <pre><code>-- Get all buffered entries in chronological order
+local entries = Log.getBuffer()
+
+-- Filter by substring
+local failures = Log.getBufferFiltered("[FAIL]")
+local specEntries = Log.getBufferFiltered("[M:MEC-001]")
+local chain = Log.getBufferFiltered("cid=7")
+
+-- Get invariant pass/fail counts
+local results = Log.getInvariantResults()
+
+-- Reset session (clears buffer, metrics, invariants)
+Log.reset()</code></pre>
+
+      <h2 id="debugging">Debugging Workflow (A &rarr; D &rarr; M)</h2>
+      <p>Use MDA logs to trace from experience to code:</p>
+      <ol class="steps">
+        <li>Filter for <code>[FAIL]</code> and <code>[WARN]</code> &mdash; find what's broken</li>
+        <li>Check <code>[A:AES-*] [PROXY_CHECK]</code> &mdash; which aesthetic proxy is out of range?</li>
+        <li>Check <code>[D:DYN-*] [INVARIANT]</code> &mdash; which dynamic invariant failed?</li>
+        <li>Filter by correlation ID (<code>cid=N</code>) &mdash; trace the full causal chain</li>
+        <li>Read <code>[M:MEC-*]</code> in that chain &mdash; which mechanic event preceded the failure?</li>
+        <li>Cross-reference the mechanic spec &mdash; which rule or parameter is off?</li>
+      </ol>
+
+      <h3>Common Filters</h3>
+      <table>
+        <thead><tr><th>Looking for</th><th>Filter</th></tr></thead>
+        <tbody>
+          <tr><td>All failures</td><td><code>[FAIL]</code></td></tr>
+          <tr><td>Specific spec</td><td><code>[M:MEC-001]</code></td></tr>
+          <tr><td>Invariant checks</td><td><code>[INVARIANT]</code></td></tr>
+          <tr><td>Proxy validation</td><td><code>[PROXY_CHECK]</code></td></tr>
+          <tr><td>One causal chain</td><td><code>cid=7</code></td></tr>
+          <tr><td>Session summary</td><td><code>[SUMMARY]</code></td></tr>
+        </tbody>
+      </table>
+
+      <div class="page-nav">
+        <a href="cli.html">
+          <span class="label">Previous</span>
+          <span class="title">&larr; CLI Reference</span>
+        </a>
+        <a href="multi-engine.html" class="next">
+          <span class="label">Next</span>
+          <span class="title">Multi-Engine Support &rarr;</span>
+        </a>
+      </div>
+    </main>
+  </div>
+  <script src="js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dynamics Schema - MDA Spec Framework</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header class="site-header">
+    <button class="menu-toggle" aria-label="Toggle menu">
+      <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 010 2H4a1 1 0 01-1-1zm0 5a1 1 0 011-1h12a1 1 0 010 2H4a1 1 0 01-1-1zm0 5a1 1 0 011-1h12a1 1 0 010 2H4a1 1 0 01-1-1z" clip-rule="evenodd"/></svg>
+    </button>
+    <a href="index.html" class="header-logo"><span class="logo-icon">M</span> MDA Framework</a>
+    <nav class="header-nav"><a href="getting-started.html">Guide</a><a href="cli.html">CLI</a><a href="logger.html">Logger API</a></nav>
+  </header>
+  <div class="layout">
+    <aside class="sidebar">
+      <nav>
+        <div class="nav-group"><div class="nav-group-title"><svg class="chevron" viewBox="0 0 12 12" fill="currentColor"><path d="M4.7 2.3a1 1 0 00-1.4 1.4L6.6 7l-3.3 3.3a1 1 0 001.4 1.4l4-4a1 1 0 000-1.4l-4-4z"/></svg> Introduction</div><ul class="nav-items"><li><a href="index.html">Overview</a></li><li><a href="getting-started.html">Getting Started</a></li><li><a href="concepts.html">Core Concepts</a></li></ul></div>
+        <div class="nav-group"><div class="nav-group-title"><svg class="chevron" viewBox="0 0 12 12" fill="currentColor"><path d="M4.7 2.3a1 1 0 00-1.4 1.4L6.6 7l-3.3 3.3a1 1 0 001.4 1.4l4-4a1 1 0 000-1.4l-4-4z"/></svg> Workflow</div><ul class="nav-items"><li><a href="workflow.html">8-Step Process</a></li><li><a href="example.html">Walkthrough Example</a></li></ul></div>
+        <div class="nav-group"><div class="nav-group-title"><svg class="chevron" viewBox="0 0 12 12" fill="currentColor"><path d="M4.7 2.3a1 1 0 00-1.4 1.4L6.6 7l-3.3 3.3a1 1 0 001.4 1.4l4-4a1 1 0 000-1.4l-4-4z"/></svg> Spec Schemas</div><ul class="nav-items"><li><a href="spec-concept.html">Game Concept</a></li><li><a href="spec-aesthetics.html">Aesthetics</a></li><li><a href="spec-dynamics.html">Dynamics</a></li><li><a href="spec-mechanics.html">Mechanics</a></li><li><a href="spec-tuning.html">Tuning</a></li><li><a href="spec-assets.html">Assets</a></li><li><a href="spec-bindings.html">Engine Bindings</a></li></ul></div>
+        <div class="nav-group"><div class="nav-group-title"><svg class="chevron" viewBox="0 0 12 12" fill="currentColor"><path d="M4.7 2.3a1 1 0 00-1.4 1.4L6.6 7l-3.3 3.3a1 1 0 001.4 1.4l4-4a1 1 0 000-1.4l-4-4z"/></svg> Tools</div><ul class="nav-items"><li><a href="cli.html">CLI Reference</a></li><li><a href="logger.html">MDA Logger</a></li><li><a href="multi-engine.html">Multi-Engine Support</a></li></ul></div>
+        <div class="nav-group"><div class="nav-group-title"><svg class="chevron" viewBox="0 0 12 12" fill="currentColor"><path d="M4.7 2.3a1 1 0 00-1.4 1.4L6.6 7l-3.3 3.3a1 1 0 001.4 1.4l4-4a1 1 0 000-1.4l-4-4z"/></svg> Community</div><ul class="nav-items"><li><a href="contributing.html">Contributing</a></li></ul></div>
+      </nav>
+    </aside>
+
+    <main class="content">
+      <h1>Dynamic Spec Schema</h1>
+      <p class="subtitle">
+        Dynamic specs define the <strong>runtime behavior</strong> that emerges from mechanics interacting with
+        player input and each other over time. They answer: "What BEHAVIOR should emerge during play?"
+      </p>
+
+      <p>
+        <strong>File pattern:</strong> <code>specs/dynamics/{feature}.dyn.md</code><br>
+        <strong>ID format:</strong> <code>DYN-{NNN}</code><br>
+        <strong>Scaffold:</strong> <code>npx mda new dynamic "Behavior Name"</code>
+      </p>
+
+      <div class="callout tip">
+        <div class="callout-title">From the MDA paper</div>
+        <p>"Dynamics describes the run-time behavior of the mechanics acting on player inputs and each others' outputs over time."</p>
+      </div>
+
+      <h2>Template</h2>
+      <h3>Frontmatter</h3>
+      <pre><code>---
+id: DYN-{NNN}
+name: {Descriptive name}
+traces_to_aesthetics: [AES-NNN]
+---</code></pre>
+
+      <h3>Required Sections</h3>
+
+      <h4>Behavior Description</h4>
+      <p>2-3 sentences describing the emergent behavior. Focus on what the PLAYER observes and what the SYSTEM produces &mdash; not how it's coded.</p>
+
+      <h4>Feedback System</h4>
+      <p>Model the dynamic as feedback loops. Each loop is classified as positive (amplifying) or negative (dampening).</p>
+      <pre><code>### Loop: Discovery Pacing
+- Type: Negative
+- Cycle: Player searches &rarr; time increases &rarr; hints escalate &rarr; discovery becomes easier
+- Effect: Prevents frustration, ensures Discovery aesthetic is delivered</code></pre>
+      <p>Include an ASCII diagram showing player actions, system states, and feedback arrows with +/- labels.</p>
+
+      <h4>Interaction Patterns</h4>
+      <p>Key interactions between player and system. More specific than the feedback model.</p>
+      <pre><code>### Pattern: Hint Escalation
+- Trigger: Timer passes threshold without discovery
+- Sequence: Audio cue &rarr; visual glow &rarr; particle trail &rarr; beacon
+- Duration: 30 seconds (escalates in 4 tiers)
+- Outcome: Player guided to target</code></pre>
+
+      <h4>Invariants</h4>
+      <p>Conditions that MUST hold. These are hard constraints that code validates against.</p>
+      <pre><code>- INV-1: Discovery MUST occur within 50s of search start
+- INV-2: Every reveal MUST have at least 1s of partial visibility before full reveal</code></pre>
+
+      <div class="callout danger">
+        <div class="callout-title">Invariants are non-negotiable</div>
+        <p>Code that violates an invariant is WRONG even if the game "feels okay" in testing. Invariants are validated at runtime by the MDA Logger.</p>
+      </div>
+
+      <h4>Degenerate Dynamics</h4>
+      <p>Behaviors that could emerge but undermine the target aesthetics. Each must have a detection method and prevention strategy.</p>
+      <pre><code>- Camping: Player stands still and waits for hints to solve everything
+  - Breaks: Discovery, Challenge
+  - Detection: Player velocity = 0 for &gt;10s while hints are active
+  - Prevention: Hints only activate in new areas, not repeated locations</code></pre>
+
+      <h2>Rules</h2>
+      <ol>
+        <li><strong>Model feedback systems</strong> &mdash; Every dynamic must have at least one feedback loop. No feedback = probably a mechanic, not a dynamic</li>
+        <li><strong>Trace to aesthetics</strong> &mdash; Every dynamic must list which AES specs it serves</li>
+        <li><strong>Invariants are non-negotiable</strong> &mdash; Hard constraints. Violations mean the code is wrong</li>
+        <li><strong>Name degenerate dynamics</strong> &mdash; Anticipate what can go wrong (the Monopoly problem)</li>
+        <li><strong>Be concrete</strong> &mdash; Use patterns with triggers, sequences, and durations</li>
+        <li><strong>No code</strong> &mdash; Dynamic specs describe behavior, not implementation</li>
+      </ol>
+
+      <h2>Quality Gate: Dynamic Readiness</h2>
+      <pre><code>npx mda gate dynamic</code></pre>
+      <table>
+        <thead><tr><th>Check</th><th>What it verifies</th></tr></thead>
+        <tbody>
+          <tr><td>Feedback loops</td><td>At least one loop with cycle notation</td></tr>
+          <tr><td>Binary invariants</td><td>All invariants are testable true/false conditions</td></tr>
+          <tr><td>Degenerate dynamics</td><td>Named with detection + prevention</td></tr>
+          <tr><td>Aesthetic traces</td><td>traces_to_aesthetics references valid AES specs</td></tr>
+        </tbody>
+      </table>
+
+      <div class="page-nav">
+        <a href="spec-aesthetics.html">
+          <span class="label">Previous</span>
+          <span class="title">&larr; Aesthetics Schema</span>
+        </a>
+        <a href="spec-mechanics.html" class="next">
+          <span class="label">Next</span>
+          <span class="title">Mechanics Schema &rarr;</span>
+        </a>
+      </div>
+    </main>
+  </div>
+  <script src="js/main.js"></script>
+</body>
+</html>

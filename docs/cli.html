@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CLI Reference - MDA Spec Framework</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header class="site-header">
+    <button class="menu-toggle" aria-label="Toggle menu">
+      <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 010 2H4a1 1 0 01-1-1zm0 5a1 1 0 011-1h12a1 1 0 010 2H4a1 1 0 01-1-1zm0 5a1 1 0 011-1h12a1 1 0 010 2H4a1 1 0 01-1-1z" clip-rule="evenodd"/></svg>
+    </button>
+    <a href="index.html" class="header-logo"><span class="logo-icon">M</span> MDA Framework</a>
+    <nav class="header-nav"><a href="getting-started.html">Guide</a><a href="cli.html">CLI</a><a href="logger.html">Logger API</a></nav>
+  </header>
+  <div class="layout">
+    <aside class="sidebar">
+      <nav>
+        <div class="nav-group"><div class="nav-group-title"><svg class="chevron" viewBox="0 0 12 12" fill="currentColor"><path d="M4.7 2.3a1 1 0 00-1.4 1.4L6.6 7l-3.3 3.3a1 1 0 001.4 1.4l4-4a1 1 0 000-1.4l-4-4z"/></svg> Introduction</div><ul class="nav-items"><li><a href="index.html">Overview</a></li><li><a href="getting-started.html">Getting Started</a></li><li><a href="concepts.html">Core Concepts</a></li></ul></div>
+        <div class="nav-group"><div class="nav-group-title"><svg class="chevron" viewBox="0 0 12 12" fill="currentColor"><path d="M4.7 2.3a1 1 0 00-1.4 1.4L6.6 7l-3.3 3.3a1 1 0 001.4 1.4l4-4a1 1 0 000-1.4l-4-4z"/></svg> Workflow</div><ul class="nav-items"><li><a href="workflow.html">8-Step Process</a></li><li><a href="example.html">Walkthrough Example</a></li></ul></div>
+        <div class="nav-group"><div class="nav-group-title"><svg class="chevron" viewBox="0 0 12 12" fill="currentColor"><path d="M4.7 2.3a1 1 0 00-1.4 1.4L6.6 7l-3.3 3.3a1 1 0 001.4 1.4l4-4a1 1 0 000-1.4l-4-4z"/></svg> Spec Schemas</div><ul class="nav-items"><li><a href="spec-concept.html">Game Concept</a></li><li><a href="spec-aesthetics.html">Aesthetics</a></li><li><a href="spec-dynamics.html">Dynamics</a></li><li><a href="spec-mechanics.html">Mechanics</a></li><li><a href="spec-tuning.html">Tuning</a></li><li><a href="spec-assets.html">Assets</a></li><li><a href="spec-bindings.html">Engine Bindings</a></li></ul></div>
+        <div class="nav-group"><div class="nav-group-title"><svg class="chevron" viewBox="0 0 12 12" fill="currentColor"><path d="M4.7 2.3a1 1 0 00-1.4 1.4L6.6 7l-3.3 3.3a1 1 0 001.4 1.4l4-4a1 1 0 000-1.4l-4-4z"/></svg> Tools</div><ul class="nav-items"><li><a href="cli.html">CLI Reference</a></li><li><a href="logger.html">MDA Logger</a></li><li><a href="multi-engine.html">Multi-Engine Support</a></li></ul></div>
+        <div class="nav-group"><div class="nav-group-title"><svg class="chevron" viewBox="0 0 12 12" fill="currentColor"><path d="M4.7 2.3a1 1 0 00-1.4 1.4L6.6 7l-3.3 3.3a1 1 0 001.4 1.4l4-4a1 1 0 000-1.4l-4-4z"/></svg> Community</div><ul class="nav-items"><li><a href="contributing.html">Contributing</a></li></ul></div>
+      </nav>
+    </aside>
+
+    <main class="content">
+      <h1>CLI Reference</h1>
+      <p class="subtitle">
+        The <code>mda</code> CLI provides three commands for working with specs: <code>validate</code>,
+        <code>gate</code>, and <code>new</code>.
+      </p>
+
+      <h2 id="validate"><code>mda validate</code> &mdash; Check spec integrity</h2>
+      <p>Runs 8 validation rules against all specs to catch structural issues.</p>
+
+      <pre><code># Validate all scopes (specs/ and any examples/)
+npx mda validate
+
+# JSON output (for CI or tooling)
+npx mda validate --json
+
+# Validate a specific scope only
+npx mda validate --scope specs
+
+# Validate from a different project root
+npx mda validate --dir /path/to/project</code></pre>
+
+      <h3>Validation Rules</h3>
+      <table>
+        <thead><tr><th>Rule</th><th>What it checks</th><th>Level</th></tr></thead>
+        <tbody>
+          <tr><td><code>trace-resolution</code></td><td>All <code>traces_to_*</code> references resolve to existing spec IDs</td><td>error</td></tr>
+          <tr><td><code>no-vacuo</code></td><td>Every MEC spec traces to at least one DYN spec</td><td>error</td></tr>
+          <tr><td><code>asset-traces</code></td><td>Every AST spec traces to a MEC (error) and an AES (warning)</td><td>mixed</td></tr>
+          <tr><td><code>tuning-completeness</code></td><td>Every TUN spec traces to MEC + DYN + AES</td><td>warning</td></tr>
+          <tr><td><code>unique-ids</code></td><td>No duplicate spec IDs within a scope</td><td>error</td></tr>
+          <tr><td><code>no-orphans</code></td><td>Every spec is referenced by at least one other spec</td><td>warning</td></tr>
+          <tr><td><code>binding-coverage</code></td><td>MEC and AST specs have engine binding specs</td><td>warning</td></tr>
+          <tr><td><code>frontmatter-schema</code></td><td>Required frontmatter fields are present per layer</td><td>warning</td></tr>
+        </tbody>
+      </table>
+
+      <p>Exit code is <code>0</code> on pass, <code>1</code> on any error-level diagnostic.</p>
+
+      <div class="callout tip">
+        <div class="callout-title">Framework-Tool Exemption</div>
+        <p>
+          Specs with <code>scope: framework-tool</code> are exempt from trace-resolution, no-vacuo,
+          and orphan checks. This is for cross-cutting tools like the MDA Logger (MEC-003) that
+          don't fit the normal M&rarr;D&rarr;A chain.
+        </p>
+      </div>
+
+      <hr>
+
+      <h2 id="gate"><code>mda gate &lt;layer&gt;</code> &mdash; Run quality gates</h2>
+      <p>
+        Quality gates verify that a spec is complete and well-formed enough to proceed to the next layer.
+        Gates check the markdown body content, not just frontmatter.
+      </p>
+
+      <pre><code># Run the concept readiness gate
+npx mda gate concept
+
+# Run the aesthetic gate
+npx mda gate aesthetic
+
+# Override a failure with a logged reason
+npx mda gate dynamic --override "Invariants pending playtest data"
+
+# Fail the process on gate failure (useful in CI)
+npx mda gate mechanic --strict
+
+# JSON output
+npx mda gate implementation --json</code></pre>
+
+      <h3>Available Gates</h3>
+      <table>
+        <thead><tr><th>Gate</th><th>Applies to</th><th>Key checks</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><code>concept</code></td>
+            <td>GAME specs</td>
+            <td>Vision clarity, aesthetic commitment (Primary + Absent tiers), core loop cycle, boundary definition, feature map, success criteria</td>
+          </tr>
+          <tr>
+            <td><code>aesthetic</code></td>
+            <td>AES specs</td>
+            <td>Measurable proxies with targets, anti-patterns defined, precise vocabulary (no "fun"), primary aesthetic classified</td>
+          </tr>
+          <tr>
+            <td><code>dynamic</code></td>
+            <td>DYN specs</td>
+            <td>Feedback loops with cycle notation, binary invariants (INV-N), degenerate dynamics named, traces to aesthetics</td>
+          </tr>
+          <tr>
+            <td><code>mechanic</code></td>
+            <td>MEC specs</td>
+            <td>Behavioral contract with I/O, testable acceptance criteria, player affordances listed, traces to dynamics</td>
+          </tr>
+          <tr>
+            <td><code>implementation</code></td>
+            <td>MEC specs</td>
+            <td>All mechanic checks + engine binding exists + upstream specs (DYN, AES) are present</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <p>Gate results are saved to <code>specs/.gate-status.json</code> for tracking.</p>
+
+      <div class="callout warning">
+        <div class="callout-title">Gates vs Rules</div>
+        <p>
+          <strong>Rules</strong> check structural integrity (frontmatter, traces, IDs) and are always enforced.<br>
+          <strong>Gates</strong> check semantic completeness (is the body content sufficient?) and are advisory by default.
+          Use <code>--strict</code> to make gates enforced.
+        </p>
+      </div>
+
+      <hr>
+
+      <h2 id="new"><code>mda new &lt;layer&gt; &lt;name&gt;</code> &mdash; Scaffold a new spec</h2>
+      <p>Creates a new spec file from a template with auto-assigned ID and updates traceability.</p>
+
+      <pre><code># Scaffold specs at each layer
+npx mda new concept "Lantern Woods"
+npx mda new aesthetic "Forest Discovery"
+npx mda new dynamic "Creature Reveal Cycle"
+npx mda new mechanic "Lantern Interaction"
+npx mda new tuning "Lantern Pacing"
+npx mda new asset "Firefly Creature"
+npx mda new binding "Lantern Roblox Binding"</code></pre>
+
+      <h3>What it does</h3>
+      <ul>
+        <li>Assigns the next sequential ID for that layer (e.g., <code>AES-002</code>)</li>
+        <li>Creates a file at <code>specs/{layer}/{slug}.{ext}</code> with the full template from the schema</li>
+        <li>Updates <code>specs/traceability.md</code> with a new row</li>
+      </ul>
+
+      <div class="page-nav">
+        <a href="spec-bindings.html">
+          <span class="label">Previous</span>
+          <span class="title">&larr; Engine Bindings</span>
+        </a>
+        <a href="logger.html" class="next">
+          <span class="label">Next</span>
+          <span class="title">MDA Logger &rarr;</span>
+        </a>
+      </div>
+    </main>
+  </div>
+  <script src="js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Engine Bindings Schema - MDA Spec Framework</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header class="site-header">
+    <button class="menu-toggle" aria-label="Toggle menu">
+      <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 010 2H4a1 1 0 01-1-1zm0 5a1 1 0 011-1h12a1 1 0 010 2H4a1 1 0 01-1-1zm0 5a1 1 0 011-1h12a1 1 0 010 2H4a1 1 0 01-1-1z" clip-rule="evenodd"/></svg>
+    </button>
+    <a href="index.html" class="header-logo"><span class="logo-icon">M</span> MDA Framework</a>
+    <nav class="header-nav"><a href="getting-started.html">Guide</a><a href="cli.html">CLI</a><a href="logger.html">Logger API</a></nav>
+  </header>
+  <div class="layout">
+    <aside class="sidebar">
+      <nav>
+        <div class="nav-group"><div class="nav-group-title"><svg class="chevron" viewBox="0 0 12 12" fill="currentColor"><path d="M4.7 2.3a1 1 0 00-1.4 1.4L6.6 7l-3.3 3.3a1 1 0 001.4 1.4l4-4a1 1 0 000-1.4l-4-4z"/></svg> Introduction</div><ul class="nav-items"><li><a href="index.html">Overview</a></li><li><a href="getting-started.html">Getting Started</a></li><li><a href="concepts.html">Core Concepts</a></li></ul></div>
+        <div class="nav-group"><div class="nav-group-title"><svg class="chevron" viewBox="0 0 12 12" fill="currentColor"><path d="M4.7 2.3a1 1 0 00-1.4 1.4L6.6 7l-3.3 3.3a1 1 0 001.4 1.4l4-4a1 1 0 000-1.4l-4-4z"/></svg> Workflow</div><ul class="nav-items"><li><a href="workflow.html">8-Step Process</a></li><li><a href="example.html">Walkthrough Example</a></li></ul></div>
+        <div class="nav-group"><div class="nav-group-title"><svg class="chevron" viewBox="0 0 12 12" fill="currentColor"><path d="M4.7 2.3a1 1 0 00-1.4 1.4L6.6 7l-3.3 3.3a1 1 0 001.4 1.4l4-4a1 1 0 000-1.4l-4-4z"/></svg> Spec Schemas</div><ul class="nav-items"><li><a href="spec-concept.html">Game Concept</a></li><li><a href="spec-aesthetics.html">Aesthetics</a></li><li><a href="spec-dynamics.html">Dynamics</a></li><li><a href="spec-mechanics.html">Mechanics</a></li><li><a href="spec-tuning.html">Tuning</a></li><li><a href="spec-assets.html">Assets</a></li><li><a href="spec-bindings.html">Engine Bindings</a></li></ul></div>
+        <div class="nav-group"><div class="nav-group-title"><svg class="chevron" viewBox="0 0 12 12" fill="currentColor"><path d="M4.7 2.3a1 1 0 00-1.4 1.4L6.6 7l-3.3 3.3a1 1 0 001.4 1.4l4-4a1 1 0 000-1.4l-4-4z"/></svg> Tools</div><ul class="nav-items"><li><a href="cli.html">CLI Reference</a></li><li><a href="logger.html">MDA Logger</a></li><li><a href="multi-engine.html">Multi-Engine Support</a></li></ul></div>
+        <div class="nav-group"><div class="nav-group-title"><svg class="chevron" viewBox="0 0 12 12" fill="currentColor"><path d="M4.7 2.3a1 1 0 00-1.4 1.4L6.6 7l-3.3 3.3a1 1 0 001.4 1.4l4-4a1 1 0 000-1.4l-4-4z"/></svg> Community</div><ul class="nav-items"><li><a href="contributing.html">Contributing</a></li></ul></div>
+      </nav>
+    </aside>
+
+    <main class="content">
+      <h1>Engine Binding Schema</h1>
+      <p class="subtitle">
+        Binding specs define the <strong>engine-specific mapping</strong> between MDA behavioral specs and a target
+        game engine. They answer: "How does this mechanic or asset translate to engine X?"
+      </p>
+
+      <p>
+        <strong>File pattern:</strong> <code>specs/bindings/{name}.bind.md</code><br>
+        <strong>ID format:</strong> <code>BIND-{NNN}</code><br>
+        <strong>Scaffold:</strong> <code>npx mda new binding "System Roblox Binding"</code>
+      </p>
+
+      <h2>Template</h2>
+      <h3>Frontmatter</h3>
+      <pre><code>---
+id: BIND-{NNN}
+name: {Descriptive name}
+engine: roblox | unity | unreal
+binds_to: [MEC-NNN, AST-NNN]
+language: luau | csharp | cpp | blueprint
+---</code></pre>
+
+      <h3>Required Sections</h3>
+
+      <h4>Bound Specs</h4>
+      <p>Which behavioral specs this binding covers and what aspect it maps.</p>
+
+      <h4>Scene Structure</h4>
+      <p>How the behavioral model maps to the engine's scene graph. Includes an instance hierarchy diagram.</p>
+
+      <h4>Tags &amp; Markers</h4>
+      <p>How game objects are identified and queried at runtime.</p>
+      <table>
+        <thead><tr><th>Concept</th><th>Engine Mapping</th></tr></thead>
+        <tbody>
+          <tr><td>creature tag</td><td>CollectionService tag "ForestCreature"</td></tr>
+          <tr><td>reveal state</td><td>Instance:GetAttribute("RevealState")</td></tr>
+        </tbody>
+      </table>
+
+      <h4>API Surface</h4>
+      <p>Engine-specific services, APIs, and events used.</p>
+
+      <h4>Data Representation</h4>
+      <p>How game state maps to engine data types and locations.</p>
+
+      <h4>Network Model</h4>
+      <p>Authority (server/client/shared), replication strategy, input handling.</p>
+
+      <h4>Platform Considerations</h4>
+      <p>Performance budgets, mobile constraints, etc.</p>
+
+      <h2>Rules</h2>
+      <ol>
+        <li><strong>One binding per engine per spec set</strong> &mdash; Don't combine Roblox and Unity in one file</li>
+        <li><strong>Reference behavioral specs</strong> &mdash; <code>binds_to</code> must list actual MEC/AST IDs</li>
+        <li><strong>No behavioral logic</strong> &mdash; Bindings describe HOW, not WHAT. The WHAT is in MEC/DYN specs</li>
+        <li><strong>Engine idioms</strong> &mdash; Use the target engine's standard patterns</li>
+        <li><strong>Keep in sync</strong> &mdash; When a MEC spec changes, review its bindings</li>
+        <li><strong>Completeness</strong> &mdash; Every behavioral contract aspect should have a mapping</li>
+      </ol>
+
+      <p>For a quick reference of cross-engine mappings, see <a href="multi-engine.html">Multi-Engine Support</a>.</p>
+
+      <div class="page-nav">
+        <a href="spec-assets.html">
+          <span class="label">Previous</span>
+          <span class="title">&larr; Assets Schema</span>
+        </a>
+        <a href="cli.html" class="next">
+          <span class="label">Next</span>
+          <span class="title">CLI Reference &rarr;</span>
+        </a>
+      </div>
+    </main>
+  </div>
+  <script src="js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Contributing - MDA Spec Framework</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header class="site-header">
+    <button class="menu-toggle" aria-label="Toggle menu">
+      <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 010 2H4a1 1 0 01-1-1zm0 5a1 1 0 011-1h12a1 1 0 010 2H4a1 1 0 01-1-1zm0 5a1 1 0 011-1h12a1 1 0 010 2H4a1 1 0 01-1-1z" clip-rule="evenodd"/></svg>
+    </button>
+    <a href="index.html" class="header-logo"><span class="logo-icon">M</span> MDA Framework</a>
+    <nav class="header-nav"><a href="getting-started.html">Guide</a><a href="cli.html">CLI</a><a href="logger.html">Logger API</a></nav>
+  </header>
+  <div class="layout">
+    <aside class="sidebar">
+      <nav>
+        <div class="nav-group"><div class="nav-group-title"><svg class="chevron" viewBox="0 0 12 12" fill="currentColor"><path d="M4.7 2.3a1 1 0 00-1.4 1.4L6.6 7l-3.3 3.3a1 1 0 001.4 1.4l4-4a1 1 0 000-1.4l-4-4z"/></svg> Introduction</div><ul class="nav-items"><li><a href="index.html">Overview</a></li><li><a href="getting-started.html">Getting Started</a></li><li><a href="concepts.html">Core Concepts</a></li></ul></div>
+        <div class="nav-group"><div class="nav-group-title"><svg class="chevron" viewBox="0 0 12 12" fill="currentColor"><path d="M4.7 2.3a1 1 0 00-1.4 1.4L6.6 7l-3.3 3.3a1 1 0 001.4 1.4l4-4a1 1 0 000-1.4l-4-4z"/></svg> Workflow</div><ul class="nav-items"><li><a href="workflow.html">8-Step Process</a></li><li><a href="example.html">Walkthrough Example</a></li></ul></div>
+        <div class="nav-group"><div class="nav-group-title"><svg class="chevron" viewBox="0 0 12 12" fill="currentColor"><path d="M4.7 2.3a1 1 0 00-1.4 1.4L6.6 7l-3.3 3.3a1 1 0 001.4 1.4l4-4a1 1 0 000-1.4l-4-4z"/></svg> Spec Schemas</div><ul class="nav-items"><li><a href="spec-concept.html">Game Concept</a></li><li><a href="spec-aesthetics.html">Aesthetics</a></li><li><a href="spec-dynamics.html">Dynamics</a></li><li><a href="spec-mechanics.html">Mechanics</a></li><li><a href="spec-tuning.html">Tuning</a></li><li><a href="spec-assets.html">Assets</a></li><li><a href="spec-bindings.html">Engine Bindings</a></li></ul></div>
+        <div class="nav-group"><div class="nav-group-title"><svg class="chevron" viewBox="0 0 12 12" fill="currentColor"><path d="M4.7 2.3a1 1 0 00-1.4 1.4L6.6 7l-3.3 3.3a1 1 0 001.4 1.4l4-4a1 1 0 000-1.4l-4-4z"/></svg> Tools</div><ul class="nav-items"><li><a href="cli.html">CLI Reference</a></li><li><a href="logger.html">MDA Logger</a></li><li><a href="multi-engine.html">Multi-Engine Support</a></li></ul></div>
+        <div class="nav-group"><div class="nav-group-title"><svg class="chevron" viewBox="0 0 12 12" fill="currentColor"><path d="M4.7 2.3a1 1 0 00-1.4 1.4L6.6 7l-3.3 3.3a1 1 0 001.4 1.4l4-4a1 1 0 000-1.4l-4-4z"/></svg> Community</div><ul class="nav-items"><li><a href="contributing.html">Contributing</a></li></ul></div>
+      </nav>
+    </aside>
+
+    <main class="content">
+      <h1>Contributing</h1>
+      <p class="subtitle">How to contribute to the MDA Spec Framework &mdash; from setting up the development environment to adding validation rules and quality gates.</p>
+
+      <h2>Development Setup</h2>
+      <pre><code># Clone and install
+git clone &lt;this-repo&gt;
+cd framework
+npm install
+
+# Build the CLI tool
+cd tools
+npx tsc
+
+# Verify it works
+cd ..
+npx mda validate</code></pre>
+
+      <h3>Rebuilding After Changes</h3>
+      <p>The CLI source lives in <code>tools/src/</code>. After editing TypeScript files:</p>
+      <pre><code>cd tools && npx tsc && cd ..</code></pre>
+      <p>Or use watch mode during development:</p>
+      <pre><code>cd tools && npx tsc --watch</code></pre>
+
+      <h2>Project Layout</h2>
+      <table>
+        <thead><tr><th>Directory</th><th>Contents</th><th>Language</th></tr></thead>
+        <tbody>
+          <tr><td><code>tools/src/</code></td><td>CLI tool (validator, gates, scaffolding)</td><td>TypeScript</td></tr>
+          <tr><td><code>specs/</code></td><td>Spec schemas, glossary, workflow</td><td>Markdown</td></tr>
+          <tr><td><code>src/shared/</code></td><td>Runtime logger module</td><td>Luau</td></tr>
+          <tr><td><code>src/tools/</code></td><td>Legacy Luau validator</td><td>Luau</td></tr>
+        </tbody>
+      </table>
+
+      <h2>Adding a New Validation Rule</h2>
+      <ol class="steps">
+        <li>Create <code>tools/src/rules/{rule-name}.ts</code> exporting a <code>ValidationRule</code></li>
+        <li>The rule receives a <code>SpecGraph</code> and returns <code>Diagnostic[]</code></li>
+        <li>Register it in <code>tools/src/rules/index.ts</code> by importing and adding to <code>allRules</code></li>
+        <li>Rebuild and test: <code>npx tsc && cd .. && npx mda validate</code></li>
+      </ol>
+
+      <pre><code>import type { Diagnostic, ValidationRule, SpecGraph } from "../types.js";
+
+export const myRule: ValidationRule = {
+  name: "my-rule",
+  description: "What this rule checks",
+  run(graph: SpecGraph): Diagnostic[] {
+    const diagnostics: Diagnostic[] = [];
+    // Check specs via graph.specs, graph.byLayer,
+    // graph.inbound, graph.outbound
+    return diagnostics;
+  },
+};</code></pre>
+
+      <h2>Adding a New Quality Gate</h2>
+      <ol class="steps">
+        <li>Create <code>tools/src/gates/{layer}-gate.ts</code> with a function returning <code>GateCheckResult[]</code></li>
+        <li>Register it in <code>tools/src/gates/index.ts</code></li>
+        <li>Gate checks inspect <code>SpecContent</code> (body text + sections), not just frontmatter</li>
+      </ol>
+
+      <h2>Adding a New Spec Layer</h2>
+      <ol class="steps">
+        <li>Create the directory under <code>specs/</code> with a <code>_schema.md</code></li>
+        <li>Add the layer prefix to <code>LAYER_PREFIXES</code> in <code>tools/src/parser.ts</code></li>
+        <li>Add the layer to the <code>SpecLayer</code> type in <code>tools/src/types.ts</code></li>
+        <li>Add scaffolding template in <code>tools/src/scaffold.ts</code></li>
+        <li>Add relevant validation rules and gate checks</li>
+      </ol>
+
+      <h2>Conventions</h2>
+
+      <h3>Spec IDs</h3>
+      <ul>
+        <li>Format: <code>{LAYER}-{NNN}</code> (e.g., <code>AES-001</code>, <code>MEC-003</code>)</li>
+        <li>IDs are sequential within each layer</li>
+        <li>Use <code>npx mda new</code> to auto-assign the next ID</li>
+      </ul>
+
+      <h3>Traces</h3>
+      <ul>
+        <li>Frontmatter fields like <code>traces_to_dynamics: [DYN-001]</code> create edges in the spec graph</li>
+        <li>Every trace must resolve to an existing spec ID</li>
+        <li>Mechanics must trace to dynamics (no "in vacuo" mechanics)</li>
+        <li>Assets must trace to both mechanics and aesthetics</li>
+      </ul>
+
+      <h3>Framework-Tool Exemption</h3>
+      <p>
+        Specs with <code>scope: framework-tool</code> are exempt from trace-resolution, no-vacuo, and orphan checks.
+        This is for cross-cutting tools like the MDA Logger that don't fit the normal M&rarr;D&rarr;A chain.
+      </p>
+
+      <h3>Scoped Validation</h3>
+      <ul>
+        <li><code>specs/</code> is the main validation scope</li>
+        <li>Each <code>examples/*/</code> directory is an isolated scope</li>
+        <li>Cross-scope trace references are not validated</li>
+      </ul>
+
+      <h2>Architecture Decisions</h2>
+      <ul>
+        <li><strong>TypeScript over Luau for tooling:</strong> The Luau validator can't run outside Roblox. The TS CLI runs anywhere with Node.js.</li>
+        <li><strong>Gates vs Rules:</strong> Rules check structural integrity (always enforced). Gates check semantic completeness (advisory by default, <code>--strict</code> to enforce).</li>
+        <li><strong>Engine-agnostic specs + binding layer:</strong> Behavioral specs describe <em>what</em>. Bindings describe <em>how</em>. Same design targets multiple engines.</li>
+        <li><strong>Scoped validation:</strong> Examples are isolated so they don't interfere with the main project.</li>
+      </ul>
+
+      <h2>Running Checks</h2>
+      <pre><code># Full validation
+npx mda validate
+
+# Specific gate
+npx mda gate concept
+
+# JSON output for scripting
+npx mda validate --json
+npx mda gate aesthetic --json</code></pre>
+
+      <div class="page-nav">
+        <a href="multi-engine.html">
+          <span class="label">Previous</span>
+          <span class="title">&larr; Multi-Engine Support</span>
+        </a>
+        <div></div>
+      </div>
+    </main>
+  </div>
+  <script src="js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Multi-Engine Support - MDA Spec Framework</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header class="site-header">
+    <button class="menu-toggle" aria-label="Toggle menu">
+      <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 010 2H4a1 1 0 01-1-1zm0 5a1 1 0 011-1h12a1 1 0 010 2H4a1 1 0 01-1-1zm0 5a1 1 0 011-1h12a1 1 0 010 2H4a1 1 0 01-1-1z" clip-rule="evenodd"/></svg>
+    </button>
+    <a href="index.html" class="header-logo"><span class="logo-icon">M</span> MDA Framework</a>
+    <nav class="header-nav"><a href="getting-started.html">Guide</a><a href="cli.html">CLI</a><a href="logger.html">Logger API</a></nav>
+  </header>
+  <div class="layout">
+    <aside class="sidebar">
+      <nav>
+        <div class="nav-group"><div class="nav-group-title"><svg class="chevron" viewBox="0 0 12 12" fill="currentColor"><path d="M4.7 2.3a1 1 0 00-1.4 1.4L6.6 7l-3.3 3.3a1 1 0 001.4 1.4l4-4a1 1 0 000-1.4l-4-4z"/></svg> Introduction</div><ul class="nav-items"><li><a href="index.html">Overview</a></li><li><a href="getting-started.html">Getting Started</a></li><li><a href="concepts.html">Core Concepts</a></li></ul></div>
+        <div class="nav-group"><div class="nav-group-title"><svg class="chevron" viewBox="0 0 12 12" fill="currentColor"><path d="M4.7 2.3a1 1 0 00-1.4 1.4L6.6 7l-3.3 3.3a1 1 0 001.4 1.4l4-4a1 1 0 000-1.4l-4-4z"/></svg> Workflow</div><ul class="nav-items"><li><a href="workflow.html">8-Step Process</a></li><li><a href="example.html">Walkthrough Example</a></li></ul></div>
+        <div class="nav-group"><div class="nav-group-title"><svg class="chevron" viewBox="0 0 12 12" fill="currentColor"><path d="M4.7 2.3a1 1 0 00-1.4 1.4L6.6 7l-3.3 3.3a1 1 0 001.4 1.4l4-4a1 1 0 000-1.4l-4-4z"/></svg> Spec Schemas</div><ul class="nav-items"><li><a href="spec-concept.html">Game Concept</a></li><li><a href="spec-aesthetics.html">Aesthetics</a></li><li><a href="spec-dynamics.html">Dynamics</a></li><li><a href="spec-mechanics.html">Mechanics</a></li><li><a href="spec-tuning.html">Tuning</a></li><li><a href="spec-assets.html">Assets</a></li><li><a href="spec-bindings.html">Engine Bindings</a></li></ul></div>
+        <div class="nav-group"><div class="nav-group-title"><svg class="chevron" viewBox="0 0 12 12" fill="currentColor"><path d="M4.7 2.3a1 1 0 00-1.4 1.4L6.6 7l-3.3 3.3a1 1 0 001.4 1.4l4-4a1 1 0 000-1.4l-4-4z"/></svg> Tools</div><ul class="nav-items"><li><a href="cli.html">CLI Reference</a></li><li><a href="logger.html">MDA Logger</a></li><li><a href="multi-engine.html">Multi-Engine Support</a></li></ul></div>
+        <div class="nav-group"><div class="nav-group-title"><svg class="chevron" viewBox="0 0 12 12" fill="currentColor"><path d="M4.7 2.3a1 1 0 00-1.4 1.4L6.6 7l-3.3 3.3a1 1 0 001.4 1.4l4-4a1 1 0 000-1.4l-4-4z"/></svg> Community</div><ul class="nav-items"><li><a href="contributing.html">Contributing</a></li></ul></div>
+      </nav>
+    </aside>
+
+    <main class="content">
+      <h1>Multi-Engine Support</h1>
+      <p class="subtitle">
+        The framework separates behavioral specs (what the game does) from engine bindings (how a specific engine implements it),
+        enabling the same game design to target multiple engines.
+      </p>
+
+      <h2>Architecture</h2>
+      <ul>
+        <li><strong>Behavioral specs</strong> (<code>specs/mechanics/</code>, <code>specs/dynamics/</code>, etc.) are engine-agnostic</li>
+        <li><strong>Binding specs</strong> (<code>specs/bindings/</code>) map behavioral contracts to engine-specific APIs</li>
+        <li><strong>Equivalence table</strong> (<code>specs/bindings/equivalence.md</code>) provides a quick cross-engine reference</li>
+      </ul>
+
+      <p>When implementing for a specific engine, read both the mechanic spec (what to build) and its binding spec (how to build it in your engine).</p>
+
+      <h2>Engine Equivalence Table</h2>
+
+      <h3>Scene Graph</h3>
+      <table>
+        <thead><tr><th>MDA Concept</th><th>Roblox</th><th>Unity</th><th>Unreal</th></tr></thead>
+        <tbody>
+          <tr><td>World container</td><td>Workspace</td><td>Scene</td><td>World/Level</td></tr>
+          <tr><td>Game object</td><td>Instance (Part, Model)</td><td>GameObject</td><td>Actor</td></tr>
+          <tr><td>Component</td><td>N/A (properties on Instance)</td><td>MonoBehaviour</td><td>ActorComponent</td></tr>
+          <tr><td>Hierarchy parent</td><td>Instance.Parent</td><td>Transform.parent</td><td>AttachToActor</td></tr>
+          <tr><td>Prefab / template</td><td>Asset in ServerStorage</td><td>Prefab</td><td>Blueprint</td></tr>
+        </tbody>
+      </table>
+
+      <h3>Services &amp; Subsystems</h3>
+      <table>
+        <thead><tr><th>MDA Concept</th><th>Roblox</th><th>Unity</th><th>Unreal</th></tr></thead>
+        <tbody>
+          <tr><td>Physics</td><td>Workspace (physics engine)</td><td>Physics / Rigidbody</td><td>UPhysicsEngine</td></tr>
+          <tr><td>Input</td><td>UserInputService / ContextActionService</td><td>Input System</td><td>Enhanced Input System</td></tr>
+          <tr><td>Audio</td><td>SoundService / Sound instances</td><td>AudioSource / AudioListener</td><td>UAudioComponent / MetaSounds</td></tr>
+          <tr><td>UI framework</td><td>ScreenGui / SurfaceGui</td><td>Canvas / UI Toolkit</td><td>UMG / Slate</td></tr>
+          <tr><td>Scheduling</td><td>RunService (Heartbeat, Stepped)</td><td>MonoBehaviour (Update)</td><td>Tick / Timers</td></tr>
+          <tr><td>Networking</td><td>RemoteEvent / RemoteFunction</td><td>Netcode for GameObjects</td><td>Replication / RPCs</td></tr>
+          <tr><td>Storage</td><td>DataStoreService</td><td>PlayerPrefs / custom</td><td>SaveGame / custom</td></tr>
+          <tr><td>Tags / markers</td><td>CollectionService tags</td><td>Tags / Layers</td><td>Gameplay Tags</td></tr>
+          <tr><td>Attributes</td><td>Instance:GetAttribute()</td><td>Serialized fields</td><td>UProperty / metadata</td></tr>
+        </tbody>
+      </table>
+
+      <h3>Scripting</h3>
+      <table>
+        <thead><tr><th>MDA Concept</th><th>Roblox</th><th>Unity</th><th>Unreal</th></tr></thead>
+        <tbody>
+          <tr><td>Language</td><td>Luau</td><td>C#</td><td>C++ / Blueprint</td></tr>
+          <tr><td>Script attachment</td><td>Script parented to Instance</td><td>MonoBehaviour on GameObject</td><td>ActorComponent on Actor</td></tr>
+          <tr><td>Module system</td><td>ModuleScript (require)</td><td>Assembly / namespace</td><td>Module / #include</td></tr>
+          <tr><td>Coroutines</td><td>task.spawn / task.wait</td><td>Coroutines (IEnumerator)</td><td>Latent Actions / async</td></tr>
+        </tbody>
+      </table>
+
+      <h3>Networking Model</h3>
+      <table>
+        <thead><tr><th>MDA Concept</th><th>Roblox</th><th>Unity</th><th>Unreal</th></tr></thead>
+        <tbody>
+          <tr><td>Authority</td><td>Server-authoritative (always)</td><td>Configurable</td><td>Server-authoritative (default)</td></tr>
+          <tr><td>Client &rarr; Server</td><td>RemoteEvent:FireServer()</td><td>ServerRpc / Command</td><td>Server RPC</td></tr>
+          <tr><td>Server &rarr; Client</td><td>RemoteEvent:FireClient()</td><td>ClientRpc / TargetRpc</td><td>Client RPC / Multicast</td></tr>
+          <tr><td>State replication</td><td>Value objects / Attributes</td><td>NetworkVariable / SyncVar</td><td>Replicated properties</td></tr>
+        </tbody>
+      </table>
+
+      <h3>Event System</h3>
+      <table>
+        <thead><tr><th>MDA Concept</th><th>Roblox</th><th>Unity</th><th>Unreal</th></tr></thead>
+        <tbody>
+          <tr><td>Custom events</td><td>BindableEvent / Signal pattern</td><td>C# events / UnityEvent</td><td>Delegates / Event Dispatchers</td></tr>
+          <tr><td>Collision</td><td>Touched / GetTouchingParts</td><td>OnCollisionEnter</td><td>OnComponentHit</td></tr>
+          <tr><td>Trigger zones</td><td>Touched (CanCollide=false)</td><td>OnTriggerEnter</td><td>OnComponentBeginOverlap</td></tr>
+          <tr><td>Player join/leave</td><td>Players.PlayerAdded</td><td>NetworkManager callbacks</td><td>GameMode::PostLogin</td></tr>
+        </tbody>
+      </table>
+
+      <div class="callout tip">
+        <div class="callout-title">Using the table</div>
+        <p>
+          When writing a binding spec, find the engine equivalent of each MDA concept in the table above,
+          then detail the specific implementation in the binding spec's sections. See the
+          <a href="spec-bindings.html">Engine Binding Schema</a> for the full template.
+        </p>
+      </div>
+
+      <div class="page-nav">
+        <a href="logger.html">
+          <span class="label">Previous</span>
+          <span class="title">&larr; MDA Logger</span>
+        </a>
+        <a href="contributing.html" class="next">
+          <span class="label">Next</span>
+          <span class="title">Contributing &rarr;</span>
+        </a>
+      </div>
+    </main>
+  </div>
+  <script src="js/main.js"></script>
+</body>
+</html>

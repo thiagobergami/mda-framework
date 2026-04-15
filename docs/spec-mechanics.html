@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mechanics Schema - MDA Spec Framework</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header class="site-header">
+    <button class="menu-toggle" aria-label="Toggle menu">
+      <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 010 2H4a1 1 0 01-1-1zm0 5a1 1 0 011-1h12a1 1 0 010 2H4a1 1 0 01-1-1zm0 5a1 1 0 011-1h12a1 1 0 010 2H4a1 1 0 01-1-1z" clip-rule="evenodd"/></svg>
+    </button>
+    <a href="index.html" class="header-logo"><span class="logo-icon">M</span> MDA Framework</a>
+    <nav class="header-nav"><a href="getting-started.html">Guide</a><a href="cli.html">CLI</a><a href="logger.html">Logger API</a></nav>
+  </header>
+  <div class="layout">
+    <aside class="sidebar">
+      <nav>
+        <div class="nav-group"><div class="nav-group-title"><svg class="chevron" viewBox="0 0 12 12" fill="currentColor"><path d="M4.7 2.3a1 1 0 00-1.4 1.4L6.6 7l-3.3 3.3a1 1 0 001.4 1.4l4-4a1 1 0 000-1.4l-4-4z"/></svg> Introduction</div><ul class="nav-items"><li><a href="index.html">Overview</a></li><li><a href="getting-started.html">Getting Started</a></li><li><a href="concepts.html">Core Concepts</a></li></ul></div>
+        <div class="nav-group"><div class="nav-group-title"><svg class="chevron" viewBox="0 0 12 12" fill="currentColor"><path d="M4.7 2.3a1 1 0 00-1.4 1.4L6.6 7l-3.3 3.3a1 1 0 001.4 1.4l4-4a1 1 0 000-1.4l-4-4z"/></svg> Workflow</div><ul class="nav-items"><li><a href="workflow.html">8-Step Process</a></li><li><a href="example.html">Walkthrough Example</a></li></ul></div>
+        <div class="nav-group"><div class="nav-group-title"><svg class="chevron" viewBox="0 0 12 12" fill="currentColor"><path d="M4.7 2.3a1 1 0 00-1.4 1.4L6.6 7l-3.3 3.3a1 1 0 001.4 1.4l4-4a1 1 0 000-1.4l-4-4z"/></svg> Spec Schemas</div><ul class="nav-items"><li><a href="spec-concept.html">Game Concept</a></li><li><a href="spec-aesthetics.html">Aesthetics</a></li><li><a href="spec-dynamics.html">Dynamics</a></li><li><a href="spec-mechanics.html">Mechanics</a></li><li><a href="spec-tuning.html">Tuning</a></li><li><a href="spec-assets.html">Assets</a></li><li><a href="spec-bindings.html">Engine Bindings</a></li></ul></div>
+        <div class="nav-group"><div class="nav-group-title"><svg class="chevron" viewBox="0 0 12 12" fill="currentColor"><path d="M4.7 2.3a1 1 0 00-1.4 1.4L6.6 7l-3.3 3.3a1 1 0 001.4 1.4l4-4a1 1 0 000-1.4l-4-4z"/></svg> Tools</div><ul class="nav-items"><li><a href="cli.html">CLI Reference</a></li><li><a href="logger.html">MDA Logger</a></li><li><a href="multi-engine.html">Multi-Engine Support</a></li></ul></div>
+        <div class="nav-group"><div class="nav-group-title"><svg class="chevron" viewBox="0 0 12 12" fill="currentColor"><path d="M4.7 2.3a1 1 0 00-1.4 1.4L6.6 7l-3.3 3.3a1 1 0 001.4 1.4l4-4a1 1 0 000-1.4l-4-4z"/></svg> Community</div><ul class="nav-items"><li><a href="contributing.html">Contributing</a></li></ul></div>
+      </nav>
+    </aside>
+
+    <main class="content">
+      <h1>Mechanic Spec Schema</h1>
+      <p class="subtitle">
+        Mechanic specs define the <strong>actions, behaviors, and control mechanisms</strong> afforded to the player.
+        Together with game content, they support the dynamics. They answer: "What can the player DO and what RULES govern the system?"
+      </p>
+
+      <p>
+        <strong>File pattern:</strong> <code>specs/mechanics/{feature}.mec.md</code><br>
+        <strong>ID format:</strong> <code>MEC-{NNN}</code><br>
+        <strong>Scaffold:</strong> <code>npx mda new mechanic "System Name"</code>
+      </p>
+
+      <div class="callout danger">
+        <div class="callout-title">Never "in vacuo"</div>
+        <p>The paper's core rule: components cannot be evaluated in isolation. Every mechanic MUST trace to at least one dynamic. A mechanic without a dynamic has no purpose.</p>
+      </div>
+
+      <h2>Template</h2>
+      <h3>Frontmatter</h3>
+      <pre><code>---
+id: MEC-{NNN}
+name: {Descriptive name}
+traces_to_dynamics: [DYN-NNN]
+---</code></pre>
+
+      <h3>Required Sections</h3>
+
+      <h4>Purpose</h4>
+      <p>1-2 sentences explaining WHY this mechanic exists &mdash; what dynamic it supports and what aesthetic it ultimately serves.</p>
+
+      <h4>Player Affordances</h4>
+      <p>The verbs &mdash; what the player can DO.</p>
+      <pre><code>- Carry: Pick up and carry the lantern &mdash; Input: proximity + interact key
+- Aim: Point the lantern beam &mdash; Input: mouse/stick direction
+- Merge: Combine lantern light with nearby player &mdash; Input: automatic within 5 studs</code></pre>
+
+      <h4>Game Content</h4>
+      <p>The material that mechanics operate on. Each entry references an asset spec by ID.</p>
+      <pre><code>- Lantern model: Handheld light source &mdash; Asset: AST-007 &mdash; Status: placeholder
+- Creature variants: 8 species &mdash; Asset: AST-008 &mdash; Status: concept</code></pre>
+
+      <h4>Rules</h4>
+      <p>Constraints and formulas governing mechanics. Tunable parameters are marked <code>[TUNABLE]</code>.</p>
+      <pre><code>### Rule 1: Light Cone
+- Condition: Player is carrying lantern
+- Effect: Cone of light extends from lantern in aim direction
+- Formula: intensity = basePower * (1 - distance/maxRange)
+- Parameters:
+  - basePower: 1.0 [TUNABLE]
+  - maxRange: 20 studs [TUNABLE]
+  - coneAngle: 45 degrees [TUNABLE]</code></pre>
+
+      <h4>Behavioral Contract</h4>
+      <p>The specification that code must satisfy.</p>
+      <pre><code>### Inputs
+- playerPosition: Vector3 from character
+- aimDirection: Vector3 from mouse/stick
+
+### Outputs
+- lightCone: Cone geometry for intersection tests
+- illuminatedCreatures: list of creatures in the cone
+
+### Guarantees
+- Light cone updates every frame
+- Creatures are never missed (no frame-skip holes)</code></pre>
+
+      <h4>Acceptance Criteria</h4>
+      <p>Concrete, testable pass/fail conditions.</p>
+      <ul class="checklist">
+        <li>Light cone renders at 60fps on target hardware</li>
+        <li>Creature at maxRange - 1 stud is detected</li>
+        <li>Creature at maxRange + 1 stud is NOT detected</li>
+        <li>Merged lanterns increase effective range by mergeBonus factor</li>
+      </ul>
+
+      <h4>Integration Points</h4>
+      <pre><code>- Fires: CREATURE_LIT, CREATURE_REVEAL, LANTERN_MERGE
+- Listens: PlayerAdded, CharacterAdded
+- Reads: creature positions, player positions
+- Writes: creature visibility state, journal entries</code></pre>
+
+      <h4>Engine Bindings</h4>
+      <p>References to <a href="spec-bindings.html">binding specs</a> for each target engine.</p>
+
+      <h2>Rules</h2>
+      <ol>
+        <li><strong>Never in vacuo</strong> &mdash; Every mechanic MUST have <code>traces_to_dynamics</code></li>
+        <li><strong>Player affordances first</strong> &mdash; Start with what the player CAN DO</li>
+        <li><strong>Behavior over data</strong> &mdash; Describe what the system DOES, not just data structures</li>
+        <li><strong>Mark tunable parameters</strong> &mdash; Any numeric value that might need adjustment</li>
+        <li><strong>Acceptance criteria are tests</strong> &mdash; Specific enough to write automated tests from</li>
+        <li><strong>Integration points prevent surprises</strong> &mdash; Document all side effects</li>
+      </ol>
+
+      <h2>Quality Gate: Mechanic &amp; Implementation Readiness</h2>
+      <pre><code>npx mda gate mechanic
+npx mda gate implementation</code></pre>
+      <table>
+        <thead><tr><th>Check</th><th>What it verifies</th></tr></thead>
+        <tbody>
+          <tr><td>Behavioral contract</td><td>Inputs, outputs, and guarantees defined</td></tr>
+          <tr><td>Acceptance criteria</td><td>Testable, binary pass/fail conditions</td></tr>
+          <tr><td>Player affordances</td><td>Listed with input methods</td></tr>
+          <tr><td>Dynamic traces</td><td>traces_to_dynamics references valid DYN specs</td></tr>
+          <tr><td>Engine binding (impl. gate)</td><td>Binding spec exists for target engine</td></tr>
+          <tr><td>Upstream specs (impl. gate)</td><td>Related DYN and AES specs are present</td></tr>
+        </tbody>
+      </table>
+
+      <div class="page-nav">
+        <a href="spec-dynamics.html">
+          <span class="label">Previous</span>
+          <span class="title">&larr; Dynamics Schema</span>
+        </a>
+        <a href="spec-tuning.html" class="next">
+          <span class="label">Next</span>
+          <span class="title">Tuning Schema &rarr;</span>
+        </a>
+      </div>
+    </main>
+  </div>
+  <script src="js/main.js"></script>
+</body>
+</html>

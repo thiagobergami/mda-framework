@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MDA Spec Framework</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header class="site-header">
+    <button class="menu-toggle" aria-label="Toggle menu">
+      <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 010 2H4a1 1 0 01-1-1zm0 5a1 1 0 011-1h12a1 1 0 010 2H4a1 1 0 01-1-1zm0 5a1 1 0 011-1h12a1 1 0 010 2H4a1 1 0 01-1-1z" clip-rule="evenodd"/></svg>
+    </button>
+    <a href="index.html" class="header-logo">
+      <span class="logo-icon">M</span>
+      MDA Framework
+    </a>
+    <nav class="header-nav">
+      <a href="getting-started.html">Guide</a>
+      <a href="cli.html">CLI</a>
+      <a href="logger.html">Logger API</a>
+      <a href="https://github.com">GitHub</a>
+    </nav>
+  </header>
+
+  <div class="layout">
+    <aside class="sidebar">
+      <nav>
+        <div class="nav-group">
+          <div class="nav-group-title">
+            <svg class="chevron" viewBox="0 0 12 12" fill="currentColor"><path d="M4.7 2.3a1 1 0 00-1.4 1.4L6.6 7l-3.3 3.3a1 1 0 001.4 1.4l4-4a1 1 0 000-1.4l-4-4z"/></svg>
+            Introduction
+          </div>
+          <ul class="nav-items">
+            <li><a href="index.html">Overview</a></li>
+            <li><a href="getting-started.html">Getting Started</a></li>
+            <li><a href="concepts.html">Core Concepts</a></li>
+          </ul>
+        </div>
+
+        <div class="nav-group">
+          <div class="nav-group-title">
+            <svg class="chevron" viewBox="0 0 12 12" fill="currentColor"><path d="M4.7 2.3a1 1 0 00-1.4 1.4L6.6 7l-3.3 3.3a1 1 0 001.4 1.4l4-4a1 1 0 000-1.4l-4-4z"/></svg>
+            Workflow
+          </div>
+          <ul class="nav-items">
+            <li><a href="workflow.html">8-Step Process</a></li>
+            <li><a href="example.html">Walkthrough Example</a></li>
+          </ul>
+        </div>
+
+        <div class="nav-group">
+          <div class="nav-group-title">
+            <svg class="chevron" viewBox="0 0 12 12" fill="currentColor"><path d="M4.7 2.3a1 1 0 00-1.4 1.4L6.6 7l-3.3 3.3a1 1 0 001.4 1.4l4-4a1 1 0 000-1.4l-4-4z"/></svg>
+            Spec Schemas
+          </div>
+          <ul class="nav-items">
+            <li><a href="spec-concept.html">Game Concept</a></li>
+            <li><a href="spec-aesthetics.html">Aesthetics</a></li>
+            <li><a href="spec-dynamics.html">Dynamics</a></li>
+            <li><a href="spec-mechanics.html">Mechanics</a></li>
+            <li><a href="spec-tuning.html">Tuning</a></li>
+            <li><a href="spec-assets.html">Assets</a></li>
+            <li><a href="spec-bindings.html">Engine Bindings</a></li>
+          </ul>
+        </div>
+
+        <div class="nav-group">
+          <div class="nav-group-title">
+            <svg class="chevron" viewBox="0 0 12 12" fill="currentColor"><path d="M4.7 2.3a1 1 0 00-1.4 1.4L6.6 7l-3.3 3.3a1 1 0 001.4 1.4l4-4a1 1 0 000-1.4l-4-4z"/></svg>
+            Tools
+          </div>
+          <ul class="nav-items">
+            <li><a href="cli.html">CLI Reference</a></li>
+            <li><a href="logger.html">MDA Logger</a></li>
+            <li><a href="multi-engine.html">Multi-Engine Support</a></li>
+          </ul>
+        </div>
+
+        <div class="nav-group">
+          <div class="nav-group-title">
+            <svg class="chevron" viewBox="0 0 12 12" fill="currentColor"><path d="M4.7 2.3a1 1 0 00-1.4 1.4L6.6 7l-3.3 3.3a1 1 0 001.4 1.4l4-4a1 1 0 000-1.4l-4-4z"/></svg>
+            Community
+          </div>
+          <ul class="nav-items">
+            <li><a href="contributing.html">Contributing</a></li>
+          </ul>
+        </div>
+      </nav>
+    </aside>
+
+    <main class="content">
+      <div class="hero">
+        <h1>MDA Spec Framework</h1>
+        <p class="tagline">
+          A spec-driven development framework for AI-assisted game development, built on the
+          MDA framework (Mechanics, Dynamics, Aesthetics) by Hunicke, LeBlanc &amp; Zubek.
+        </p>
+        <div class="hero-actions">
+          <a href="getting-started.html" class="btn btn-primary">Get Started</a>
+          <a href="concepts.html" class="btn btn-secondary">Learn the Concepts</a>
+        </div>
+      </div>
+
+      <hr>
+
+      <h2>The Problem</h2>
+      <p>
+        AI coding assistants can write game code, but they lack <strong>design intent</strong>. They
+        implement features "in vacuo" &mdash; isolated from their effect on player experience. A damage
+        system gets built without knowing it exists to create <em>tension</em>. A hint system gets tuned
+        without knowing it serves <em>discovery</em>.
+      </p>
+
+      <h2>The Solution</h2>
+      <p>
+        Structure game design as layered, traceable specifications that give AI three things it normally lacks:
+      </p>
+
+      <div class="features">
+        <div class="feature-card">
+          <span class="feature-icon">&#127919;</span>
+          <h3>Intent</h3>
+          <p>Aesthetic specs explain <em>why</em> a feature exists &mdash; which of the 8 player experience categories it serves.</p>
+        </div>
+        <div class="feature-card">
+          <span class="feature-icon">&#128218;</span>
+          <h3>Constraints</h3>
+          <p>Dynamic specs define behavioral boundaries and feedback systems that <em>must</em> emerge from the mechanics.</p>
+        </div>
+        <div class="feature-card">
+          <span class="feature-icon">&#9989;</span>
+          <h3>Testability</h3>
+          <p>Mechanic specs provide acceptance criteria, and runtime logs validate invariants and aesthetic proxies automatically.</p>
+        </div>
+      </div>
+
+      <h2>How It Works</h2>
+      <p>Every game feature is specified across the MDA causal chain before code is written:</p>
+
+      <div class="diagram">
+<pre><code>Game Concept          "A cozy hide-and-seek game for young children"
+      |
+      v
+Aesthetics (WHY)      "The player should feel the delight of discovery"
+      |                 Primary: Discovery | Secondary: Fantasy, Sensation
+      v
+Dynamics (WHAT)       "A negative feedback loop ensures the player always finds
+      |                 the baby within 50 seconds via escalating hints"
+      v
+Mechanics (HOW)       "Rule 4: Hint system fires at [15s, 25s, 35s, 45s] with
+      |                 escalating cues. discoveryRange = 8 studs."
+      v
+Tuning (BALANCE)      "hintTier1Time: 15s [10-25], sensitivity: High
+      |                 discoveryRange: 8 studs [5-15], sensitivity: High"
+      v
+Assets (CONTENT)      "Baby character: 5k tri, R15 rig, 8 emotion blendshapes
+                        Status: placeholder | Emotional intent: warmth"</code></pre>
+      </div>
+
+      <p>
+        AI reads <strong>top-down</strong> (M&rarr;D&rarr;A) to understand intent when implementing. AI reads
+        <strong>bottom-up</strong> (A&rarr;D&rarr;M) to trace problems when debugging.
+      </p>
+
+      <h2>Key Features</h2>
+
+      <div class="features">
+        <div class="feature-card">
+          <span class="feature-icon">&#128736;</span>
+          <h3>CLI Tooling</h3>
+          <p>Validate specs, run quality gates, and scaffold new specs from the command line with <code>npx mda</code>.</p>
+        </div>
+        <div class="feature-card">
+          <span class="feature-icon">&#128202;</span>
+          <h3>Structured Logging</h3>
+          <p>MDALogger tags every runtime event with its MDA layer and spec ID for traceable debugging.</p>
+        </div>
+        <div class="feature-card">
+          <span class="feature-icon">&#127918;</span>
+          <h3>Multi-Engine</h3>
+          <p>Engine-agnostic behavioral specs with binding layers for Roblox, Unity, and Unreal Engine.</p>
+        </div>
+        <div class="feature-card">
+          <span class="feature-icon">&#128279;</span>
+          <h3>Full Traceability</h3>
+          <p>Bidirectional links between all spec layers. Every mechanic traces to a dynamic and an aesthetic.</p>
+        </div>
+        <div class="feature-card">
+          <span class="feature-icon">&#128682;</span>
+          <h3>Quality Gates</h3>
+          <p>Automated checks ensure specs are complete before proceeding to the next layer.</p>
+        </div>
+        <div class="feature-card">
+          <span class="feature-icon">&#129302;</span>
+          <h3>AI-Optimized</h3>
+          <p>Designed for AI assistants to read and implement with full design context via CLAUDE.md.</p>
+        </div>
+      </div>
+
+      <h2>Based On</h2>
+      <p>
+        <a href="https://users.cs.northwestern.edu/~hunicke/MDA.pdf">MDA: A Formal Approach to Game Design and Game Research</a>
+        by Robin Hunicke, Marc LeBlanc, Robert Zubek (GDC 2001-2004).
+      </p>
+
+      <div class="page-nav">
+        <div></div>
+        <a href="getting-started.html" class="next">
+          <span class="label">Next</span>
+          <span class="title">Getting Started &rarr;</span>
+        </a>
+      </div>
+    </main>
+  </div>
+
+  <script src="js/main.js"></script>
+</body>
+</html>

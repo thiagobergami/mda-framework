@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tuning Schema - MDA Spec Framework</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header class="site-header">
+    <button class="menu-toggle" aria-label="Toggle menu">
+      <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 010 2H4a1 1 0 01-1-1zm0 5a1 1 0 011-1h12a1 1 0 010 2H4a1 1 0 01-1-1zm0 5a1 1 0 011-1h12a1 1 0 010 2H4a1 1 0 01-1-1z" clip-rule="evenodd"/></svg>
+    </button>
+    <a href="index.html" class="header-logo"><span class="logo-icon">M</span> MDA Framework</a>
+    <nav class="header-nav"><a href="getting-started.html">Guide</a><a href="cli.html">CLI</a><a href="logger.html">Logger API</a></nav>
+  </header>
+  <div class="layout">
+    <aside class="sidebar">
+      <nav>
+        <div class="nav-group"><div class="nav-group-title"><svg class="chevron" viewBox="0 0 12 12" fill="currentColor"><path d="M4.7 2.3a1 1 0 00-1.4 1.4L6.6 7l-3.3 3.3a1 1 0 001.4 1.4l4-4a1 1 0 000-1.4l-4-4z"/></svg> Introduction</div><ul class="nav-items"><li><a href="index.html">Overview</a></li><li><a href="getting-started.html">Getting Started</a></li><li><a href="concepts.html">Core Concepts</a></li></ul></div>
+        <div class="nav-group"><div class="nav-group-title"><svg class="chevron" viewBox="0 0 12 12" fill="currentColor"><path d="M4.7 2.3a1 1 0 00-1.4 1.4L6.6 7l-3.3 3.3a1 1 0 001.4 1.4l4-4a1 1 0 000-1.4l-4-4z"/></svg> Workflow</div><ul class="nav-items"><li><a href="workflow.html">8-Step Process</a></li><li><a href="example.html">Walkthrough Example</a></li></ul></div>
+        <div class="nav-group"><div class="nav-group-title"><svg class="chevron" viewBox="0 0 12 12" fill="currentColor"><path d="M4.7 2.3a1 1 0 00-1.4 1.4L6.6 7l-3.3 3.3a1 1 0 001.4 1.4l4-4a1 1 0 000-1.4l-4-4z"/></svg> Spec Schemas</div><ul class="nav-items"><li><a href="spec-concept.html">Game Concept</a></li><li><a href="spec-aesthetics.html">Aesthetics</a></li><li><a href="spec-dynamics.html">Dynamics</a></li><li><a href="spec-mechanics.html">Mechanics</a></li><li><a href="spec-tuning.html">Tuning</a></li><li><a href="spec-assets.html">Assets</a></li><li><a href="spec-bindings.html">Engine Bindings</a></li></ul></div>
+        <div class="nav-group"><div class="nav-group-title"><svg class="chevron" viewBox="0 0 12 12" fill="currentColor"><path d="M4.7 2.3a1 1 0 00-1.4 1.4L6.6 7l-3.3 3.3a1 1 0 001.4 1.4l4-4a1 1 0 000-1.4l-4-4z"/></svg> Tools</div><ul class="nav-items"><li><a href="cli.html">CLI Reference</a></li><li><a href="logger.html">MDA Logger</a></li><li><a href="multi-engine.html">Multi-Engine Support</a></li></ul></div>
+        <div class="nav-group"><div class="nav-group-title"><svg class="chevron" viewBox="0 0 12 12" fill="currentColor"><path d="M4.7 2.3a1 1 0 00-1.4 1.4L6.6 7l-3.3 3.3a1 1 0 001.4 1.4l4-4a1 1 0 000-1.4l-4-4z"/></svg> Community</div><ul class="nav-items"><li><a href="contributing.html">Contributing</a></li></ul></div>
+      </nav>
+    </aside>
+
+    <main class="content">
+      <h1>Tuning Spec Schema</h1>
+      <p class="subtitle">
+        Tuning specs define the <strong>iterative refinement parameters</strong> for a feature. They answer:
+        "What values can we adjust, within what ranges, to improve the experience?"
+      </p>
+
+      <p>
+        <strong>File pattern:</strong> <code>specs/tuning/{feature}.tune.md</code><br>
+        <strong>ID format:</strong> <code>TUN-{NNN}</code><br>
+        <strong>Scaffold:</strong> <code>npx mda new tuning "Feature Pacing"</code>
+      </p>
+
+      <div class="callout tip">
+        <div class="callout-title">From the MDA paper</div>
+        <p>"By iteratively refining the value of penalties, rate of taxation or thresholds for rewards and punishments, we can refine the gameplay until it is balanced."</p>
+      </div>
+
+      <h2>Template</h2>
+      <h3>Frontmatter</h3>
+      <pre><code>---
+id: TUN-{NNN}
+name: {Descriptive name}
+traces_to_mechanics: [MEC-NNN]
+traces_to_dynamics: [DYN-NNN]
+traces_to_aesthetics: [AES-NNN]
+---</code></pre>
+      <p>Tuning specs are the only layer that traces to ALL three other layers, because tuning affects the entire M&rarr;D&rarr;A chain.</p>
+
+      <h3>Required Sections</h3>
+
+      <h4>Tuning Goal</h4>
+      <p>What experience outcome this tuning achieves. Reference the aesthetic spec and define what "balanced" means.</p>
+
+      <h4>Parameters</h4>
+      <p>Every <code>[TUNABLE]</code> value from related mechanic specs.</p>
+      <pre><code>### peekThreshold
+- Mechanic: MEC-005, Rule 2
+- Current value: 0.15
+- Range: [0.05, 0.40]
+- Step: 0.05
+- Affects dynamic: Light Reveal Cycle peek phase duration
+- Affects aesthetic: Creature Wonder &mdash; anticipation before reveal
+- Sensitivity: High</code></pre>
+
+      <h4>Target Metrics</h4>
+      <p>Measurable outcomes corresponding to aesthetic observable proxies.</p>
+      <table>
+        <thead><tr><th>Metric</th><th>Target</th><th>Tolerance</th><th>Source</th></tr></thead>
+        <tbody>
+          <tr><td>reveal_pause</td><td>1.0s</td><td>&plusmn;0.3s</td><td>AES-003</td></tr>
+          <tr><td>discovery_rate</td><td>25s</td><td>&plusmn;10s</td><td>AES-002</td></tr>
+        </tbody>
+      </table>
+
+      <h4>Tuning Constraints</h4>
+      <p>Rules limiting how parameters relate to each other.</p>
+
+      <h4>Known Trade-offs</h4>
+      <p>Adjustments that improve one aesthetic at the expense of another.</p>
+      <pre><code>- peekThreshold vs revealSpeed: Lower peek threshold increases anticipation (Sensation)
+  but slows down discovery rate (Discovery). Primary aesthetic (Discovery) wins.</code></pre>
+
+      <h4>Iteration Log</h4>
+      <p>Record of tuning changes and observed effects. Builds institutional knowledge.</p>
+      <pre><code>### Iteration 1 &mdash; 2026-04-14
+- Changed: peekThreshold from 0.30 to 0.15
+- Reason: INV-2 failures &mdash; light jumps skipping peek phase
+- Observed: reveal_pause improved from 0.3s to 1.2s
+- Decision: Keep</code></pre>
+
+      <h2>Rules</h2>
+      <ol>
+        <li><strong>Every tunable parameter is documented</strong> &mdash; Hidden magic numbers are the enemy of iteration</li>
+        <li><strong>Ranges prevent extremes</strong> &mdash; AI must never set values outside the range</li>
+        <li><strong>Sensitivity guides priority</strong> &mdash; High-sensitivity parameters need small, careful adjustments</li>
+        <li><strong>Trade-offs are explicit</strong> &mdash; Name what breaks when you "fix" something</li>
+        <li><strong>Log iterations</strong> &mdash; Past attempts (including failures) inform future adjustments</li>
+        <li><strong>Trace in all directions</strong> &mdash; Tuning affects the entire M&rarr;D&rarr;A chain</li>
+      </ol>
+
+      <div class="page-nav">
+        <a href="spec-mechanics.html">
+          <span class="label">Previous</span>
+          <span class="title">&larr; Mechanics Schema</span>
+        </a>
+        <a href="spec-assets.html" class="next">
+          <span class="label">Next</span>
+          <span class="title">Assets Schema &rarr;</span>
+        </a>
+      </div>
+    </main>
+  </div>
+  <script src="js/main.js"></script>
+</body>
+</html>

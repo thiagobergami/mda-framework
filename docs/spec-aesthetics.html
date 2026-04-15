@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Aesthetics Schema - MDA Spec Framework</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header class="site-header">
+    <button class="menu-toggle" aria-label="Toggle menu">
+      <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 010 2H4a1 1 0 01-1-1zm0 5a1 1 0 011-1h12a1 1 0 010 2H4a1 1 0 01-1-1zm0 5a1 1 0 011-1h12a1 1 0 010 2H4a1 1 0 01-1-1z" clip-rule="evenodd"/></svg>
+    </button>
+    <a href="index.html" class="header-logo"><span class="logo-icon">M</span> MDA Framework</a>
+    <nav class="header-nav">
+      <a href="getting-started.html">Guide</a>
+      <a href="cli.html">CLI</a>
+      <a href="logger.html">Logger API</a>
+    </nav>
+  </header>
+  <div class="layout">
+    <aside class="sidebar">
+      <nav>
+        <div class="nav-group"><div class="nav-group-title"><svg class="chevron" viewBox="0 0 12 12" fill="currentColor"><path d="M4.7 2.3a1 1 0 00-1.4 1.4L6.6 7l-3.3 3.3a1 1 0 001.4 1.4l4-4a1 1 0 000-1.4l-4-4z"/></svg> Introduction</div><ul class="nav-items"><li><a href="index.html">Overview</a></li><li><a href="getting-started.html">Getting Started</a></li><li><a href="concepts.html">Core Concepts</a></li></ul></div>
+        <div class="nav-group"><div class="nav-group-title"><svg class="chevron" viewBox="0 0 12 12" fill="currentColor"><path d="M4.7 2.3a1 1 0 00-1.4 1.4L6.6 7l-3.3 3.3a1 1 0 001.4 1.4l4-4a1 1 0 000-1.4l-4-4z"/></svg> Workflow</div><ul class="nav-items"><li><a href="workflow.html">8-Step Process</a></li><li><a href="example.html">Walkthrough Example</a></li></ul></div>
+        <div class="nav-group"><div class="nav-group-title"><svg class="chevron" viewBox="0 0 12 12" fill="currentColor"><path d="M4.7 2.3a1 1 0 00-1.4 1.4L6.6 7l-3.3 3.3a1 1 0 001.4 1.4l4-4a1 1 0 000-1.4l-4-4z"/></svg> Spec Schemas</div><ul class="nav-items"><li><a href="spec-concept.html">Game Concept</a></li><li><a href="spec-aesthetics.html">Aesthetics</a></li><li><a href="spec-dynamics.html">Dynamics</a></li><li><a href="spec-mechanics.html">Mechanics</a></li><li><a href="spec-tuning.html">Tuning</a></li><li><a href="spec-assets.html">Assets</a></li><li><a href="spec-bindings.html">Engine Bindings</a></li></ul></div>
+        <div class="nav-group"><div class="nav-group-title"><svg class="chevron" viewBox="0 0 12 12" fill="currentColor"><path d="M4.7 2.3a1 1 0 00-1.4 1.4L6.6 7l-3.3 3.3a1 1 0 001.4 1.4l4-4a1 1 0 000-1.4l-4-4z"/></svg> Tools</div><ul class="nav-items"><li><a href="cli.html">CLI Reference</a></li><li><a href="logger.html">MDA Logger</a></li><li><a href="multi-engine.html">Multi-Engine Support</a></li></ul></div>
+        <div class="nav-group"><div class="nav-group-title"><svg class="chevron" viewBox="0 0 12 12" fill="currentColor"><path d="M4.7 2.3a1 1 0 00-1.4 1.4L6.6 7l-3.3 3.3a1 1 0 001.4 1.4l4-4a1 1 0 000-1.4l-4-4z"/></svg> Community</div><ul class="nav-items"><li><a href="contributing.html">Contributing</a></li></ul></div>
+      </nav>
+    </aside>
+
+    <main class="content">
+      <h1>Aesthetic Spec Schema</h1>
+      <p class="subtitle">
+        Aesthetic specs define the <strong>player experience goals</strong> for a feature. They answer:
+        "What should the player FEEL when interacting with this part of the game?"
+      </p>
+
+      <p>
+        <strong>File pattern:</strong> <code>specs/aesthetics/{feature}.aes.md</code><br>
+        <strong>ID format:</strong> <code>AES-{NNN}</code><br>
+        <strong>Scaffold:</strong> <code>npx mda new aesthetic "Feature Name"</code>
+      </p>
+
+      <div class="callout tip">
+        <div class="callout-title">From the MDA paper</div>
+        <p>"In describing the aesthetics of a game, we want to move away from words like 'fun' and 'gameplay' towards a more directed vocabulary."</p>
+      </div>
+
+      <h2>Template</h2>
+      <h3>Frontmatter</h3>
+      <pre><code>---
+id: AES-{NNN}
+name: {Descriptive name}
+primary_aesthetic: {One of the 8 categories}
+secondary_aesthetics: [{List of supporting categories}]
+target_audience: {Who this experience is for}
+---</code></pre>
+
+      <h3>Required Sections</h3>
+
+      <h4>Experience Goal</h4>
+      <p>2-3 sentences describing the desired player experience using <a href="concepts.html#aesthetics">aesthetic vocabulary</a>. Never use "fun" or "gameplay."</p>
+
+      <h4>Aesthetic Profile</h4>
+      <p>Primary aesthetic with its "Game as..." frame, plus secondary aesthetics with explanations of how they support or amplify the primary.</p>
+
+      <h4>Observable Proxies</h4>
+      <p>Measurable player behaviors that indicate the aesthetic is working. Each proxy has a name, what to measure, and a target range or threshold.</p>
+      <pre><code>- reveal_pause_duration: Average time players pause at reveals &mdash; Target: &gt;1.0s
+- discovery_rate: Median time between discoveries &mdash; Target: 25s &plusmn;10</code></pre>
+
+      <h4>Anti-Patterns</h4>
+      <p>Behaviors or states that indicate the aesthetic is FAILING. Each anti-pattern must have a detection signal.</p>
+
+      <h4>Audience Context</h4>
+      <p>Who is the target player? The same mechanics produce different aesthetics for different audiences.</p>
+
+      <h2>Rules</h2>
+      <ol>
+        <li><strong>Use the 8 categories</strong> &mdash; Every spec must classify using the <a href="concepts.html#aesthetics">glossary vocabulary</a></li>
+        <li><strong>One primary</strong> &mdash; Exactly one dominant aesthetic. If you can't choose, the feature is too broad; split it</li>
+        <li><strong>Observable proxies are required</strong> &mdash; If you can't define how to observe the aesthetic, it's too vague to implement</li>
+        <li><strong>Anti-patterns prevent drift</strong> &mdash; They catch when a mechanic change breaks the experience</li>
+        <li><strong>Audience matters</strong> &mdash; The same system produces different aesthetics for different players</li>
+        <li><strong>No implementation details</strong> &mdash; Aesthetics describe WHAT the player feels, never HOW the system achieves it</li>
+      </ol>
+
+      <h2>Quality Gate: Aesthetic Readiness</h2>
+      <pre><code>npx mda gate aesthetic</code></pre>
+      <table>
+        <thead><tr><th>Check</th><th>What it verifies</th></tr></thead>
+        <tbody>
+          <tr><td>Measurable proxies</td><td>All proxies have numeric targets, not subjective phrases</td></tr>
+          <tr><td>Anti-patterns defined</td><td>Each anti-pattern has a detection signal</td></tr>
+          <tr><td>Precise vocabulary</td><td>No "fun", "engaging", or other banned vague words</td></tr>
+          <tr><td>Primary classified</td><td>Exactly one primary aesthetic from the 8 categories</td></tr>
+        </tbody>
+      </table>
+
+      <div class="page-nav">
+        <a href="spec-concept.html">
+          <span class="label">Previous</span>
+          <span class="title">&larr; Game Concept</span>
+        </a>
+        <a href="spec-dynamics.html" class="next">
+          <span class="label">Next</span>
+          <span class="title">Dynamics Schema &rarr;</span>
+        </a>
+      </div>
+    </main>
+  </div>
+  <script src="js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Walkthrough Example - MDA Spec Framework</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header class="site-header">
+    <button class="menu-toggle" aria-label="Toggle menu">
+      <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 010 2H4a1 1 0 01-1-1zm0 5a1 1 0 011-1h12a1 1 0 010 2H4a1 1 0 01-1-1zm0 5a1 1 0 011-1h12a1 1 0 010 2H4a1 1 0 01-1-1z" clip-rule="evenodd"/></svg>
+    </button>
+    <a href="index.html" class="header-logo">
+      <span class="logo-icon">M</span>
+      MDA Framework
+    </a>
+    <nav class="header-nav">
+      <a href="getting-started.html">Guide</a>
+      <a href="cli.html">CLI</a>
+      <a href="logger.html">Logger API</a>
+    </nav>
+  </header>
+
+  <div class="layout">
+    <aside class="sidebar">
+      <nav>
+        <div class="nav-group">
+          <div class="nav-group-title">
+            <svg class="chevron" viewBox="0 0 12 12" fill="currentColor"><path d="M4.7 2.3a1 1 0 00-1.4 1.4L6.6 7l-3.3 3.3a1 1 0 001.4 1.4l4-4a1 1 0 000-1.4l-4-4z"/></svg>
+            Introduction
+          </div>
+          <ul class="nav-items">
+            <li><a href="index.html">Overview</a></li>
+            <li><a href="getting-started.html">Getting Started</a></li>
+            <li><a href="concepts.html">Core Concepts</a></li>
+          </ul>
+        </div>
+        <div class="nav-group">
+          <div class="nav-group-title">
+            <svg class="chevron" viewBox="0 0 12 12" fill="currentColor"><path d="M4.7 2.3a1 1 0 00-1.4 1.4L6.6 7l-3.3 3.3a1 1 0 001.4 1.4l4-4a1 1 0 000-1.4l-4-4z"/></svg>
+            Workflow
+          </div>
+          <ul class="nav-items">
+            <li><a href="workflow.html">8-Step Process</a></li>
+            <li><a href="example.html">Walkthrough Example</a></li>
+          </ul>
+        </div>
+        <div class="nav-group">
+          <div class="nav-group-title">
+            <svg class="chevron" viewBox="0 0 12 12" fill="currentColor"><path d="M4.7 2.3a1 1 0 00-1.4 1.4L6.6 7l-3.3 3.3a1 1 0 001.4 1.4l4-4a1 1 0 000-1.4l-4-4z"/></svg>
+            Spec Schemas
+          </div>
+          <ul class="nav-items">
+            <li><a href="spec-concept.html">Game Concept</a></li>
+            <li><a href="spec-aesthetics.html">Aesthetics</a></li>
+            <li><a href="spec-dynamics.html">Dynamics</a></li>
+            <li><a href="spec-mechanics.html">Mechanics</a></li>
+            <li><a href="spec-tuning.html">Tuning</a></li>
+            <li><a href="spec-assets.html">Assets</a></li>
+            <li><a href="spec-bindings.html">Engine Bindings</a></li>
+          </ul>
+        </div>
+        <div class="nav-group">
+          <div class="nav-group-title">
+            <svg class="chevron" viewBox="0 0 12 12" fill="currentColor"><path d="M4.7 2.3a1 1 0 00-1.4 1.4L6.6 7l-3.3 3.3a1 1 0 001.4 1.4l4-4a1 1 0 000-1.4l-4-4z"/></svg>
+            Tools
+          </div>
+          <ul class="nav-items">
+            <li><a href="cli.html">CLI Reference</a></li>
+            <li><a href="logger.html">MDA Logger</a></li>
+            <li><a href="multi-engine.html">Multi-Engine Support</a></li>
+          </ul>
+        </div>
+        <div class="nav-group">
+          <div class="nav-group-title">
+            <svg class="chevron" viewBox="0 0 12 12" fill="currentColor"><path d="M4.7 2.3a1 1 0 00-1.4 1.4L6.6 7l-3.3 3.3a1 1 0 001.4 1.4l4-4a1 1 0 000-1.4l-4-4z"/></svg>
+            Community
+          </div>
+          <ul class="nav-items">
+            <li><a href="contributing.html">Contributing</a></li>
+          </ul>
+        </div>
+      </nav>
+    </aside>
+
+    <main class="content">
+      <h1>Walkthrough: Lantern Woods</h1>
+      <p class="subtitle">
+        A complete example of the framework in action &mdash; from rough game idea to validated implementation.
+        The game is fictional, but every step reflects the real process.
+      </p>
+
+      <div class="callout tip">
+        <div class="callout-title">The Game</div>
+        <p>
+          <strong>Lantern Woods</strong> &mdash; a co-op exploration game where 2-4 players carry
+          lanterns through a dark forest, revealing hidden creatures that react to light. Each
+          creature reacts differently to light. The goal is to fill a "Field Journal" by discovering
+          all creature types. Calm, no combat, ages 10+. Target platform: Roblox.
+        </p>
+      </div>
+
+      <h2>Phase 1: Concept Refinement</h2>
+      <p>
+        The designer describes a rough idea. The framework enters a <strong>refinement loop</strong>
+        that pressure-tests the idea against the 6 Concept Readiness checks.
+      </p>
+
+      <h3>The conversation</h3>
+      <pre><code>Designer:  I want to make a co-op game where 2-4 players explore a dark forest
+           carrying lanterns. The lanterns reveal hidden creatures in the
+           environment. Each creature reacts differently to light. The goal is
+           to fill a "Field Journal" by discovering all creature types.
+
+Claude:    I've drafted the concept. Let me run the readiness gate:
+
+           npx mda gate concept
+
+           [PASS] Vision clarity
+           [FAIL] Aesthetic commitment
+                  Problem: Only 1 aesthetic marked Absent. The gate requires
+                  at least 2 to ensure focus.
+           [PASS] Core loop coherence
+           [WARN] Boundary definition
+                  Only 2 explicit boundaries. Gate requires at least 3.
+           [PASS] Feature traceability
+           [PASS] Scope realism
+
+           RESULT: BLOCKED (1 fail, 1 warn)</code></pre>
+
+      <p>Claude proposes fixes: mark Expression and Submission as Absent (players observe, not create; sessions have a clear Journal goal). Add a third boundary about competition. The designer approves and adds a fourth boundary about crafting.</p>
+
+      <pre><code>npx mda gate concept
+
+[PASS] Vision clarity
+[PASS] Aesthetic commitment  (3 active, 3 absent)
+[PASS] Core loop coherence
+[PASS] Boundary definition   (4 boundaries with rationale)
+[PASS] Feature traceability
+[PASS] Scope realism
+
+RESULT: PASSED (6/6)</code></pre>
+
+      <div class="callout tip">
+        <div class="callout-title">What the gate caught</div>
+        <p>
+          Without the gate, the concept would have tried to serve 5 aesthetics. That's too many &mdash;
+          downstream specs would have conflicting goals. By forcing Absent aesthetics, the concept
+          now has clear priorities that cascade into focused specs.
+        </p>
+      </div>
+
+      <h2>Phase 2: Gated Spec Authoring</h2>
+      <p>Each layer is authored, then its gate runs before the next layer starts.</p>
+
+      <h3>Aesthetics &rarr; Aesthetic Gate</h3>
+      <pre><code>Checking AES-003 (Creature Wonder):
+  [PASS] 3 observable proxies, all measurable
+  [FAIL] Anti-pattern "reveal fatigue" has no detection signal
+         How do you DETECT "players stop being impressed by reveals"?
+
+RESULT: BLOCKED</code></pre>
+      <p>
+        Claude proposes a measurable detection signal: "Average player pause duration at reveal drops
+        below 0.5s for 3 consecutive reveals." This is trackable &mdash; the MDA logger records how long
+        players stop moving after a creature is revealed. Designer approves, gate passes.
+      </p>
+
+      <h3>Dynamics &rarr; Dynamic Gate</h3>
+      <pre><code>Checking DYN-002 (Light Reveal Cycle):
+  [WARN] Journal Momentum is a positive loop with no cap identified
+         What prevents "journal completionism" from dominating?
+
+RESULT: PASSED with warnings</code></pre>
+      <p>
+        Designer adds a cap: "Journal shows max 2 undiscovered silhouettes at a time, preventing
+        overwhelm. Momentum comes from quality of each discovery, not quantity pressure."
+      </p>
+
+      <h3>Mechanics &rarr; Implementation Gate</h3>
+      <pre><code>Checking MEC-004 (Lantern System):    All checks pass
+Checking MEC-005 (Creature Behavior):  All checks pass
+Checking MEC-006 (Field Journal):      All checks pass
+Checking bindings (engine: roblox):    All 3 bindings present
+Checking tuning:                       All parameters documented
+
+RESULT: PASSED &mdash; Ready for implementation</code></pre>
+
+      <h3>Files after Phase 2</h3>
+      <div class="diagram">
+<pre><code>specs/
+  concept/lantern-woods.concept.md          GAME-002 (PASSED)
+  aesthetics/lantern-discovery.aes.md       AES-002  (PASSED)
+  aesthetics/creature-wonder.aes.md         AES-003  (PASSED)
+  dynamics/light-reveal-cycle.dyn.md        DYN-002  (PASSED)
+  dynamics/coop-exploration.dyn.md          DYN-003  (PASSED)
+  mechanics/lantern-system.mec.md           MEC-004  (PASSED)
+  mechanics/creature-behavior.mec.md        MEC-005  (PASSED)
+  mechanics/field-journal.mec.md            MEC-006  (PASSED)
+  assets/forest-creatures.asset.md          AST-007
+  assets/forest-environment.asset.md        AST-008
+  tuning/lantern-pacing.tune.md             TUN-002
+  tuning/creature-reveal.tune.md            TUN-003
+  bindings/roblox/lantern-system.bind.md    BIND-001
+  bindings/roblox/creature-behavior.bind.md BIND-002
+  bindings/roblox/field-journal.bind.md     BIND-003</code></pre>
+      </div>
+
+      <h2>Phase 3: Implement-Debug Loop</h2>
+      <p>Implementation and debugging form a continuous cycle, not a waterfall.</p>
+
+      <h3>Iteration 1: Initial Implementation</h3>
+      <p>Claude reads the spec chain (MEC-004 &rarr; DYN-002 &rarr; AES-002), reads the binding spec, writes Luau code with logger calls, syncs to Roblox Studio via Rojo.</p>
+
+      <p>Designer playtests: "The reveals don't feel rewarding. Players find creatures but just keep walking."</p>
+
+      <h4>Analyzing the logs</h4>
+      <pre><code>[A:AES-002] [PASS] proxy=reveal_rate       value=52   target=50
+[A:AES-003] [FAIL] proxy=reveal_pause      value=0.3  target=1.0  OUT_OF_RANGE
+
+[D:DYN-002] INV-2: FAIL &mdash; 4/12 reveals had no partial reaction
+
+Tracing cid=9:
+[01:42.100] [M:MEC-004] CREATURE_LIT  light=0.12
+[01:42.300] [M:MEC-004] CREATURE_LIT  light=0.28
+[01:42.400] [M:MEC-004] CREATURE_LIT  light=0.74  &larr; jumped!
+[01:42.401] [M:MEC-005] CREATURE_REVEAL hadPeek=false
+[01:42.401] [D:DYN-002] FAIL INVARIANT inv=INV-2</code></pre>
+
+      <p>
+        <strong>Root cause:</strong> Light jumped from 0.28 to 0.74 in one frame, skipping the peek phase.
+        <code>peekThreshold</code> (0.3) and <code>revealThreshold</code> (0.7) are too close for fast-moving players.
+      </p>
+
+      <p><strong>Fix:</strong> Lower <code>peekThreshold</code> from 0.3 to 0.15 (tuning) + add <code>peekMinDuration = 1.0s</code> to MEC-005 (mechanic amendment).</p>
+
+      <h3>Iteration 2: Retest</h3>
+      <pre><code>[A:AES-003] [PASS] proxy=reveal_pause  value=1.2  target=1.0
+[D:DYN-002] all invariants PASS
+[A:AES-002] [FAIL] proxy=coop_clustering  value=0.15  target=0.70</code></pre>
+      <p>Creatures work now, but co-op is broken &mdash; players ignore each other.</p>
+
+      <h3>Iteration 3: A Vision Change</h3>
+      <p>The A&rarr;D&rarr;M trace reveals this isn't a tuning or bug issue &mdash; there's no <strong>mechanical reason</strong> to cooperate. Every creature is soloable.</p>
+
+      <div class="callout warning">
+        <div class="callout-title">Vision Change Proposal</div>
+        <p>
+          <strong>Trigger:</strong> coop_clustering at 0.15 (target 0.70)<br>
+          <strong>Root cause:</strong> No creature requires 2+ lanterns. Solo always works.<br>
+          <strong>Proposed change:</strong> Add rare creatures requiring merged lantern light + speed bonus for merged reveals on normal creatures.<br>
+          <strong>Cascade:</strong> DYN-003 &rarr; MEC-005 &rarr; TUN-003 &rarr; AST-007 (4 specs modified)
+        </p>
+      </div>
+
+      <p>The designer decides: "Do both &mdash; rare creatures require merge, AND merge makes normal reveals faster. Solo players can still complete 80% of the Journal."</p>
+
+      <p>Claude modifies specs top-down through gates, re-implements MEC-005, updates tuning and traceability.</p>
+
+      <h3>Iteration 4: Validated</h3>
+      <pre><code>[A:AES-002] [PASS] proxy=coop_clustering  value=0.71  target=0.70
+[A:AES-002] [PASS] proxy=reveal_rate      value=48
+[A:AES-003] [PASS] proxy=reveal_pause     value=1.4
+[D:DYN-002] all invariants PASS
+[D:DYN-003] all invariants PASS
+
+ALL PROXIES IN_RANGE. ALL INVARIANTS PASS.</code></pre>
+
+      <h2>Decision Summary</h2>
+      <table>
+        <thead>
+          <tr><th>Moment</th><th>Who Decides</th><th>AI Role</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Concept draft</td><td>Gate (automated)</td><td>Proposes fixes for failures</td></tr>
+          <tr><td>Concept refinement</td><td>Designer</td><td>Presents trade-offs</td></tr>
+          <tr><td>Gate failures</td><td>AI proposes, designer confirms</td><td>Drafts measurable signals</td></tr>
+          <tr><td>Implementation</td><td>AI (reads binding spec)</td><td>Writes all code</td></tr>
+          <tr><td>Playtest feedback</td><td>Designer (subjective)</td><td>Translates to: which proxy fails?</td></tr>
+          <tr><td>Diagnosis</td><td>AI (from log data)</td><td>Traces A&rarr;D&rarr;M, classifies fix type</td></tr>
+          <tr><td>Tuning fix</td><td>AI proposes, designer confirms</td><td>Pushes parameter live</td></tr>
+          <tr><td>Vision change</td><td>Designer decides</td><td>Drafts proposal with cascade analysis</td></tr>
+          <tr><td>Feature validated</td><td>Data (automated)</td><td>Reports results</td></tr>
+        </tbody>
+      </table>
+
+      <div class="callout tip">
+        <div class="callout-title">Key Insight</div>
+        <p>
+          The human makes <strong>design decisions</strong> (what the game should feel like).
+          The AI makes <strong>analytical decisions</strong> (which proxy is failing, what the root cause is).
+          The tooling makes <strong>structural decisions</strong> (are gates passing, are traces valid).
+          No single actor has full authority. The framework makes these handoff points explicit.
+        </p>
+      </div>
+
+      <div class="page-nav">
+        <a href="workflow.html">
+          <span class="label">Previous</span>
+          <span class="title">&larr; 8-Step Process</span>
+        </a>
+        <a href="spec-concept.html" class="next">
+          <span class="label">Next</span>
+          <span class="title">Concept Schema &rarr;</span>
+        </a>
+      </div>
+    </main>
+  </div>
+
+  <script src="js/main.js"></script>
+</body>
+</html>

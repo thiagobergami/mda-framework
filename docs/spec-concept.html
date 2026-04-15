@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Game Concept Schema - MDA Spec Framework</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header class="site-header">
+    <button class="menu-toggle" aria-label="Toggle menu">
+      <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 010 2H4a1 1 0 01-1-1zm0 5a1 1 0 011-1h12a1 1 0 010 2H4a1 1 0 01-1-1zm0 5a1 1 0 011-1h12a1 1 0 010 2H4a1 1 0 01-1-1z" clip-rule="evenodd"/></svg>
+    </button>
+    <a href="index.html" class="header-logo"><span class="logo-icon">M</span> MDA Framework</a>
+    <nav class="header-nav">
+      <a href="getting-started.html">Guide</a>
+      <a href="cli.html">CLI</a>
+      <a href="logger.html">Logger API</a>
+    </nav>
+  </header>
+  <div class="layout">
+    <aside class="sidebar">
+      <nav>
+        <div class="nav-group">
+          <div class="nav-group-title"><svg class="chevron" viewBox="0 0 12 12" fill="currentColor"><path d="M4.7 2.3a1 1 0 00-1.4 1.4L6.6 7l-3.3 3.3a1 1 0 001.4 1.4l4-4a1 1 0 000-1.4l-4-4z"/></svg> Introduction</div>
+          <ul class="nav-items">
+            <li><a href="index.html">Overview</a></li>
+            <li><a href="getting-started.html">Getting Started</a></li>
+            <li><a href="concepts.html">Core Concepts</a></li>
+          </ul>
+        </div>
+        <div class="nav-group">
+          <div class="nav-group-title"><svg class="chevron" viewBox="0 0 12 12" fill="currentColor"><path d="M4.7 2.3a1 1 0 00-1.4 1.4L6.6 7l-3.3 3.3a1 1 0 001.4 1.4l4-4a1 1 0 000-1.4l-4-4z"/></svg> Workflow</div>
+          <ul class="nav-items">
+            <li><a href="workflow.html">8-Step Process</a></li>
+            <li><a href="example.html">Walkthrough Example</a></li>
+          </ul>
+        </div>
+        <div class="nav-group">
+          <div class="nav-group-title"><svg class="chevron" viewBox="0 0 12 12" fill="currentColor"><path d="M4.7 2.3a1 1 0 00-1.4 1.4L6.6 7l-3.3 3.3a1 1 0 001.4 1.4l4-4a1 1 0 000-1.4l-4-4z"/></svg> Spec Schemas</div>
+          <ul class="nav-items">
+            <li><a href="spec-concept.html">Game Concept</a></li>
+            <li><a href="spec-aesthetics.html">Aesthetics</a></li>
+            <li><a href="spec-dynamics.html">Dynamics</a></li>
+            <li><a href="spec-mechanics.html">Mechanics</a></li>
+            <li><a href="spec-tuning.html">Tuning</a></li>
+            <li><a href="spec-assets.html">Assets</a></li>
+            <li><a href="spec-bindings.html">Engine Bindings</a></li>
+          </ul>
+        </div>
+        <div class="nav-group">
+          <div class="nav-group-title"><svg class="chevron" viewBox="0 0 12 12" fill="currentColor"><path d="M4.7 2.3a1 1 0 00-1.4 1.4L6.6 7l-3.3 3.3a1 1 0 001.4 1.4l4-4a1 1 0 000-1.4l-4-4z"/></svg> Tools</div>
+          <ul class="nav-items">
+            <li><a href="cli.html">CLI Reference</a></li>
+            <li><a href="logger.html">MDA Logger</a></li>
+            <li><a href="multi-engine.html">Multi-Engine Support</a></li>
+          </ul>
+        </div>
+        <div class="nav-group">
+          <div class="nav-group-title"><svg class="chevron" viewBox="0 0 12 12" fill="currentColor"><path d="M4.7 2.3a1 1 0 00-1.4 1.4L6.6 7l-3.3 3.3a1 1 0 001.4 1.4l4-4a1 1 0 000-1.4l-4-4z"/></svg> Community</div>
+          <ul class="nav-items">
+            <li><a href="contributing.html">Contributing</a></li>
+          </ul>
+        </div>
+      </nav>
+    </aside>
+
+    <main class="content">
+      <h1>Game Concept Schema</h1>
+      <p class="subtitle">
+        The starting point of the entire framework. Before any MDA breakdown happens, you need a
+        clear picture of: what is this game, who is it for, and what experience does it deliver?
+      </p>
+
+      <p>
+        <strong>File pattern:</strong> <code>specs/concept/{game-name}.concept.md</code><br>
+        <strong>ID format:</strong> <code>GAME-{NNN}</code><br>
+        <strong>Scaffold:</strong> <code>npx mda new concept "Game Title"</code>
+      </p>
+
+      <h2>Template</h2>
+      <h3>Frontmatter</h3>
+      <pre><code>---
+id: GAME-{NNN}
+name: {Game title or working title}
+version: {Spec version}
+---</code></pre>
+
+      <h3>Required Sections</h3>
+
+      <h4>Vision</h4>
+      <p>2-4 sentences capturing the essence of the game. The elevator pitch. A reader should immediately understand what kind of experience this is.</p>
+
+      <h4>Aesthetic Profile</h4>
+      <p>Rank the 8 aesthetic categories by importance for this game. This profile drives every design decision downstream.</p>
+      <table>
+        <thead><tr><th>Priority</th><th>Aesthetic</th><th>Role in this game</th></tr></thead>
+        <tbody>
+          <tr><td>Primary</td><td>{category}</td><td>How this aesthetic manifests</td></tr>
+          <tr><td>Secondary</td><td>{category}</td><td>How it supports the primary</td></tr>
+          <tr><td>Tertiary</td><td>{category}</td><td>Present but not a driver</td></tr>
+          <tr><td>Absent</td><td>{category}</td><td>Explicitly NOT pursued</td></tr>
+        </tbody>
+      </table>
+      <p>Include a <strong>Conflicts and resolutions</strong> subsection if any aesthetics tension each other.</p>
+
+      <h4>Core Loop</h4>
+      <p>The repeating cycle of player activity. Describe as: action &rarr; feedback &rarr; decision &rarr; action.</p>
+      <pre><code>{Action} &rarr; {System Response} &rarr; {Player Decision} &rarr; {repeat}
+
+- Frequency: How often this cycle repeats
+- Serves aesthetic: Which primary/secondary aesthetic</code></pre>
+
+      <h4>Target Audience</h4>
+      <p>Age range, player archetype, experience level, session length, social context.</p>
+
+      <h4>Platform Constraints</h4>
+      <p>Runtime, language, target devices, performance budget, input methods, network model.</p>
+
+      <h4>Feature Map</h4>
+      <p>High-level list of features, each connecting to an aesthetic. This becomes the spec backlog.</p>
+      <table>
+        <thead><tr><th>Feature</th><th>Primary Aesthetic</th><th>Priority</th><th>Status</th></tr></thead>
+        <tbody>
+          <tr><td>{name}</td><td>{aesthetic}</td><td>Must-have / Should-have / Nice-to-have</td><td>Not started / In progress / Specced / Implemented</td></tr>
+        </tbody>
+      </table>
+
+      <h4>Boundaries</h4>
+      <p>What this game is NOT. Explicit exclusions prevent scope creep and help AI make judgment calls.</p>
+
+      <h4>Reference Games</h4>
+      <p>Games that share aspects of the target experience. Be specific about what to learn from &mdash; not "it's like Minecraft" but "Minecraft's Discovery loop."</p>
+
+      <h4>Success Criteria</h4>
+      <p>High-level metrics that map to the aesthetic profile. These become the source of truth for aesthetic spec observable proxies.</p>
+
+      <h2>Rules</h2>
+      <ol>
+        <li><strong>Write the concept FIRST</strong> &mdash; Before any AES, DYN, MEC, TUN, or AST spec</li>
+        <li><strong>Rank aesthetics explicitly</strong> &mdash; "Primary" means trade-offs favor this. "Absent" means actively avoid it</li>
+        <li><strong>One core loop</strong> &mdash; If you have two equally important loops, you have two games</li>
+        <li><strong>Boundaries prevent scope creep</strong> &mdash; Easier for AI to implement "a Discovery game that is NOT a combat game" than just "a Discovery game"</li>
+        <li><strong>Reference games are specific</strong> &mdash; "Like Zelda" is useless. "Zelda BotW's emergent physics interactions" is actionable</li>
+        <li><strong>Feature map is the spec backlog</strong> &mdash; Each row generates a full AES&rarr;DYN&rarr;MEC&rarr;TUN chain</li>
+      </ol>
+
+      <h2>Quality Gate: Concept Readiness</h2>
+      <pre><code>npx mda gate concept</code></pre>
+      <table>
+        <thead><tr><th>Check</th><th>What it verifies</th></tr></thead>
+        <tbody>
+          <tr><td>Vision clarity</td><td>Uses aesthetic vocabulary, not vague words like "fun"</td></tr>
+          <tr><td>Aesthetic commitment</td><td>Primary + Absent tiers defined with enough Absent entries</td></tr>
+          <tr><td>Core loop coherence</td><td>Loop serves the Primary aesthetic</td></tr>
+          <tr><td>Boundary definition</td><td>At least 3 boundaries with aesthetic rationale</td></tr>
+          <tr><td>Feature traceability</td><td>All features connect to aesthetics</td></tr>
+          <tr><td>Scope realism</td><td>Not too many Must-have features</td></tr>
+        </tbody>
+      </table>
+
+      <div class="page-nav">
+        <a href="example.html">
+          <span class="label">Previous</span>
+          <span class="title">&larr; Walkthrough Example</span>
+        </a>
+        <a href="spec-aesthetics.html" class="next">
+          <span class="label">Next</span>
+          <span class="title">Aesthetics Schema &rarr;</span>
+        </a>
+      </div>
+    </main>
+  </div>
+  <script src="js/main.js"></script>
+</body>
+</html>

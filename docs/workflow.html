@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>8-Step Workflow - MDA Spec Framework</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header class="site-header">
+    <button class="menu-toggle" aria-label="Toggle menu">
+      <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 010 2H4a1 1 0 01-1-1zm0 5a1 1 0 011-1h12a1 1 0 010 2H4a1 1 0 01-1-1zm0 5a1 1 0 011-1h12a1 1 0 010 2H4a1 1 0 01-1-1z" clip-rule="evenodd"/></svg>
+    </button>
+    <a href="index.html" class="header-logo">
+      <span class="logo-icon">M</span>
+      MDA Framework
+    </a>
+    <nav class="header-nav">
+      <a href="getting-started.html">Guide</a>
+      <a href="cli.html">CLI</a>
+      <a href="logger.html">Logger API</a>
+    </nav>
+  </header>
+
+  <div class="layout">
+    <aside class="sidebar">
+      <nav>
+        <div class="nav-group">
+          <div class="nav-group-title">
+            <svg class="chevron" viewBox="0 0 12 12" fill="currentColor"><path d="M4.7 2.3a1 1 0 00-1.4 1.4L6.6 7l-3.3 3.3a1 1 0 001.4 1.4l4-4a1 1 0 000-1.4l-4-4z"/></svg>
+            Introduction
+          </div>
+          <ul class="nav-items">
+            <li><a href="index.html">Overview</a></li>
+            <li><a href="getting-started.html">Getting Started</a></li>
+            <li><a href="concepts.html">Core Concepts</a></li>
+          </ul>
+        </div>
+        <div class="nav-group">
+          <div class="nav-group-title">
+            <svg class="chevron" viewBox="0 0 12 12" fill="currentColor"><path d="M4.7 2.3a1 1 0 00-1.4 1.4L6.6 7l-3.3 3.3a1 1 0 001.4 1.4l4-4a1 1 0 000-1.4l-4-4z"/></svg>
+            Workflow
+          </div>
+          <ul class="nav-items">
+            <li><a href="workflow.html">8-Step Process</a></li>
+            <li><a href="example.html">Walkthrough Example</a></li>
+          </ul>
+        </div>
+        <div class="nav-group">
+          <div class="nav-group-title">
+            <svg class="chevron" viewBox="0 0 12 12" fill="currentColor"><path d="M4.7 2.3a1 1 0 00-1.4 1.4L6.6 7l-3.3 3.3a1 1 0 001.4 1.4l4-4a1 1 0 000-1.4l-4-4z"/></svg>
+            Spec Schemas
+          </div>
+          <ul class="nav-items">
+            <li><a href="spec-concept.html">Game Concept</a></li>
+            <li><a href="spec-aesthetics.html">Aesthetics</a></li>
+            <li><a href="spec-dynamics.html">Dynamics</a></li>
+            <li><a href="spec-mechanics.html">Mechanics</a></li>
+            <li><a href="spec-tuning.html">Tuning</a></li>
+            <li><a href="spec-assets.html">Assets</a></li>
+            <li><a href="spec-bindings.html">Engine Bindings</a></li>
+          </ul>
+        </div>
+        <div class="nav-group">
+          <div class="nav-group-title">
+            <svg class="chevron" viewBox="0 0 12 12" fill="currentColor"><path d="M4.7 2.3a1 1 0 00-1.4 1.4L6.6 7l-3.3 3.3a1 1 0 001.4 1.4l4-4a1 1 0 000-1.4l-4-4z"/></svg>
+            Tools
+          </div>
+          <ul class="nav-items">
+            <li><a href="cli.html">CLI Reference</a></li>
+            <li><a href="logger.html">MDA Logger</a></li>
+            <li><a href="multi-engine.html">Multi-Engine Support</a></li>
+          </ul>
+        </div>
+        <div class="nav-group">
+          <div class="nav-group-title">
+            <svg class="chevron" viewBox="0 0 12 12" fill="currentColor"><path d="M4.7 2.3a1 1 0 00-1.4 1.4L6.6 7l-3.3 3.3a1 1 0 001.4 1.4l4-4a1 1 0 000-1.4l-4-4z"/></svg>
+            Community
+          </div>
+          <ul class="nav-items">
+            <li><a href="contributing.html">Contributing</a></li>
+          </ul>
+        </div>
+      </nav>
+    </aside>
+
+    <main class="content">
+      <h1>8-Step Spec Authoring Workflow</h1>
+      <p class="subtitle">
+        The step-by-step process from "I have a game idea" to "AI can implement it." Each step has
+        a clear input, output, and validation checkpoint.
+      </p>
+
+      <div class="diagram">
+<pre><code>Step 1: Game Concept     &rarr; The "what" and "why"
+Step 2: Aesthetic Specs   &rarr; The player experience goals
+Step 3: Dynamic Specs     &rarr; The emergent behaviors and feedback systems
+Step 4: Mechanic Specs    &rarr; The rules, actions, and content
+Step 5: Asset Specs       &rarr; The models, sounds, and visual content
+Step 6: Tuning Specs      &rarr; The adjustable parameters
+Step 7: Traceability      &rarr; The bidirectional links
+Step 8: Validation        &rarr; The integrity check</code></pre>
+      </div>
+
+      <p>
+        Each step only requires the output of the previous step. AI can assist at any step,
+        but earlier steps require more design judgment (human-driven), while later steps become
+        increasingly implementable by AI alone.
+      </p>
+
+      <hr>
+
+      <h2 id="step-1">Step 1: Game Concept</h2>
+      <p><strong>Input:</strong> A game idea (can be rough)<br>
+         <strong>Output:</strong> <code>specs/concept/{game-name}.concept.md</code><br>
+         <strong>Schema:</strong> <a href="spec-concept.html">Game Concept Schema</a></p>
+
+      <h3>What to do</h3>
+      <ol class="steps">
+        <li>Write the Vision (2-4 sentence elevator pitch)</li>
+        <li>Rank the 8 aesthetic categories for your game (Primary, Secondary, Tertiary, Absent)</li>
+        <li>Define the core loop as a cycle: action &rarr; feedback &rarr; decision &rarr; repeat</li>
+        <li>Describe target audience, platform constraints, and session length</li>
+        <li>List features that need to be specced (the feature map)</li>
+        <li>Define boundaries (what the game is NOT)</li>
+      </ol>
+
+      <h3>Validation checkpoint</h3>
+      <ul class="checklist">
+        <li>Can you explain the game in 2 sentences using aesthetic vocabulary (not "fun")?</li>
+        <li>Is there exactly one Primary aesthetic?</li>
+        <li>Does the core loop serve the Primary aesthetic?</li>
+        <li>Are boundaries clear enough that AI won't add unwanted features?</li>
+        <li>Does every feature in the feature map connect to an aesthetic?</li>
+      </ul>
+
+      <div class="callout warning">
+        <div class="callout-title">Common Pitfalls</div>
+        <ul>
+          <li><strong>Too vague:</strong> "A cool adventure game" &mdash; Which aesthetics? For whom? What loop?</li>
+          <li><strong>Too broad:</strong> 15 features all marked "must-have" &mdash; Prioritize ruthlessly</li>
+          <li><strong>Missing boundaries:</strong> No "this is NOT a..." &mdash; AI will add combat to your puzzle game</li>
+        </ul>
+      </div>
+
+      <hr>
+
+      <h2 id="step-2">Step 2: Aesthetic Specs</h2>
+      <p><strong>Input:</strong> Game Concept (Step 1)<br>
+         <strong>Output:</strong> One <code>specs/aesthetics/{feature}.aes.md</code> per feature<br>
+         <strong>Schema:</strong> <a href="spec-aesthetics.html">Aesthetic Spec Schema</a></p>
+
+      <h3>What to do</h3>
+      <p>For each feature in the concept's feature map:</p>
+      <ol class="steps">
+        <li>Identify which aesthetic(s) this feature delivers</li>
+        <li>Write the experience goal in 2-3 sentences</li>
+        <li>Define observable proxies &mdash; measurable player behaviors that indicate the aesthetic is working</li>
+        <li>Define anti-patterns &mdash; behaviors that indicate the aesthetic is failing</li>
+        <li>Note audience context if it differs from the game-wide audience</li>
+      </ol>
+
+      <h3>Validation checkpoint</h3>
+      <ul class="checklist">
+        <li>Every feature from the concept's feature map has at least one aesthetic spec</li>
+        <li>Every observable proxy is measurable (not "the player feels happy")</li>
+        <li>Every anti-pattern has a detection signal</li>
+      </ul>
+
+      <hr>
+
+      <h2 id="step-3">Step 3: Dynamic Specs</h2>
+      <p><strong>Input:</strong> Aesthetic Specs (Step 2)<br>
+         <strong>Output:</strong> One <code>specs/dynamics/{feature}.dyn.md</code> per behavior system<br>
+         <strong>Schema:</strong> <a href="spec-dynamics.html">Dynamic Spec Schema</a></p>
+
+      <h3>What to do</h3>
+      <p>For each aesthetic spec, design the dynamics that produce it:</p>
+      <ol class="steps">
+        <li>Identify feedback loops (positive and negative) that create the aesthetic</li>
+        <li>Draw the feedback system diagram</li>
+        <li>Define interaction patterns (trigger &rarr; sequence &rarr; outcome)</li>
+        <li>Define invariants &mdash; conditions that MUST hold for the dynamic to work</li>
+        <li>Name degenerate dynamics &mdash; behaviors that could emerge but shouldn't</li>
+      </ol>
+
+      <h3>Validation checkpoint</h3>
+      <ul class="checklist">
+        <li>Every dynamic traces to at least one aesthetic spec</li>
+        <li>Every dynamic has at least one feedback loop identified</li>
+        <li>Every invariant is a binary testable condition (true/false, not a range)</li>
+        <li>Degenerate dynamics have detection methods AND prevention strategies</li>
+      </ul>
+
+      <div class="callout tip">
+        <div class="callout-title">AI Role</div>
+        <p>
+          AI can help model feedback systems and identify degenerate dynamics, but the core
+          behavioral goals should come from the designer. AI is good at finding edge cases
+          ("what if the player does X?") but poor at deciding which behaviors matter.
+        </p>
+      </div>
+
+      <hr>
+
+      <h2 id="step-4">Step 4: Mechanic Specs</h2>
+      <p><strong>Input:</strong> Dynamic Specs (Step 3)<br>
+         <strong>Output:</strong> One <code>specs/mechanics/{feature}.mec.md</code> per system<br>
+         <strong>Schema:</strong> <a href="spec-mechanics.html">Mechanic Spec Schema</a></p>
+
+      <h3>What to do</h3>
+      <ol class="steps">
+        <li>Define player affordances &mdash; what verbs does the player have?</li>
+        <li>List game content &mdash; what is in the world for mechanics to operate on?</li>
+        <li>Write rules with conditions, effects, formulas, and parameters</li>
+        <li>Define the behavioral contract (inputs, outputs, guarantees)</li>
+        <li>Write acceptance criteria &mdash; concrete, testable pass/fail conditions</li>
+        <li>Map integration points (fires, listens, reads, writes)</li>
+        <li>Add MDA Logger integration examples</li>
+      </ol>
+
+      <h3>Validation checkpoint</h3>
+      <ul class="checklist">
+        <li>Every mechanic traces to at least one dynamic spec</li>
+        <li>Every rule has at least one tunable parameter marked <code>[TUNABLE]</code></li>
+        <li>Every acceptance criterion is binary (pass/fail, not subjective)</li>
+        <li>Integration points are complete (no undocumented side effects)</li>
+      </ul>
+
+      <div class="callout tip">
+        <div class="callout-title">AI Role</div>
+        <p>
+          This is where AI becomes highly effective. Given well-written dynamic specs with clear
+          invariants, AI can design mechanics that satisfy the constraints. AI can also identify
+          missing integration points and propose acceptance criteria.
+        </p>
+      </div>
+
+      <hr>
+
+      <h2 id="step-5">Step 5: Asset Specs</h2>
+      <p><strong>Input:</strong> Mechanic Specs (Step 4) &mdash; specifically the Game Content sections<br>
+         <strong>Output:</strong> <code>specs/assets/catalog.md</code> + one <code>specs/assets/{name}.asset.md</code> per asset group<br>
+         <strong>Schema:</strong> <a href="spec-assets.html">Asset Spec Schema</a></p>
+
+      <h3>What to do</h3>
+      <ol class="steps">
+        <li>Create an asset spec with emotional intent (using aesthetic vocabulary)</li>
+        <li>Define technical requirements (poly count, duration, spatial settings, etc.)</li>
+        <li>List variants and their triggers</li>
+        <li>Define the engine integration (location, tags, attributes)</li>
+        <li>Write the placeholder protocol (behavioral equivalence + swap protocol)</li>
+        <li>Add the asset to <code>specs/assets/catalog.md</code></li>
+      </ol>
+
+      <hr>
+
+      <h2 id="step-6">Step 6: Tuning Specs</h2>
+      <p><strong>Input:</strong> Mechanic Specs (Step 4) &mdash; specifically the <code>[TUNABLE]</code> parameters<br>
+         <strong>Output:</strong> One <code>specs/tuning/{feature}.tune.md</code> per tunable feature group<br>
+         <strong>Schema:</strong> <a href="spec-tuning.html">Tuning Spec Schema</a></p>
+
+      <h3>What to do</h3>
+      <ol class="steps">
+        <li>Collect all <code>[TUNABLE]</code> parameters from related mechanic specs</li>
+        <li>Define ranges, steps, and sensitivity for each</li>
+        <li>Map target metrics from aesthetic observable proxies</li>
+        <li>Document tuning constraints (coupled parameters, ordering requirements)</li>
+        <li>Document known trade-offs between parameters</li>
+        <li>Initialize the iteration log</li>
+      </ol>
+
+      <hr>
+
+      <h2 id="step-7">Step 7: Traceability</h2>
+      <p><strong>Input:</strong> All specs from Steps 1-6<br>
+         <strong>Output:</strong> Updated <code>specs/traceability.md</code></p>
+
+      <ol class="steps">
+        <li>Add every new spec to the traceability matrix</li>
+        <li>Update the dependency graph</li>
+        <li>Verify all bidirectional links resolve</li>
+      </ol>
+
+      <hr>
+
+      <h2 id="step-8">Step 8: Validation</h2>
+      <p><strong>Input:</strong> All specs<br>
+         <strong>Output:</strong> Validation report</p>
+
+      <pre><code>npx mda validate</code></pre>
+
+      <h3>What it checks</h3>
+      <h4>Structural integrity</h4>
+      <ul class="checklist">
+        <li>Every AES spec is referenced by at least one DYN spec</li>
+        <li>Every DYN spec traces to at least one AES spec</li>
+        <li>Every MEC spec traces to at least one DYN spec</li>
+        <li>Every AST spec traces to at least one MEC AND one AES</li>
+        <li>No orphaned specs</li>
+      </ul>
+
+      <h4>Completeness</h4>
+      <ul class="checklist">
+        <li>Every feature in the concept's feature map has a full spec chain</li>
+        <li>Every mechanic has logger integration examples</li>
+        <li>Every asset has a placeholder protocol</li>
+        <li>Every dynamic has invariants</li>
+        <li>Every aesthetic has observable proxies</li>
+      </ul>
+
+      <hr>
+
+      <h2 id="re-spec">When to Re-Spec</h2>
+      <p>Specs are living documents. Re-spec when:</p>
+      <ul>
+        <li><strong>Playtesting reveals a broken aesthetic</strong> &rarr; Start at Step 2, trace down</li>
+        <li><strong>A new feature is added</strong> &rarr; Start at Step 1 (update feature map), then Steps 2-7</li>
+        <li><strong>Tuning can't fix a problem</strong> &rarr; The mechanic design is wrong &rarr; revisit Step 4</li>
+        <li><strong>A dynamic creates degenerate behavior</strong> &rarr; Revisit Step 3, may cascade to Step 4</li>
+        <li><strong>Scope changes</strong> &rarr; Revisit Step 1 boundaries and feature map</li>
+      </ul>
+
+      <div class="page-nav">
+        <a href="concepts.html">
+          <span class="label">Previous</span>
+          <span class="title">&larr; Core Concepts</span>
+        </a>
+        <a href="example.html" class="next">
+          <span class="label">Next</span>
+          <span class="title">Walkthrough Example &rarr;</span>
+        </a>
+      </div>
+    </main>
+  </div>
+
+  <script src="js/main.js"></script>
+</body>
+</html>

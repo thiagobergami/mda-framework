@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Core Concepts - MDA Spec Framework</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header class="site-header">
+    <button class="menu-toggle" aria-label="Toggle menu">
+      <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 010 2H4a1 1 0 01-1-1zm0 5a1 1 0 011-1h12a1 1 0 010 2H4a1 1 0 01-1-1zm0 5a1 1 0 011-1h12a1 1 0 010 2H4a1 1 0 01-1-1z" clip-rule="evenodd"/></svg>
+    </button>
+    <a href="index.html" class="header-logo">
+      <span class="logo-icon">M</span>
+      MDA Framework
+    </a>
+    <nav class="header-nav">
+      <a href="getting-started.html">Guide</a>
+      <a href="cli.html">CLI</a>
+      <a href="logger.html">Logger API</a>
+    </nav>
+  </header>
+
+  <div class="layout">
+    <aside class="sidebar">
+      <nav>
+        <div class="nav-group">
+          <div class="nav-group-title">
+            <svg class="chevron" viewBox="0 0 12 12" fill="currentColor"><path d="M4.7 2.3a1 1 0 00-1.4 1.4L6.6 7l-3.3 3.3a1 1 0 001.4 1.4l4-4a1 1 0 000-1.4l-4-4z"/></svg>
+            Introduction
+          </div>
+          <ul class="nav-items">
+            <li><a href="index.html">Overview</a></li>
+            <li><a href="getting-started.html">Getting Started</a></li>
+            <li><a href="concepts.html">Core Concepts</a></li>
+          </ul>
+        </div>
+        <div class="nav-group">
+          <div class="nav-group-title">
+            <svg class="chevron" viewBox="0 0 12 12" fill="currentColor"><path d="M4.7 2.3a1 1 0 00-1.4 1.4L6.6 7l-3.3 3.3a1 1 0 001.4 1.4l4-4a1 1 0 000-1.4l-4-4z"/></svg>
+            Workflow
+          </div>
+          <ul class="nav-items">
+            <li><a href="workflow.html">8-Step Process</a></li>
+            <li><a href="example.html">Walkthrough Example</a></li>
+          </ul>
+        </div>
+        <div class="nav-group">
+          <div class="nav-group-title">
+            <svg class="chevron" viewBox="0 0 12 12" fill="currentColor"><path d="M4.7 2.3a1 1 0 00-1.4 1.4L6.6 7l-3.3 3.3a1 1 0 001.4 1.4l4-4a1 1 0 000-1.4l-4-4z"/></svg>
+            Spec Schemas
+          </div>
+          <ul class="nav-items">
+            <li><a href="spec-concept.html">Game Concept</a></li>
+            <li><a href="spec-aesthetics.html">Aesthetics</a></li>
+            <li><a href="spec-dynamics.html">Dynamics</a></li>
+            <li><a href="spec-mechanics.html">Mechanics</a></li>
+            <li><a href="spec-tuning.html">Tuning</a></li>
+            <li><a href="spec-assets.html">Assets</a></li>
+            <li><a href="spec-bindings.html">Engine Bindings</a></li>
+          </ul>
+        </div>
+        <div class="nav-group">
+          <div class="nav-group-title">
+            <svg class="chevron" viewBox="0 0 12 12" fill="currentColor"><path d="M4.7 2.3a1 1 0 00-1.4 1.4L6.6 7l-3.3 3.3a1 1 0 001.4 1.4l4-4a1 1 0 000-1.4l-4-4z"/></svg>
+            Tools
+          </div>
+          <ul class="nav-items">
+            <li><a href="cli.html">CLI Reference</a></li>
+            <li><a href="logger.html">MDA Logger</a></li>
+            <li><a href="multi-engine.html">Multi-Engine Support</a></li>
+          </ul>
+        </div>
+        <div class="nav-group">
+          <div class="nav-group-title">
+            <svg class="chevron" viewBox="0 0 12 12" fill="currentColor"><path d="M4.7 2.3a1 1 0 00-1.4 1.4L6.6 7l-3.3 3.3a1 1 0 001.4 1.4l4-4a1 1 0 000-1.4l-4-4z"/></svg>
+            Community
+          </div>
+          <ul class="nav-items">
+            <li><a href="contributing.html">Contributing</a></li>
+          </ul>
+        </div>
+      </nav>
+    </aside>
+
+    <main class="content">
+      <h1>Core Concepts</h1>
+      <p class="subtitle">
+        The MDA framework replaces vague design language with a formal, layered approach to game development.
+        Understanding these concepts is essential for writing effective specs.
+      </p>
+
+      <h2>What is MDA?</h2>
+      <p>
+        MDA stands for <strong>Mechanics, Dynamics, Aesthetics</strong> &mdash; a formal framework
+        for understanding games created by Robin Hunicke, Marc LeBlanc, and Robert Zubek. The core
+        insight is that games are <strong>artifacts, not media</strong>. The content of a game is its
+        <em>behavior</em>, not the media that streams out of it towards the player.
+      </p>
+
+      <h3>The Three Layers</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Layer</th>
+            <th>Question</th>
+            <th>Description</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Mechanics</strong></td>
+            <td>HOW does it work?</td>
+            <td>The actions, behaviors, and control mechanisms afforded to the player. Together with game content (levels, assets, etc.), they are the building blocks.</td>
+          </tr>
+          <tr>
+            <td><strong>Dynamics</strong></td>
+            <td>WHAT emerges?</td>
+            <td>The runtime behavior of mechanics acting on player input and each other over time. Modeled as feedback systems.</td>
+          </tr>
+          <tr>
+            <td><strong>Aesthetics</strong></td>
+            <td>WHY does it exist?</td>
+            <td>The desirable emotional responses evoked in the player. The target player experience.</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h2 id="dual-perspective">The Dual Perspective</h2>
+      <p>MDA has two directions of reading. Both are essential:</p>
+
+      <h3>Designer Perspective (M &rarr; D &rarr; A) &mdash; Use when IMPLEMENTING</h3>
+      <div class="diagram">
+<pre><code>Mechanics  --give rise to--&gt;  Dynamics  --which produce--&gt;  Aesthetics</code></pre>
+      </div>
+      <ol>
+        <li>Read the mechanic spec &mdash; implement the rules, actions, and control mechanisms</li>
+        <li>Validate against the dynamic spec &mdash; does the intended behavior emerge?</li>
+        <li>Validate against the aesthetic spec &mdash; does it produce the target experience?</li>
+      </ol>
+
+      <h3>Player Perspective (A &rarr; D &rarr; M) &mdash; Use when DEBUGGING</h3>
+      <div class="diagram">
+<pre><code>Aesthetics  --set the tone for--&gt;  Dynamics  --which expose--&gt;  Mechanics</code></pre>
+      </div>
+      <ol>
+        <li>Start from the aesthetic spec &mdash; what experience is broken or missing?</li>
+        <li>Trace to dynamics &mdash; which feedback system is misfiring?</li>
+        <li>Trace to mechanics &mdash; which rule, parameter, or action needs adjustment?</li>
+      </ol>
+
+      <div class="callout tip">
+        <div class="callout-title">Key Insight</div>
+        <p>
+          Designers think M&rarr;D&rarr;A (bottom-up: "I'll add this rule and it will create this behavior").
+          Players experience A&rarr;D&rarr;M (top-down: "this feels wrong &mdash; what's causing it?").
+          Both directions are necessary for effective game development.
+        </p>
+      </div>
+
+      <h2 id="aesthetics">The 8 Aesthetic Categories</h2>
+      <p>
+        The MDA paper replaces vague words like "fun" with a directed vocabulary of 8 aesthetic categories.
+        Every spec in this framework uses these categories.
+      </p>
+
+      <table>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Aesthetic</th>
+            <th>Frame</th>
+            <th>Examples</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>1</td>
+            <td><strong>Sensation</strong></td>
+            <td>Game as sense-pleasure</td>
+            <td>Rez, Tetris Effect, Flower</td>
+          </tr>
+          <tr>
+            <td>2</td>
+            <td><strong>Fantasy</strong></td>
+            <td>Game as make-believe</td>
+            <td>Skyrim, The Sims, Animal Crossing</td>
+          </tr>
+          <tr>
+            <td>3</td>
+            <td><strong>Narrative</strong></td>
+            <td>Game as drama</td>
+            <td>Last of Us, Final Fantasy, Celeste</td>
+          </tr>
+          <tr>
+            <td>4</td>
+            <td><strong>Challenge</strong></td>
+            <td>Game as obstacle course</td>
+            <td>Dark Souls, Quake, Super Meat Boy</td>
+          </tr>
+          <tr>
+            <td>5</td>
+            <td><strong>Fellowship</strong></td>
+            <td>Game as social framework</td>
+            <td>Among Us, Charades, MMOs</td>
+          </tr>
+          <tr>
+            <td>6</td>
+            <td><strong>Discovery</strong></td>
+            <td>Game as uncharted territory</td>
+            <td>Outer Wilds, Zelda: BotW, Minecraft</td>
+          </tr>
+          <tr>
+            <td>7</td>
+            <td><strong>Expression</strong></td>
+            <td>Game as self-discovery</td>
+            <td>Minecraft Creative, LittleBigPlanet</td>
+          </tr>
+          <tr>
+            <td>8</td>
+            <td><strong>Submission</strong></td>
+            <td>Game as pastime</td>
+            <td>Stardew Valley, Cookie Clicker</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>Usage Rules</h3>
+      <ul>
+        <li>Every aesthetic spec lists its <strong>primary</strong> aesthetic (the dominant experience goal)</li>
+        <li>Additional aesthetics are listed as <strong>secondary</strong> (supporting, but not the focus)</li>
+        <li>When aesthetics conflict (e.g., Challenge vs Submission), the primary wins</li>
+        <li>Every design trade-off is resolved by asking: "which aesthetic is primary?"</li>
+      </ul>
+
+      <div class="callout danger">
+        <div class="callout-title">Banned Vocabulary</div>
+        <p>
+          Never use vague words like "fun", "gameplay", "engaging", or "cool" in specs.
+          Instead, name the specific aesthetic category. "The player has fun" becomes
+          "the player experiences Discovery through escalating reveals."
+        </p>
+      </div>
+
+      <h2 id="feedback-systems">Feedback Systems</h2>
+      <p>Dynamics are modeled as feedback systems &mdash; loops where outputs feed back as inputs.</p>
+
+      <h3>Positive Feedback Loops</h3>
+      <p>
+        Advantage amplifies itself (rich get richer). Creates decisive outcomes but can destroy
+        tension if unchecked. Example: Monopoly &mdash; owning more property generates more rent,
+        which buys more property.
+      </p>
+
+      <h3>Negative Feedback Loops</h3>
+      <p>
+        Advantage is dampened (rubber-banding). Keeps players competitive but can feel unfair if
+        too aggressive. Example: Mario Kart &mdash; leading players get weaker items, trailing
+        players get powerful ones.
+      </p>
+
+      <div class="callout warning">
+        <div class="callout-title">The Monopoly Problem</div>
+        <p>
+          The MDA paper's key example: Monopoly's unchecked positive feedback loop (property &rarr; rent &rarr; more property)
+          creates a "runaway leader" dynamic that destroys both Challenge and Fellowship aesthetics.
+          Always ensure positive feedback loops have counteracting negative loops or caps.
+        </p>
+      </div>
+
+      <h2 id="key-terms">Key Vocabulary</h2>
+
+      <h3>Dynamic Terms</h3>
+      <table>
+        <thead>
+          <tr><th>Term</th><th>Definition</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><strong>Emergent behavior</strong></td><td>A dynamic that arises from mechanic interactions but is not explicitly coded. Example: "camping" in shooters.</td></tr>
+          <tr><td><strong>Intended dynamic</strong></td><td>A behavior the designer explicitly targets. Specified in dynamic specs.</td></tr>
+          <tr><td><strong>Degenerate dynamic</strong></td><td>A behavior that undermines aesthetic goals. Example: Monopoly's runaway leader problem.</td></tr>
+          <tr><td><strong>Invariant</strong></td><td>A condition that must ALWAYS hold during a dynamic. Used as validation constraints.</td></tr>
+        </tbody>
+      </table>
+
+      <h3>Mechanic Terms</h3>
+      <table>
+        <thead>
+          <tr><th>Term</th><th>Definition</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><strong>Mechanic</strong></td><td>An action, behavior, or control mechanism afforded to the player within a game context.</td></tr>
+          <tr><td><strong>Game content</strong></td><td>Levels, assets, spawn points, items &mdash; the material that mechanics operate on.</td></tr>
+          <tr><td><strong>Player affordance</strong></td><td>What the player can DO &mdash; the verbs of the game (run, jump, shoot, build, trade).</td></tr>
+          <tr><td><strong>Rule</strong></td><td>A constraint or formula that governs how mechanics interact.</td></tr>
+          <tr><td><strong>Parameter</strong></td><td>A tunable numeric value within a rule.</td></tr>
+        </tbody>
+      </table>
+
+      <h2 id="spec-ids">Spec ID Conventions</h2>
+      <p>Each spec gets a unique ID used for traceability:</p>
+      <table>
+        <thead>
+          <tr><th>Layer</th><th>Prefix</th><th>Example</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Game Concept</td><td><code>GAME-</code></td><td>GAME-001</td></tr>
+          <tr><td>Aesthetics</td><td><code>AES-</code></td><td>AES-001</td></tr>
+          <tr><td>Dynamics</td><td><code>DYN-</code></td><td>DYN-001</td></tr>
+          <tr><td>Mechanics</td><td><code>MEC-</code></td><td>MEC-001</td></tr>
+          <tr><td>Tuning</td><td><code>TUN-</code></td><td>TUN-001</td></tr>
+          <tr><td>Assets</td><td><code>AST-</code></td><td>AST-001</td></tr>
+          <tr><td>Bindings</td><td><code>BIND-</code></td><td>BIND-001</td></tr>
+        </tbody>
+      </table>
+      <p>IDs are sequential within their layer and are never reused, even if the spec is deleted. Use <code>npx mda new</code> to auto-assign IDs.</p>
+
+      <h2 id="traceability">Traceability</h2>
+      <p>
+        Every spec layer links to adjacent layers through frontmatter fields like
+        <code>traces_to_dynamics</code> or <code>traces_to_aesthetics</code>. This creates a
+        bidirectional graph that enables both design directions:
+      </p>
+      <div class="diagram">
+<pre><code>GAME-001 {Game Concept}
+  |
+  +--&gt; AES-* {Aesthetic Specs}
+  |      |
+  |      +--&gt; DYN-* {Dynamic Specs}
+  |             |
+  |             +--&gt; MEC-* {Mechanic Specs}
+  |             |      +--&gt; TUN-* {Tuning Specs}
+  |             |      +--&gt; AST-* {Asset Specs}
+  |             |
+  |             +--&gt; ... (more mechanics)
+  |
+  +--&gt; ... (more aesthetics)</code></pre>
+      </div>
+      <p>The <code>specs/traceability.md</code> file provides a master matrix of all links. The validation rule <code>trace-resolution</code> ensures all references resolve to existing spec IDs.</p>
+
+      <div class="callout danger">
+        <div class="callout-title">No Mechanics "In Vacuo"</div>
+        <p>
+          The paper's core rule: components cannot be evaluated "in vacuo" &mdash; isolated from their
+          effect on dynamics and player experience. Every mechanic MUST trace to at least one dynamic.
+          The <code>no-vacuo</code> validation rule enforces this.
+        </p>
+      </div>
+
+      <div class="page-nav">
+        <a href="getting-started.html">
+          <span class="label">Previous</span>
+          <span class="title">&larr; Getting Started</span>
+        </a>
+        <a href="workflow.html" class="next">
+          <span class="label">Next</span>
+          <span class="title">8-Step Workflow &rarr;</span>
+        </a>
+      </div>
+    </main>
+  </div>
+
+  <script src="js/main.js"></script>
+</body>
+</html>
