@@ -1,10 +1,7 @@
 ---
 id: MEC-003
 name: MDA Logger — Structured Runtime Logging
-traces_to_dynamics: [DYN-001]
 scope: framework-tool
-platform: roblox
-language: luau
 ---
 
 # MDA Logger — Structured Runtime Logging

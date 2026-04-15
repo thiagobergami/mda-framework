@@ -86,14 +86,17 @@ trigger condition and how it differs from the base.}
 |---------|---------|---------------------|
 | {name}  | {when used} | {what changes} |
 
-## Roblox Integration
+## Engine Integration
 
-{Where this asset lives in the game hierarchy and how code references it.}
+{Where this asset lives in the game hierarchy and how code references it.
+Engine-specific details (API calls, service references) go in binding specs
+(specs/bindings/). This section covers the logical integration.}
 
-- **Location**: {e.g., ReplicatedStorage.Assets.Characters.Baby}
-- **Instance type**: {e.g., Model, Sound, Animation, ParticleEmitter}
-- **CollectionService tags**: {tags applied for runtime queries}
-- **Attributes**: {Roblox attributes set on the instance}
+- **Container**: {e.g., asset storage folder, prefab location}
+- **Instance type**: {e.g., 3D model, sound clip, particle system}
+- **Tags / markers**: {tags applied for runtime queries}
+- **Attributes / properties**: {custom data set on the instance}
+- **Binding**: {BIND-NNN — reference to engine-specific binding spec}
 
 ## Placeholder Protocol
 

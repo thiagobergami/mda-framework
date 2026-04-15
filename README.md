@@ -66,6 +66,131 @@ The MDA paper replaces vague words like "fun" with a directed vocabulary:
 Every spec in this framework uses these categories. Every design trade-off is resolved by
 asking: "which aesthetic is primary?"
 
+## Getting Started
+
+### Prerequisites
+
+- [Node.js](https://nodejs.org/) >= 18
+- npm (comes with Node.js)
+
+### Installation
+
+```bash
+git clone <this-repo>
+cd framework
+npm install
+```
+
+This installs the `mda` CLI tool locally. All commands are run via `npx mda`.
+
+### Quick Start
+
+```bash
+# 1. Scaffold a game concept
+npx mda new concept "My Game"
+
+# 2. Fill in the generated template at specs/concept/my-game.concept.md
+
+# 3. Run the concept readiness gate
+npx mda gate concept
+
+# 4. Fix any gate failures, then scaffold the next layer
+npx mda new aesthetic "Core Feature"
+
+# 5. Validate all specs at any time
+npx mda validate
+```
+
+## CLI Usage
+
+The `mda` CLI provides three commands for working with specs.
+
+### `mda validate` — Check spec integrity
+
+Runs 8 validation rules against all specs to catch structural issues.
+
+```bash
+# Validate all scopes (specs/ and any examples/)
+npx mda validate
+
+# JSON output (for CI or tooling)
+npx mda validate --json
+
+# Validate a specific scope only
+npx mda validate --scope specs
+
+# Validate from a different project root
+npx mda validate --dir /path/to/project
+```
+
+**Validation rules:**
+
+| Rule | What it checks | Level |
+|------|---------------|-------|
+| `trace-resolution` | All `traces_to_*` references resolve to existing spec IDs | error |
+| `no-vacuo` | Every MEC spec traces to at least one DYN spec | error |
+| `asset-traces` | Every AST spec traces to a MEC (error) and an AES (warning) | mixed |
+| `tuning-completeness` | Every TUN spec traces to MEC + DYN + AES | warning |
+| `unique-ids` | No duplicate spec IDs within a scope | error |
+| `no-orphans` | Every spec is referenced by at least one other spec | warning |
+| `binding-coverage` | MEC and AST specs have engine binding specs | warning |
+| `frontmatter-schema` | Required frontmatter fields are present per layer | warning |
+
+Exit code is `0` on pass, `1` on any error-level diagnostic.
+
+### `mda gate <layer>` — Run quality gates
+
+Quality gates verify that a spec is complete and well-formed enough to proceed to the next layer. Gates check the markdown body content, not just frontmatter.
+
+```bash
+# Run the concept readiness gate
+npx mda gate concept
+
+# Run the aesthetic gate
+npx mda gate aesthetic
+
+# Override a failure with a logged reason
+npx mda gate dynamic --override "Invariants pending playtest data"
+
+# Fail the process on gate failure (useful in CI)
+npx mda gate mechanic --strict
+
+# JSON output
+npx mda gate implementation --json
+```
+
+**Available gates:**
+
+| Gate | Applies to | Key checks |
+|------|-----------|------------|
+| `concept` | GAME specs | Vision clarity, aesthetic commitment (Primary + Absent tiers), core loop cycle, boundary definition, feature map, success criteria |
+| `aesthetic` | AES specs | Measurable proxies with targets, anti-patterns defined, precise vocabulary (no "fun"), primary aesthetic classified |
+| `dynamic` | DYN specs | Feedback loops with cycle notation, binary invariants (INV-N), degenerate dynamics named, traces to aesthetics |
+| `mechanic` | MEC specs | Behavioral contract with I/O, testable acceptance criteria, player affordances listed, traces to dynamics |
+| `implementation` | MEC specs | All mechanic checks + engine binding exists + upstream specs (DYN, AES) are present |
+
+Gate results are saved to `specs/.gate-status.json` for tracking.
+
+### `mda new <layer> <name>` — Scaffold a new spec
+
+Creates a new spec file from a template with auto-assigned ID and updates traceability.
+
+```bash
+# Scaffold specs at each layer
+npx mda new concept "Lantern Woods"
+npx mda new aesthetic "Forest Discovery"
+npx mda new dynamic "Creature Reveal Cycle"
+npx mda new mechanic "Lantern Interaction"
+npx mda new tuning "Lantern Pacing"
+npx mda new asset "Firefly Creature"
+npx mda new binding "Lantern Roblox Binding"
+```
+
+**What it does:**
+- Assigns the next sequential ID for that layer (e.g., `AES-002`)
+- Creates a file at `specs/{layer}/{slug}.{ext}` with the full template
+- Updates `specs/traceability.md` with a new row
+
 ## Project Structure
 
 ```
@@ -78,24 +203,44 @@ specs/                              # Specification layer
 ├── dynamics/_schema.md             # Feedback systems, invariants, interaction patterns
 ├── mechanics/_schema.md            # Player affordances, rules, behavioral contracts
 ├── tuning/_schema.md               # Parameter ranges, trade-offs, iteration logs
-└── assets/
-    ├── _schema.md                  # Emotional intent, technical reqs, placeholders
-    └── catalog.md                  # Asset registry with status tracking
+├── assets/_schema.md               # Emotional intent, technical reqs, placeholders
+└── bindings/
+    ├── _schema.md                  # Engine-specific mapping specs
+    └── equivalence.md              # Cross-engine concept mapping table
 
-src/                                # Runtime tools
+tools/                              # CLI tooling (TypeScript)
+├── src/
+│   ├── cli.ts                      # Commander-based CLI entry point
+│   ├── parser.ts                   # Frontmatter parser with scope discovery
+│   ├── graph.ts                    # Spec adjacency-list graph builder
+│   ├── reporter.ts                 # Terminal and JSON output formatting
+│   ├── scaffold.ts                 # Spec template generation
+│   ├── types.ts                    # Core type definitions
+│   ├── rules/                      # 8 validation rules
+│   └── gates/                      # 5 quality gates
+└── dist/                           # Compiled output (git-ignored)
+
+src/                                # Runtime tools (Luau)
 ├── shared/MDALogger.luau           # Structured logging with MDA layer tagging
-└── tools/validate-specs.luau       # Spec integrity checker
-
-examples/                           # Reference implementations
-└── baby-chase/                     # Complete example from the MDA paper
-    ├── aesthetics/                 # AES-001: Playful Discovery
-    ├── dynamics/                   # DYN-001: Playful Pursuit Cycle
-    ├── mechanics/                  # MEC-001: Movement, MEC-002: Expressions
-    ├── tuning/                     # TUN-001: Pacing & Difficulty
-    └── assets/                     # 6 asset specs with placeholder protocols
+└── tools/validate-specs.luau       # Legacy Luau spec validator
 
 CLAUDE.md                           # AI instructions (read by Claude Code automatically)
+IMPROVEMENTS.md                     # Roadmap and improvement plan
+WORKFLOW_SIMULATION.md              # End-to-end workflow walkthrough
 ```
+
+## Multi-Engine Support
+
+The framework separates behavioral specs (what the game does) from engine bindings (how a
+specific engine implements it). This enables the same game design to target multiple engines:
+
+- **Behavioral specs** (`specs/mechanics/`, `specs/dynamics/`, etc.) are engine-agnostic
+- **Binding specs** (`specs/bindings/`) map behavioral contracts to engine-specific APIs
+- **Equivalence table** (`specs/bindings/equivalence.md`) provides a quick reference for
+  Roblox, Unity, and Unreal Engine mappings
+
+When implementing for a specific engine, read both the mechanic spec (what to build) and its
+binding spec (how to build it in your engine).
 
 ## Structured Logging
 
@@ -127,37 +272,16 @@ The framework defines an 8-step spec authoring process (see `specs/WORKFLOW.md`)
 5. **Asset Specs** — Emotional intent, technical requirements, placeholder protocols
 6. **Tuning Specs** — Parameter ranges, trade-offs, iteration log
 7. **Traceability** — Bidirectional links between all layers
-8. **Validation** — Structural integrity check (automated)
+8. **Validation** — Structural integrity check (automated via `npx mda validate`)
 
+Quality gates between each step ensure specs are complete before proceeding.
 Steps 1-3 require human design judgment. Steps 4-8 are increasingly automatable by AI.
-
-## Spec Validation
-
-The validator (`src/tools/validate-specs.luau`) checks:
-
-- All trace references resolve to existing specs
-- No mechanics exist without dynamic traces ("in vacuo" check)
-- All assets trace to both a mechanic and an aesthetic
-- All tuning specs trace to all three MDA layers
-- Spec IDs are unique within their layer
-- No orphaned specs (existing but never referenced)
-
-## Getting Started
-
-1. Read `specs/glossary.md` to learn the MDA vocabulary
-2. Read `specs/WORKFLOW.md` to understand the spec authoring process
-3. Look at `examples/baby-chase/` for a complete worked example
-4. Create your game concept using `specs/concept/_schema.md`
-5. Follow the workflow to spec each feature through all MDA layers
-
-If using Claude Code or another AI assistant, the `CLAUDE.md` file is read automatically and
-instructs the AI on how to read specs, implement from them, and debug using the dual perspective.
 
 ## Based On
 
 - [MDA: A Formal Approach to Game Design and Game Research](https://users.cs.northwestern.edu/~hunicke/MDA.pdf)
   by Robin Hunicke, Marc LeBlanc, Robert Zubek (GDC 2001-2004)
-- Platform: Roblox (Luau), though the spec framework is platform-agnostic
+- Targets: Roblox (Luau), Unity (C#), Unreal Engine (C++/Blueprint) via engine binding specs
 
 ## License
 

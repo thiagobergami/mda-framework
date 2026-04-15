@@ -11,6 +11,8 @@ Bidirectional links between all spec layers. Use this to navigate in both direct
 |-----------|---------|----------|--------|--------|-------------------|
 | *Add rows as specs are created* | | | | | |
 
+| GAME-001 Test Game | — | — | — | — | Concept gate |
+
 ## Reading Guide
 
 ### When implementing a new feature (M → D → A):

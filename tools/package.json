@@ -1,0 +1,23 @@
+{
+  "name": "mda",
+  "version": "0.1.0",
+  "description": "MDA spec-driven game development CLI",
+  "type": "module",
+  "bin": {
+    "mda": "./dist/cli.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch"
+  },
+  "dependencies": {
+    "chalk": "^5.3.0",
+    "commander": "^12.1.0",
+    "glob": "^11.0.0",
+    "gray-matter": "^4.0.3"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "typescript": "^5.6.0"
+  }
+}

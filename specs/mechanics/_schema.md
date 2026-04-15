@@ -18,8 +18,6 @@ must be understood through its effect on dynamics and player experience.
 id: MEC-{NNN}
 name: {Descriptive name}
 traces_to_dynamics: [{DYN-NNN IDs this mechanic supports}]
-platform: roblox
-language: luau
 ---
 
 # {Name}
@@ -91,6 +89,15 @@ What events does it listen to? What shared state does it read or write?}
 - **Listens**: {Events this mechanic responds to}
 - **Reads**: {Shared state consumed}
 - **Writes**: {Shared state modified}
+
+## Engine Bindings
+
+{Engine-specific implementation details go in binding specs (specs/bindings/).
+Reference the relevant BIND-NNN spec for each target engine. See
+specs/bindings/_schema.md for the binding format and
+specs/bindings/equivalence.md for cross-engine concept mapping.}
+
+- **Binding**: {BIND-NNN} — Engine: {roblox|unity|unreal}
 ```
 
 ## Rules
