@@ -13,6 +13,8 @@ Bidirectional links between all spec layers. Use this to navigate in both direct
 
 | GAME-001 Test Game | — | — | — | — | Concept gate |
 
+| GAME-001 Don't get virus | — | — | — | — | Concept gate |
+
 ## Reading Guide
 
 ### When implementing a new feature (M → D → A):
