@@ -9,6 +9,7 @@ const REQUIRED_FIELDS: Partial<Record<SpecLayer, string[]>> = {
   TUN: ["id", "name"],
   AST: ["id", "name"],
   BIND: ["id", "name"],
+  LVL: ["id", "name", "status", "references"],
 };
 
 /** Validate that each spec has the required frontmatter fields for its layer */

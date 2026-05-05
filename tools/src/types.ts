@@ -1,5 +1,5 @@
 /** MDA spec layers derived from ID prefix */
-export type SpecLayer = "AES" | "DYN" | "MEC" | "TUN" | "AST" | "GAME" | "BIND";
+export type SpecLayer = "AES" | "DYN" | "MEC" | "TUN" | "AST" | "GAME" | "BIND" | "LVL";
 
 /** Parsed frontmatter metadata for a single spec */
 export interface SpecMeta {

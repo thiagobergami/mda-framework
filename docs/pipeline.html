@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Spec Wizard - MDA Spec Framework</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header class="site-header">
+    <button class="menu-toggle" aria-label="Toggle menu">
+      <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 010 2H4a1 1 0 01-1-1zm0 5a1 1 0 011-1h12a1 1 0 010 2H4a1 1 0 01-1-1zm0 5a1 1 0 011-1h12a1 1 0 010 2H4a1 1 0 01-1-1z" clip-rule="evenodd"/></svg>
+    </button>
+    <a href="index.html" class="header-logo"><span class="logo-icon">M</span> MDA Framework</a>
+    <nav class="header-nav"><a href="getting-started.html">Guide</a><a href="cli.html">CLI</a><a href="logger.html">Logger API</a></nav>
+  </header>
+  <div class="layout">
+    <aside class="sidebar">
+      <nav>
+        <div class="nav-group"><div class="nav-group-title"><svg class="chevron" viewBox="0 0 12 12" fill="currentColor"><path d="M4.7 2.3a1 1 0 00-1.4 1.4L6.6 7l-3.3 3.3a1 1 0 001.4 1.4l4-4a1 1 0 000-1.4l-4-4z"/></svg> Introduction</div><ul class="nav-items"><li><a href="index.html">Overview</a></li><li><a href="getting-started.html">Getting Started</a></li><li><a href="concepts.html">Core Concepts</a></li></ul></div>
+        <div class="nav-group"><div class="nav-group-title"><svg class="chevron" viewBox="0 0 12 12" fill="currentColor"><path d="M4.7 2.3a1 1 0 00-1.4 1.4L6.6 7l-3.3 3.3a1 1 0 001.4 1.4l4-4a1 1 0 000-1.4l-4-4z"/></svg> Workflow</div><ul class="nav-items"><li><a href="workflow.html">8-Step Process</a></li><li><a href="example.html">Walkthrough Example</a></li></ul></div>
+        <div class="nav-group"><div class="nav-group-title"><svg class="chevron" viewBox="0 0 12 12" fill="currentColor"><path d="M4.7 2.3a1 1 0 00-1.4 1.4L6.6 7l-3.3 3.3a1 1 0 001.4 1.4l4-4a1 1 0 000-1.4l-4-4z"/></svg> Spec Schemas</div><ul class="nav-items"><li><a href="spec-concept.html">Game Concept</a></li><li><a href="spec-aesthetics.html">Aesthetics</a></li><li><a href="spec-dynamics.html">Dynamics</a></li><li><a href="spec-mechanics.html">Mechanics</a></li><li><a href="spec-tuning.html">Tuning</a></li><li><a href="spec-assets.html">Assets</a></li><li><a href="spec-bindings.html">Engine Bindings</a></li><li><a href="spec-levels.html">Levels</a></li></ul></div>
+        <div class="nav-group"><div class="nav-group-title"><svg class="chevron" viewBox="0 0 12 12" fill="currentColor"><path d="M4.7 2.3a1 1 0 00-1.4 1.4L6.6 7l-3.3 3.3a1 1 0 001.4 1.4l4-4a1 1 0 000-1.4l-4-4z"/></svg> Design</div><ul class="nav-items"><li><a href="pipeline.html">Spec Wizard</a></li></ul></div>
+        <div class="nav-group"><div class="nav-group-title"><svg class="chevron" viewBox="0 0 12 12" fill="currentColor"><path d="M4.7 2.3a1 1 0 00-1.4 1.4L6.6 7l-3.3 3.3a1 1 0 001.4 1.4l4-4a1 1 0 000-1.4l-4-4z"/></svg> Tools</div><ul class="nav-items"><li><a href="cli.html">CLI Reference</a></li><li><a href="logger.html">MDA Logger</a></li><li><a href="multi-engine.html">Multi-Engine Support</a></li></ul></div>
+        <div class="nav-group"><div class="nav-group-title"><svg class="chevron" viewBox="0 0 12 12" fill="currentColor"><path d="M4.7 2.3a1 1 0 00-1.4 1.4L6.6 7l-3.3 3.3a1 1 0 001.4 1.4l4-4a1 1 0 000-1.4l-4-4z"/></svg> Community</div><ul class="nav-items"><li><a href="contributing.html">Contributing</a></li></ul></div>
+      </nav>
+    </aside>
+
+    <main class="content">
+      <h1>Spec Wizard</h1>
+      <p class="subtitle">
+        An interactive CLI that walks you through Concept &rarr; Aesthetics &rarr; Dynamics &rarr; Mechanics
+        &rarr; Assets &rarr; Tuning &rarr; Levels, branching its menu off the current state of <code>specs/</code>.
+        Source: <code>design/pipeline/cli/</code>.
+      </p>
+
+      <p>
+        <strong>Run:</strong> <code>npm run spec</code><br>
+        <strong>Type-check:</strong> <code>npm run spec:check</code><br>
+        <strong>Stack:</strong> Node + <code>tsx</code> + <code>@inquirer/prompts</code>
+      </p>
+
+      <h2>Why use it</h2>
+      <p>The bare <code>mda new &lt;layer&gt; &lt;name&gt;</code> CLI scaffolds an empty template. The wizard adds two
+      things on top:</p>
+      <ol>
+        <li><strong>Branched menus</strong> &mdash; only offers what makes sense given the current state of
+          <code>specs/</code>. You won't see "Add a mechanic" until at least one dynamic exists.</li>
+        <li><strong>Frontmatter pre-fill</strong> &mdash; asks high-level questions (primary aesthetic, traces,
+          level status) and patches the answers into the scaffolded file so you start with the body, not metadata.</li>
+      </ol>
+      <p>The wizard shells out to <code>mda new</code> for actual file creation. Any change to <code>mda new</code>'s
+      templates flows through automatically.</p>
+
+      <h2>Flags</h2>
+      <table>
+        <thead><tr><th>Flag</th><th>Effect</th></tr></thead>
+        <tbody>
+          <tr><td><code>--dry-run</code></td><td>Print what <code>mda</code> commands would run; write nothing</td></tr>
+          <tr><td><code>--dir PATH</code></td><td>Operate on a different project root (default: cwd)</td></tr>
+        </tbody>
+      </table>
+
+      <h2>Menu Branching</h2>
+      <p>The top-level menu is computed on each iteration from <code>listExistingSpecs()</code>:</p>
+      <ul>
+        <li>If <code>specs/concept/</code> is empty &rarr; only "Start a new concept" is offered.</li>
+        <li>If a concept exists but no aesthetics &rarr; "Add an aesthetic" appears (with a "/3+ recommended" hint).</li>
+        <li>If aesthetics exist &rarr; "Add a dynamic" appears.</li>
+        <li>If dynamics exist &rarr; "Add a mechanic" appears.</li>
+        <li>If mechanics exist &rarr; "Add an asset", "Add a tuning spec", and "Design a level" all appear.</li>
+        <li>"Validate all specs" and "Exit" are always available.</li>
+      </ul>
+
+      <h2>Per-Layer Prompts</h2>
+      <p>Each prompt asks for high-level fields, scaffolds via <code>mda new</code>, then patches frontmatter:</p>
+      <table>
+        <thead><tr><th>Layer</th><th>Asks for</th><th>Patches into frontmatter</th></tr></thead>
+        <tbody>
+          <tr><td>Concept</td><td>Name, pitch, platform, primary + secondary aesthetics</td><td><code>platform</code>, <code>primary_aesthetic</code>, <code>secondary_aesthetics</code>, <code>pitch</code></td></tr>
+          <tr><td>Aesthetic</td><td>Name, primary category, target audience</td><td><code>primary_aesthetic</code>, <code>target_audience</code></td></tr>
+          <tr><td>Dynamic</td><td>Name, which AES specs it serves (multi-select from existing)</td><td><code>traces_to_aesthetics</code></td></tr>
+          <tr><td>Mechanic</td><td>Name, which DYN specs it produces</td><td><code>traces_to_dynamics</code></td></tr>
+          <tr><td>Asset</td><td>Name, target MECs, status</td><td><code>traces_to_mechanics</code>, <code>status</code></td></tr>
+          <tr><td>Tuning</td><td>Name, target MEC + DYN + AES specs</td><td><code>traces_to_mechanics</code>, <code>traces_to_dynamics</code>, <code>traces_to_aesthetics</code></td></tr>
+          <tr><td>Level</td><td>Name, status, AES + DYN + MEC + AST refs, duration</td><td><code>status</code>, <code>estimated_duration</code>, full <code>references:</code> block</td></tr>
+        </tbody>
+      </table>
+
+      <h2>Architecture</h2>
+      <pre><code>design/pipeline/cli/
+├── index.ts                # entry point, top-level menu, --dry-run
+├── prompts/
+│   ├── concept.ts
+│   ├── aesthetic.ts
+│   ├── dynamic.ts
+│   ├── mechanic.ts
+│   ├── asset.ts
+│   ├── tuning.ts
+│   └── level.ts
+├── lib/
+│   ├── existingSpecs.ts    # reads specs/ + design/levels/ for menu branching
+│   ├── extractIds.ts       # parses (id, name) pairs for trace prompts
+│   └── patchFrontmatter.ts # writes wizard answers into scaffolded files
+├── tsconfig.json           # type-check only (run via tsx)
+└── README.md</code></pre>
+
+      <p>The wizard runs through <code>tsx</code>, so there's no build step &mdash; iterate on prompts and re-run
+      <code>npm run spec</code> immediately.</p>
+
+      <h2>Adding a New Prompt</h2>
+      <ol>
+        <li>Copy an existing <code>prompts/&lt;layer&gt;.ts</code> as a starting point.</li>
+        <li>Replace the layer name, prompt questions, and which existing IDs to read via <code>extractIds()</code>.</li>
+        <li>Use <code>patchFrontmatter()</code> for flat-key fields. For nested blocks like the level
+          <code>references:</code>, hand-edit via a regex replace inside the prompt.</li>
+        <li>Import and dispatch from <code>index.ts</code> &mdash; add a case to the <code>topMenu()</code> choices and switch.</li>
+      </ol>
+
+      <h2>Roadmap</h2>
+      <ul>
+        <li><strong>Phase 5</strong> (next): use the wizard end-to-end on a real example, document friction points in <code>design/pipeline/web/BRIEF.md</code>.</li>
+        <li><strong>Phase 6</strong> (deferred): web UI under <code>design/pipeline/web/</code> with a live traceability graph view, only built once Phase 5 justifies it.</li>
+      </ul>
+
+      <h2>See Also</h2>
+      <ul>
+        <li><a href="cli.html">CLI Reference</a> &mdash; the underlying <code>mda</code> commands the wizard shells out to</li>
+        <li><a href="spec-levels.html">Levels</a> &mdash; the wizard's "Design a level" flow</li>
+        <li><a href="workflow.html">8-Step Process</a> &mdash; the design workflow the wizard follows</li>
+      </ul>
+
+      <div class="page-nav">
+        <a href="spec-levels.html">
+          <span class="label">Previous</span>
+          <span class="title">&larr; Levels</span>
+        </a>
+        <a href="cli.html" class="next">
+          <span class="label">Next</span>
+          <span class="title">CLI Reference &rarr;</span>
+        </a>
+      </div>
+    </main>
+  </div>
+  <script src="js/main.js"></script>
+</body>
+</html>

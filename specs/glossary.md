@@ -56,15 +56,30 @@ classify its experience goals using one or more of these, ranked by priority.
 - **State**: The current values of all game variables at a point in time.
 - **Event**: A discrete occurrence that triggers mechanic responses. Example: "player enters combat zone".
 
+## Level Design Vocabulary
+
+Level specs (`design/levels/`) compose existing M/D/A primitives into spatial and temporal
+arrangements. They use the following terms:
+
+- **Blockout**: Whitebox / spatial layout — geometry only, no art. The "playable but ugly" state.
+- **Beat chart**: Pacing curve over time — tension level, active mechanic, target aesthetic per beat.
+- **Encounter**: A self-contained unit of mechanic interaction (combat, puzzle, traversal) with explicit success/fail states.
+- **Affordance**: What the geometry teaches the player — a low ledge affords stepping; a tall ledge affords climbing.
+- **Sightline**: What the player can see from key positions. Drives Discovery by controlling reveal pacing.
+- **Critical path**: The minimum traversal required to complete a level — what a player can do with zero exploration.
+- **Optional path**: Branches off the critical path that reward exploration with cosmetic, narrative, mechanical, or economic payoffs.
+
 ## Spec ID Conventions
 
 Each spec gets a unique ID used in traceability:
 
-| Layer      | Prefix | Example   |
-|------------|--------|-----------|
-| Aesthetics | AES-   | AES-001   |
-| Dynamics   | DYN-   | DYN-001   |
-| Mechanics  | MEC-   | MEC-001   |
-| Tuning     | TUN-   | TUN-001   |
+| Layer      | Prefix | Example   | Lives in              |
+|------------|--------|-----------|-----------------------|
+| Aesthetics | AES-   | AES-001   | `specs/aesthetics/`   |
+| Dynamics   | DYN-   | DYN-001   | `specs/dynamics/`     |
+| Mechanics  | MEC-   | MEC-001   | `specs/mechanics/`    |
+| Tuning     | TUN-   | TUN-001   | `specs/tuning/`       |
+| Assets     | AST-   | AST-001   | `specs/assets/`       |
+| Levels     | LVL-   | LVL-001   | `design/levels/`      |
 
 IDs are sequential within their layer. Once assigned, an ID is never reused even if the spec is deleted.

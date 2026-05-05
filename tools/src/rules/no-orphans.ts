@@ -11,6 +11,9 @@ export const noOrphans: ValidationRule = {
       // GAME is the root — it's never referenced, that's fine
       if (spec.layer === "GAME") continue;
 
+      // LVL specs are terminal — they reference everything but nothing references them
+      if (spec.layer === "LVL") continue;
+
       // Exempt framework-tool specs
       if (spec.scope?.startsWith("framework")) continue;
 

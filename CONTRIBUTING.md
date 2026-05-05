@@ -36,7 +36,9 @@ cd tools && npx tsc --watch
 | Directory | Contents | Language |
 |-----------|----------|----------|
 | `tools/src/` | CLI tool (validator, gates, scaffolding) | TypeScript |
-| `specs/` | Spec schemas, glossary, workflow | Markdown |
+| `specs/` | Spec schemas, glossary, workflow — canonical M/D/A truth | Markdown |
+| `design/levels/` | Level specs (LVL-NNN) — compose specs into spatial layouts | Markdown |
+| `design/pipeline/cli/` | Spec wizard (`npm run spec`) | TypeScript (run via tsx) |
 | `src/shared/` | Runtime logger module | Luau |
 | `src/tools/` | Legacy Luau validator | Luau |
 
@@ -71,11 +73,38 @@ export const myRule: ValidationRule = {
 
 ### Adding a New Spec Layer
 
-1. Create the directory under `specs/` with a `_schema.md`
+1. Create the directory under `specs/` (or `design/` for non-canonical artifacts) with a `_schema.md`
 2. Add the layer prefix to `LAYER_PREFIXES` in `tools/src/parser.ts`
 3. Add the layer to the `SpecLayer` type in `tools/src/types.ts`
-4. Add scaffolding template in `tools/src/scaffold.ts`
-5. Add relevant validation rules and gate checks
+4. If the layer lives outside `specs/`, add the directory to `extraRootsForScope()` in `parser.ts`
+5. Add a `LAYER_MAP` entry and a `template()` case in `tools/src/scaffold.ts`
+6. Add relevant validation rules and gate checks
+7. Add a wizard prompt at `design/pipeline/cli/prompts/{layer}.ts` and wire it into `index.ts`
+
+### Working on the Spec Wizard
+
+The wizard lives at `design/pipeline/cli/` and runs through `tsx` (no build step):
+
+```bash
+npm run spec               # run the wizard
+npm run spec:check         # type-check without running
+npm run spec -- --dry-run  # menu-only mode, writes nothing
+```
+
+Architecture:
+
+- `index.ts` — top-level menu, branches off `listExistingSpecs()`, dispatches to prompts
+- `prompts/{layer}.ts` — one file per spec layer; each shells to `mda new`, then patches
+  frontmatter via `patchFrontmatter()`
+- `lib/existingSpecs.ts` — reads what's already in `specs/` and `design/levels/` so the menu
+  can hide options that don't make sense yet
+- `lib/extractIds.ts` — parses `(id, name)` pairs from frontmatter so trace prompts can show
+  real choices instead of free-text
+- `lib/patchFrontmatter.ts` — flat-key frontmatter editor (avoids pulling in a YAML dep for
+  a few simple replacements)
+
+Adding a new prompt: copy an existing `prompts/*.ts`, replace the layer name and trace
+sources, import it in `index.ts`, and add a case to the `topMenu()` choices and switch.
 
 ### Modifying Spec Schemas
 
