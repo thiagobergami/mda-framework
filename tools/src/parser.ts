@@ -5,7 +5,7 @@ import { resolve, relative } from "node:path";
 import type { SpecLayer, SpecMeta, SpecContent } from "./types.js";
 
 const LAYER_PREFIXES: Set<string> = new Set([
-  "AES", "DYN", "MEC", "TUN", "AST", "GAME", "BIND",
+  "AES", "DYN", "MEC", "TUN", "AST", "GAME", "BIND", "LVL",
 ]);
 
 /** Extract layer from an ID like "MEC-003" */
@@ -27,6 +27,20 @@ function collectTraces(data: Record<string, unknown>): string[] {
         const str = String(item);
         // Extract all spec IDs from the value (handles "MEC-001, MEC-002" strings)
         const ids = str.match(/[A-Z]+-\d+/g);
+        if (ids) {
+          traces.push(...ids);
+        }
+      }
+    }
+  }
+  // Level specs use a `references:` block instead of `traces_to_*`. Treat it the same
+  // for graph purposes so trace-resolution and orphan rules apply automatically.
+  const refs = data.references;
+  if (refs && typeof refs === "object" && !Array.isArray(refs)) {
+    for (const value of Object.values(refs as Record<string, unknown>)) {
+      const items = Array.isArray(value) ? value : [value];
+      for (const item of items) {
+        const ids = String(item).match(/[A-Z]+-\d+/g);
         if (ids) {
           traces.push(...ids);
         }
@@ -139,6 +153,14 @@ export async function discoverScopes(root: string): Promise<Map<string, string>>
   return scopes;
 }
 
+/** Extra spec roots that share the main `specs` graph (level specs live under design/). */
+export function extraRootsForScope(scope: string, root: string): string[] {
+  if (scope === "specs") {
+    return [resolve(root, "design/levels")];
+  }
+  return [];
+}
+
 /** Parse all specs in a directory tree */
 export async function parseScope(specsDir: string, root: string): Promise<SpecContent[]> {
   const files = await glob("**/*.md", { cwd: specsDir, absolute: true });
@@ -161,6 +183,10 @@ export async function parseAll(root: string): Promise<Map<string, SpecContent[]>
 
   for (const [name, dir] of scopes) {
     const specs = await parseScope(dir, root);
+    for (const extraDir of extraRootsForScope(name, root)) {
+      const extra = await parseScope(extraDir, root);
+      specs.push(...extra);
+    }
     result.set(name, specs);
   }
 

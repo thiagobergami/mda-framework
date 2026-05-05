@@ -15,6 +15,18 @@ Bidirectional links between all spec layers. Use this to navigate in both direct
 
 | GAME-001 Don't get virus | — | — | — | — | Concept gate |
 
+## Levels
+
+Level specs live in `design/levels/` (not `specs/`). They reference M/D/A specs by ID and
+compose them into spatial/temporal arrangements. See `design/levels/_schema.md` for the
+schema and `design/README.md` for why levels live outside `specs/`.
+
+| Level ID | Name             | Aesthetics    | Dynamics  | Mechanics | Assets | Status   |
+|----------|------------------|---------------|-----------|-----------|--------|----------|
+| *Add rows as level specs are created* | | | | | | |
+
+A reference example (not a real level, validator-skipped) lives at `design/levels/_example.level.md`.
+
 ## Reading Guide
 
 ### When implementing a new feature (M → D → A):

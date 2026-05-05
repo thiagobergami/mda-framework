@@ -14,11 +14,17 @@ Step 5: Asset Specs       → The models, sounds, and visual content
 Step 6: Tuning Specs      → The adjustable parameters
 Step 7: Traceability      → The bidirectional links
 Step 8: Validation        → The integrity check
+Step 9: Level Composition → Spatial/temporal arrangements (optional, for level-based games)
 ```
 
 Each step only requires the output of the previous step. AI can assist at any step,
 but the earlier steps require more design judgment (human-driven), while the later
 steps become increasingly implementable by AI alone.
+
+The fastest path through Steps 1–6 (and 9) is `npm run spec`, which prompts you for the
+high-level fields and pre-fills frontmatter. Steps 7 and 8 are automatic side-effects:
+`mda new` updates traceability on every scaffold, and `mda validate` runs the full integrity
+check on demand.
 
 ---
 
@@ -240,6 +246,50 @@ Run `src/tools/validate-specs.luau` or manually check:
 
 ---
 
+## Step 9: Level Composition
+
+**Input**: All specs from Steps 1-8 (at minimum: one AES, one DYN, one MEC)
+**Output**: One `design/levels/{name}.level.md` per level
+**Schema**: `design/levels/_schema.md`
+
+Levels live in `design/levels/`, NOT `specs/`. They orchestrate existing M/D/A specs into a
+spatial and temporal arrangement — they do not introduce new mechanics, dynamics, or
+aesthetics. A level spec is a composition document.
+
+### What to do:
+1. Pick the level's player goal (one sentence)
+2. Choose target aesthetics for entry, mid, and exit beats — different beats can target
+   different aesthetics
+3. Sketch a critical path (ASCII or mermaid)
+4. Lay out the blockout — coarse spatial grid is fine for early states
+5. Build the beat chart: one row per beat with tension level, active mechanic, target aesthetic
+6. Define encounters: location, mechanic mix, expected dynamic, success/fail states
+7. Map affordances: geometry → player action → spec ID it teaches
+8. Write sightline notes — what's visible from each key position
+9. List optional content with explicit reward types (cosmetic, narrative, mechanical, economic)
+10. Capture open questions for playtesting
+
+### Validation checkpoint:
+- [ ] Frontmatter `references:` block has at least one AES, one DYN, one MEC
+- [ ] All referenced spec IDs resolve (run `npx mda validate`)
+- [ ] `status` is one of `blockout | playable | polished`
+- [ ] All 11 required sections are present (see schema)
+- [ ] Beat chart's active mechanics all appear in `references.mechanics`
+- [ ] Aesthetic targets all appear in `references.aesthetics`
+
+### Status transitions:
+- `blockout` → `playable`: real geometry, encounters wired, assets in place (even if placeholder)
+- `playable` → `polished`: art, audio, and tuning passes complete; ready for external playtest
+
+### AI role at this step:
+- Read the level's referenced specs to understand what mechanics and dynamics are in play
+- Ensure beat chart pacing matches the dynamic's feedback loops
+- Validate affordances: does the geometry actually teach the mechanic listed?
+- Check for missing encounters: every mechanic listed in `references.mechanics` should appear
+  in at least one beat or encounter
+
+---
+
 ## When to Re-Spec
 
 Specs are living documents. Re-spec when:
@@ -249,6 +299,8 @@ Specs are living documents. Re-spec when:
 - **Tuning can't fix a problem** → The mechanic design is wrong → revisit Step 4
 - **A dynamic creates degenerate behavior** → Revisit Step 3, may cascade to Step 4
 - **Scope changes** → Revisit Step 1 boundaries and feature map
+- **A level's beat chart pacing breaks** → The dynamic might be wrong (Step 3) or the level
+  composition might over- or under-represent the mechanic (Step 9)
 
 Use the Player Perspective (A→D→M) to trace problems. Use the Designer Perspective
 (M→D→A) to trace implementations. Both are necessary.

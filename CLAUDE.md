@@ -10,7 +10,7 @@ the media that streams out of it towards the player.**
 ## Project Structure
 
 ```
-specs/
+specs/                           # Canonical M/D/A truth — behavioral contracts, balance, experience
 ├── WORKFLOW.md                  # Step-by-step spec authoring process — read this for process
 ├── glossary.md                  # Shared vocabulary — read this for terminology
 ├── traceability.md              # Bidirectional links between all specs
@@ -34,12 +34,20 @@ specs/
     ├── catalog.md               # Master registry of all game assets
     └── {name}.asset.md          # Asset requirements, emotional intent, placeholders
 
+design/                          # Iterative artifacts that CONSUME specs — never define new primitives
+├── README.md                    # Explains the boundary between specs/ and design/
+├── levels/                      # Level / environment design
+│   ├── _schema.md               # How to write a level spec
+│   └── {level}.level.md         # Spatial layout, beat chart, encounters, affordances
+├── flows/                       # Player journeys: onboarding, progression, retention
+│   └── {flow}.flow.md
+└── pipeline/                    # Guided spec-authoring tool — `npm run spec`
+    ├── cli/                     # Node.js CLI wizard
+    └── web/                     # Web UI (deferred)
+
 src/
 ├── shared/MDALogger.luau        # Structured runtime logging (MEC-003)
 └── tools/validate-specs.luau    # Spec integrity validator
-
-examples/                        # Reference implementations (not part of the game)
-└── baby-chase/                  # Complete example from the MDA paper
 ```
 
 ## The Dual Perspective
@@ -108,9 +116,28 @@ Aesthetics → set the tone for → Dynamics → which expose → Mechanics
 ### When creating new specs:
 - Follow `specs/WORKFLOW.md` for the step-by-step process
 - Always start from the Game Concept — new features must appear in the feature map
-- Spec in order: Concept → Aesthetics → Dynamics → Mechanics → Assets → Tuning
-- Run `validate-specs` after adding specs to check integrity
-- Update `specs/traceability.md` after every new spec
+- Spec in order: Concept → Aesthetics → Dynamics → Mechanics → Assets → Tuning → Levels
+- Prefer `npm run spec` (the wizard) — it branches its menu off existing specs and pre-fills
+  frontmatter. `npx mda new <layer> <name>` is the manual fallback.
+- Run `npx mda validate` after adding specs to check integrity
+- `mda new` auto-updates `specs/traceability.md`; manual edits to traceability are rarely needed
+
+### When working with levels:
+- Levels live in `design/levels/`, NOT `specs/` — they compose existing M/D/A specs into a
+  spatial/temporal arrangement and never define new primitives
+- Every level MUST reference at least one AES, one DYN, and one MEC via the `references:`
+  block in frontmatter (enforced by the `level-references` validator rule)
+- Use `design/levels/_schema.md` as the authoritative spec for the 11 required sections
+- `design/levels/_example.level.md` is reference documentation (skipped by the validator)
+- `status` is one of `blockout | playable | polished` — promote only after the prior state's
+  goals (geometry, encounter wiring, art/audio) are met
+
+### Things in `design/` vs `specs/`:
+- `specs/` holds canonical M/D/A truth: behavioral contracts, balance, experience goals
+- `design/` holds iterative artifacts that *consume* specs: levels, flows, the wizard tool
+- Artifacts in `design/` MUST reference specs by ID — never introduce new aesthetic, dynamic,
+  mechanic, or asset primitives there
+- See `design/README.md` for the full boundary rules
 
 ## The 8 Aesthetic Categories (Quick Reference)
 

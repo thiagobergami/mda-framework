@@ -3,7 +3,7 @@ import { resolve, join } from "node:path";
 import { parseAll } from "./parser.js";
 import type { SpecLayer } from "./types.js";
 
-type ScaffoldLayer = "concept" | "aesthetic" | "dynamic" | "mechanic" | "tuning" | "asset" | "binding";
+type ScaffoldLayer = "concept" | "aesthetic" | "dynamic" | "mechanic" | "tuning" | "asset" | "binding" | "level";
 
 const LAYER_MAP: Record<ScaffoldLayer, { prefix: SpecLayer; dir: string; ext: string }> = {
   concept:   { prefix: "GAME", dir: "specs/concept",    ext: "concept.md" },
@@ -13,6 +13,7 @@ const LAYER_MAP: Record<ScaffoldLayer, { prefix: SpecLayer; dir: string; ext: st
   tuning:    { prefix: "TUN",  dir: "specs/tuning",      ext: "tune.md" },
   asset:     { prefix: "AST",  dir: "specs/assets",      ext: "asset.md" },
   binding:   { prefix: "BIND", dir: "specs/bindings",    ext: "bind.md" },
+  level:     { prefix: "LVL",  dir: "design/levels",     ext: "level.md" },
 };
 
 /** Find the next sequential ID for a layer */
@@ -298,6 +299,86 @@ language: {luau | csharp | cpp}
 
 {How game state maps to engine data types.}
 `;
+
+    case "level":
+      return `---
+id: ${id}
+name: ${name}
+status: blockout
+references:
+  aesthetics: []
+  dynamics:   []
+  mechanics:  []
+  assets:     []
+estimated_duration: 0
+---
+
+# ${name}
+
+## Player Goal
+
+{One sentence. What does the player accomplish here?}
+
+## Aesthetic Targets
+
+| Beat   | Target aesthetic | Reasoning                  |
+|--------|------------------|----------------------------|
+| Entry  | AES-NNN ({cat})  | First impression, sets tone|
+| Mid    | AES-NNN ({cat})  | Core engagement            |
+| Exit   | AES-NNN ({cat})  | Resolution, satisfaction   |
+
+## Critical Path
+
+\`\`\`
+[Entry] → ... → [Exit]
+\`\`\`
+
+## Blockout
+
+\`\`\`
+{ASCII or mermaid blockout — see design/levels/_schema.md}
+\`\`\`
+
+## Beat Chart
+
+| Time | Zone | Tension | Active mechanic | Target aesthetic | Notes |
+|------|------|---------|-----------------|------------------|-------|
+
+## Encounters
+
+### {Encounter name}
+
+- **Location**:
+- **Mechanic mix**:
+- **Expected dynamic**:
+- **Success state**:
+- **Fail state**:
+
+## Affordances
+
+| Geometry | Player action | Teaches spec |
+|----------|---------------|--------------|
+
+## Sightline Notes
+
+- **From Entry**:
+- **From Mid**:
+- **From Exit looking back**:
+- **Hidden**:
+
+## Optional Content
+
+(none — fill in or write "none" explicitly)
+
+## Open Questions
+
+-
+
+## Iteration Log
+
+| Date | Change | Why | Observed effect |
+|------|--------|-----|-----------------|
+`;
   }
 }
 
@@ -322,21 +403,26 @@ export async function scaffold(
 
   await writeFile(filePath, content);
 
-  // Update traceability.md — append to matrix
-  const traceFile = resolve(root, "specs", "traceability.md");
-  try {
-    let trace = await readFile(traceFile, "utf-8");
-    const matrixRow = buildTraceRow(layer, id, name);
-    if (matrixRow) {
-      // Insert before the "## Reading Guide" section
-      trace = trace.replace(
-        /\n## Reading Guide/,
-        `\n${matrixRow}\n\n## Reading Guide`,
-      );
-      await writeFile(traceFile, trace);
+  if (layer === "level") {
+    await appendLevelTraceRow(root, id, name);
+  } else {
+    // Update traceability.md — append to matrix
+    const traceFile = resolve(root, "specs", "traceability.md");
+    try {
+      let trace = await readFile(traceFile, "utf-8");
+      const matrixRow = buildTraceRow(layer, id, name);
+      if (matrixRow) {
+        // Insert before the "## Reading Guide" section, but the Levels block now sits
+        // between the matrix and Reading Guide, so anchor on the first occurrence.
+        trace = trace.replace(
+          /\n## Levels/,
+          `\n${matrixRow}\n\n## Levels`,
+        );
+        await writeFile(traceFile, trace);
+      }
+    } catch {
+      // traceability.md doesn't exist, skip
     }
-  } catch {
-    // traceability.md doesn't exist, skip
   }
 
   return { id, file: join(config.dir, fileName), layer };
@@ -356,11 +442,39 @@ function buildTraceRow(layer: ScaffoldLayer, id: string, name: string): string |
       return `| | | | ${id} ${name} | | Parameter ranges |`;
     case "asset":
       return `| | | | | ${id} ${name} | Asset status |`;
+    case "level":
+      // Level rows go in the Levels table, handled separately below
+      return null;
     default:
       return null;
   }
 }
 
+/** Append a row to the Levels table in traceability.md */
+async function appendLevelTraceRow(root: string, id: string, name: string): Promise<void> {
+  const traceFile = resolve(root, "specs", "traceability.md");
+  try {
+    let trace = await readFile(traceFile, "utf-8");
+    const row = `| ${id}  | ${name} | — | — | — | — | blockout |`;
+    // Insert after the placeholder row, before the orphan-example sentence
+    if (trace.includes("*Add rows as level specs are created*")) {
+      trace = trace.replace(
+        /\| \*Add rows as level specs are created\* \| \| \| \| \| \| \|/,
+        row,
+      );
+    } else if (trace.includes("## Levels")) {
+      // Append before the next ## section after Levels
+      trace = trace.replace(
+        /(## Levels[\s\S]*?\n\|[^\n]*\n)([\s\S]*?)(\n##)/,
+        `$1${row}\n$2$3`,
+      );
+    }
+    await writeFile(traceFile, trace);
+  } catch {
+    // traceability.md missing or unwritable — non-fatal
+  }
+}
+
 export const VALID_LAYERS: ScaffoldLayer[] = [
-  "concept", "aesthetic", "dynamic", "mechanic", "tuning", "asset", "binding",
+  "concept", "aesthetic", "dynamic", "mechanic", "tuning", "asset", "binding", "level",
 ];

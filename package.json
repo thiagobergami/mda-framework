@@ -1,6 +1,15 @@
 {
   "private": true,
+  "scripts": {
+    "spec": "tsx design/pipeline/cli/index.ts",
+    "spec:check": "tsc -p design/pipeline/cli/tsconfig.json"
+  },
   "devDependencies": {
-    "mda": "file:./tools"
+    "@inquirer/prompts": "^7.2.0",
+    "@types/node": "^22.0.0",
+    "chalk": "^5.3.0",
+    "mda": "file:./tools",
+    "tsx": "^4.19.0",
+    "typescript": "^5.6.0"
   }
 }

@@ -81,9 +81,32 @@ cd framework
 npm install
 ```
 
-This installs the `mda` CLI tool locally. All commands are run via `npx mda`.
+This installs the `mda` CLI tool plus the wizard's runtime deps (`tsx`, `@inquirer/prompts`,
+`chalk`). All `mda` commands run via `npx mda`; the wizard runs via `npm run spec`.
 
-### Quick Start
+### Quick Start (guided)
+
+The fastest path is the **spec wizard**, which walks you through Concept → Aesthetics →
+Dynamics → Mechanics → Assets → Tuning → Levels and pre-fills frontmatter from your answers:
+
+```bash
+npm run spec
+```
+
+The wizard branches its menu based on what already exists in `specs/`. On a fresh project
+you'll only see "Start a new game concept"; once a concept exists, aesthetics unlock; once
+aesthetics exist, dynamics unlock; and so on.
+
+Useful flags:
+
+```bash
+npm run spec -- --dry-run       # show which mda commands would run, write nothing
+npm run spec -- --dir /path     # operate on a different project root
+```
+
+### Quick Start (manual)
+
+If you prefer to author files by hand, the same scaffolding is available without the wizard:
 
 ```bash
 # 1. Scaffold a game concept
@@ -127,14 +150,15 @@ npx mda validate --dir /path/to/project
 
 | Rule | What it checks | Level |
 |------|---------------|-------|
-| `trace-resolution` | All `traces_to_*` references resolve to existing spec IDs | error |
+| `trace-resolution` | All `traces_to_*` and level `references:` IDs resolve | error |
 | `no-vacuo` | Every MEC spec traces to at least one DYN spec | error |
 | `asset-traces` | Every AST spec traces to a MEC (error) and an AES (warning) | mixed |
 | `tuning-completeness` | Every TUN spec traces to MEC + DYN + AES | warning |
 | `unique-ids` | No duplicate spec IDs within a scope | error |
-| `no-orphans` | Every spec is referenced by at least one other spec | warning |
+| `no-orphans` | Every spec is referenced by at least one other spec (LVL exempt) | warning |
 | `binding-coverage` | MEC and AST specs have engine binding specs | warning |
 | `frontmatter-schema` | Required frontmatter fields are present per layer | warning |
+| `level-references` | LVL specs reference at least one AES, one DYN, one MEC | error |
 
 Exit code is `0` on pass, `1` on any error-level diagnostic.
 
@@ -184,17 +208,71 @@ npx mda new mechanic "Lantern Interaction"
 npx mda new tuning "Lantern Pacing"
 npx mda new asset "Firefly Creature"
 npx mda new binding "Lantern Roblox Binding"
+npx mda new level "Tutorial Forest"        # writes to design/levels/
 ```
 
 **What it does:**
-- Assigns the next sequential ID for that layer (e.g., `AES-002`)
-- Creates a file at `specs/{layer}/{slug}.{ext}` with the full template
-- Updates `specs/traceability.md` with a new row
+- Assigns the next sequential ID for that layer (e.g., `AES-002`, `LVL-003`)
+- Creates a file at `specs/{layer}/{slug}.{ext}` (or `design/levels/` for level)
+- Updates `specs/traceability.md` with a new row (Levels go in their own table)
+
+## Level Design
+
+Levels live in `design/levels/` rather than `specs/` because they **compose** existing M/D/A
+specs into a spatial/temporal arrangement — they don't define new mechanics, dynamics, or
+aesthetics. See `design/levels/_schema.md` for the full schema.
+
+A level spec contains 11 required sections:
+
+1. **Player Goal** — one sentence
+2. **Aesthetic Targets** — which AES peaks at entry, mid, exit
+3. **Critical Path** — the minimum traversal
+4. **Blockout** — ASCII spatial layout
+5. **Beat Chart** — pacing curve over time (tension, mechanic, aesthetic per beat)
+6. **Encounters** — self-contained interaction units with success/fail states
+7. **Affordances** — geometry → action → spec ID mapping
+8. **Sightline Notes** — what's visible from each key position
+9. **Optional Content** — side paths and reward types
+10. **Open Questions** — playtest items
+11. **Iteration Log** — what changed and why
+
+Frontmatter requires a `references:` block listing the AES, DYN, MEC, and AST specs the
+level uses. The validator's `level-references` rule enforces at least one of each.
+
+```yaml
+---
+id: LVL-001
+name: Tutorial Forest
+status: blockout | playable | polished
+references:
+  aesthetics: [AES-001]
+  dynamics:   [DYN-001]
+  mechanics:  [MEC-001]
+  assets:     []
+estimated_duration: 180
+---
+```
+
+Author a level with `npm run spec` (then pick "Design a level") or `npx mda new level "..."`.
+
+## Spec Wizard
+
+`npm run spec` launches an interactive wizard at `design/pipeline/cli/`. It does two things
+the bare `mda new` doesn't:
+
+1. **Branched menus** — only offers what makes sense given the current state of `specs/`.
+   You won't see "Add a mechanic" until at least one dynamic exists.
+2. **Frontmatter pre-fill** — asks high-level questions (primary aesthetic, traces, level
+   status) and patches the answers into the scaffolded file so you start with the body, not
+   metadata.
+
+The wizard shells out to `mda new` for actual file creation and runs `mda validate` on
+demand from the menu. Source: `design/pipeline/cli/{index.ts,prompts/,lib/}`.
 
 ## Project Structure
 
 ```
-specs/                              # Specification layer
+specs/                              # Canonical M/D/A truth — behavioral contracts, balance, experience
 ├── WORKFLOW.md                     # 8-step process: idea -> implementation
 ├── glossary.md                     # Shared MDA vocabulary
 ├── traceability.md                 # Bidirectional links between all specs
@@ -207,6 +285,14 @@ specs/                              # Specification layer
 └── bindings/
     ├── _schema.md                  # Engine-specific mapping specs
     └── equivalence.md              # Cross-engine concept mapping table
+
+design/                             # Iterative artifacts — consume specs, never define new primitives
+├── README.md                       # Boundary between specs/ and design/
+├── levels/                         # Spatial layouts, beat charts, encounters
+├── flows/                          # Player journeys: onboarding, progression
+└── pipeline/                       # Guided spec-authoring tool — `npm run spec`
+    ├── cli/                        # Node.js wizard
+    └── web/                        # Web UI (deferred)
 
 tools/                              # CLI tooling (TypeScript)
 ├── src/

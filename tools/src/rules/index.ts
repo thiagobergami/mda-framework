@@ -7,6 +7,7 @@ import { uniqueIds } from "./unique-ids.js";
 import { noOrphans } from "./no-orphans.js";
 import { bindingCoverage } from "./binding-coverage.js";
 import { frontmatterSchema } from "./frontmatter-schema.js";
+import { levelReferences } from "./level-references.js";
 
 /** All built-in validation rules */
 export const allRules: ValidationRule[] = [
@@ -18,6 +19,7 @@ export const allRules: ValidationRule[] = [
   noOrphans,
   bindingCoverage,
   frontmatterSchema,
+  levelReferences,
 ];
 
 /** Run all rules against a graph and produce a ValidationResult */

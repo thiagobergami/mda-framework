@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Level Schema - MDA Spec Framework</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header class="site-header">
+    <button class="menu-toggle" aria-label="Toggle menu">
+      <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 010 2H4a1 1 0 01-1-1zm0 5a1 1 0 011-1h12a1 1 0 010 2H4a1 1 0 01-1-1zm0 5a1 1 0 011-1h12a1 1 0 010 2H4a1 1 0 01-1-1z" clip-rule="evenodd"/></svg>
+    </button>
+    <a href="index.html" class="header-logo"><span class="logo-icon">M</span> MDA Framework</a>
+    <nav class="header-nav"><a href="getting-started.html">Guide</a><a href="cli.html">CLI</a><a href="logger.html">Logger API</a></nav>
+  </header>
+  <div class="layout">
+    <aside class="sidebar">
+      <nav>
+        <div class="nav-group"><div class="nav-group-title"><svg class="chevron" viewBox="0 0 12 12" fill="currentColor"><path d="M4.7 2.3a1 1 0 00-1.4 1.4L6.6 7l-3.3 3.3a1 1 0 001.4 1.4l4-4a1 1 0 000-1.4l-4-4z"/></svg> Introduction</div><ul class="nav-items"><li><a href="index.html">Overview</a></li><li><a href="getting-started.html">Getting Started</a></li><li><a href="concepts.html">Core Concepts</a></li></ul></div>
+        <div class="nav-group"><div class="nav-group-title"><svg class="chevron" viewBox="0 0 12 12" fill="currentColor"><path d="M4.7 2.3a1 1 0 00-1.4 1.4L6.6 7l-3.3 3.3a1 1 0 001.4 1.4l4-4a1 1 0 000-1.4l-4-4z"/></svg> Workflow</div><ul class="nav-items"><li><a href="workflow.html">8-Step Process</a></li><li><a href="example.html">Walkthrough Example</a></li></ul></div>
+        <div class="nav-group"><div class="nav-group-title"><svg class="chevron" viewBox="0 0 12 12" fill="currentColor"><path d="M4.7 2.3a1 1 0 00-1.4 1.4L6.6 7l-3.3 3.3a1 1 0 001.4 1.4l4-4a1 1 0 000-1.4l-4-4z"/></svg> Spec Schemas</div><ul class="nav-items"><li><a href="spec-concept.html">Game Concept</a></li><li><a href="spec-aesthetics.html">Aesthetics</a></li><li><a href="spec-dynamics.html">Dynamics</a></li><li><a href="spec-mechanics.html">Mechanics</a></li><li><a href="spec-tuning.html">Tuning</a></li><li><a href="spec-assets.html">Assets</a></li><li><a href="spec-bindings.html">Engine Bindings</a></li><li><a href="spec-levels.html">Levels</a></li></ul></div>
+        <div class="nav-group"><div class="nav-group-title"><svg class="chevron" viewBox="0 0 12 12" fill="currentColor"><path d="M4.7 2.3a1 1 0 00-1.4 1.4L6.6 7l-3.3 3.3a1 1 0 001.4 1.4l4-4a1 1 0 000-1.4l-4-4z"/></svg> Design</div><ul class="nav-items"><li><a href="pipeline.html">Spec Wizard</a></li></ul></div>
+        <div class="nav-group"><div class="nav-group-title"><svg class="chevron" viewBox="0 0 12 12" fill="currentColor"><path d="M4.7 2.3a1 1 0 00-1.4 1.4L6.6 7l-3.3 3.3a1 1 0 001.4 1.4l4-4a1 1 0 000-1.4l-4-4z"/></svg> Tools</div><ul class="nav-items"><li><a href="cli.html">CLI Reference</a></li><li><a href="logger.html">MDA Logger</a></li><li><a href="multi-engine.html">Multi-Engine Support</a></li></ul></div>
+        <div class="nav-group"><div class="nav-group-title"><svg class="chevron" viewBox="0 0 12 12" fill="currentColor"><path d="M4.7 2.3a1 1 0 00-1.4 1.4L6.6 7l-3.3 3.3a1 1 0 001.4 1.4l4-4a1 1 0 000-1.4l-4-4z"/></svg> Community</div><ul class="nav-items"><li><a href="contributing.html">Contributing</a></li></ul></div>
+      </nav>
+    </aside>
+
+    <main class="content">
+      <h1>Level Spec Schema</h1>
+      <p class="subtitle">
+        Level specs describe the <strong>spatial and temporal composition</strong> of a single level &mdash;
+        geometry, pacing, encounters, sightlines, and optional content. Levels orchestrate existing
+        M/D/A specs into a particular arrangement; they don't define new ones.
+      </p>
+
+      <p>
+        <strong>File pattern:</strong> <code>design/levels/{slug}.level.md</code><br>
+        <strong>ID format:</strong> <code>LVL-{NNN}</code><br>
+        <strong>Scaffold:</strong> <code>npx mda new level "Tutorial Forest"</code><br>
+        <strong>Schema source:</strong> <code>design/levels/_schema.md</code>
+      </p>
+
+      <div class="callout">
+        <div class="callout-title">Why levels live in <code>design/</code>, not <code>specs/</code></div>
+        <p>The MDA paper treats levels as content under Mechanics. In practice, a level orchestrates
+        <em>all three layers per zone</em> &mdash; geometry that affords a mechanic, pacing that drives a
+        dynamic feedback loop, and atmosphere that targets a specific aesthetic. A level spec
+        <em>references</em> M/D/A primitives by ID rather than competing with them, so it lives in
+        <code>design/</code> alongside other iterative artifacts.</p>
+      </div>
+
+      <h2>Vocabulary</h2>
+      <table>
+        <thead><tr><th>Term</th><th>Meaning</th></tr></thead>
+        <tbody>
+          <tr><td>Blockout</td><td>Whitebox / spatial layout &mdash; geometry only, no art</td></tr>
+          <tr><td>Beat chart</td><td>Pacing curve over time: tension, rest, climax, release</td></tr>
+          <tr><td>Encounter</td><td>A self-contained unit of mechanic interaction with success/fail states</td></tr>
+          <tr><td>Affordance</td><td>What the geometry teaches the player (ledge &rarr; climb)</td></tr>
+          <tr><td>Sightline</td><td>What the player can see from key positions</td></tr>
+          <tr><td>Critical path</td><td>The minimum traversal to complete the level</td></tr>
+          <tr><td>Optional path</td><td>Branches off the critical path that reward exploration</td></tr>
+        </tbody>
+      </table>
+
+      <h2>Frontmatter</h2>
+      <pre><code>---
+id: LVL-{NNN}
+name: {Descriptive name}
+status: blockout | playable | polished
+references:
+  aesthetics: [AES-NNN, ...]
+  dynamics:   [DYN-NNN, ...]
+  mechanics:  [MEC-NNN, ...]
+  assets:     [AST-NNN, ...]
+estimated_duration: {seconds}
+---</code></pre>
+
+      <p>The <code>references:</code> block is parsed as traces by the validator &mdash; every referenced
+      spec ID must resolve, and the <code>level-references</code> rule requires at least one AES,
+      one DYN, and one MEC.</p>
+
+      <h2>Required Sections</h2>
+      <p>A level spec MUST contain all 11 sections, in this order:</p>
+      <ol>
+        <li><strong>Player Goal</strong> &mdash; one sentence</li>
+        <li><strong>Aesthetic Targets</strong> &mdash; table of beat &rarr; aesthetic &rarr; reasoning</li>
+        <li><strong>Critical Path</strong> &mdash; ASCII or mermaid diagram</li>
+        <li><strong>Blockout</strong> &mdash; coarse spatial layout</li>
+        <li><strong>Beat Chart</strong> &mdash; pacing curve table (time, zone, tension, mechanic, aesthetic)</li>
+        <li><strong>Encounters</strong> &mdash; one or more, each with location, mechanic mix, expected dynamic, success/fail</li>
+        <li><strong>Affordances</strong> &mdash; geometry &rarr; player action &rarr; spec ID it teaches</li>
+        <li><strong>Sightline Notes</strong> &mdash; what's visible from each key position</li>
+        <li><strong>Optional Content</strong> &mdash; side paths and reward types (or "none")</li>
+        <li><strong>Open Questions</strong> &mdash; playtest items not yet resolved</li>
+        <li><strong>Iteration Log</strong> &mdash; date / change / why / observed effect</li>
+      </ol>
+
+      <h2>Status Transitions</h2>
+      <table>
+        <thead><tr><th>Status</th><th>Meaning</th><th>Promote when</th></tr></thead>
+        <tbody>
+          <tr><td><code>blockout</code></td><td>Geometry placeholders only, traversable but ugly</td><td>Beat chart and sightlines validated by walkthrough</td></tr>
+          <tr><td><code>playable</code></td><td>Full geometry, real assets in place, encounters wired</td><td>Internal playtests pass; ready for art/audio</td></tr>
+          <tr><td><code>polished</code></td><td>Art, audio, and tuning passes complete</td><td>Ready for external playtest</td></tr>
+        </tbody>
+      </table>
+
+      <h2>Validator Rule: <code>level-references</code></h2>
+      <p>Source: <code>tools/src/rules/level-references.ts</code>. Errors when a level:</p>
+      <ul>
+        <li>References no AES, no DYN, or no MEC spec</li>
+        <li>Has a <code>status</code> that isn't one of <code>blockout</code> / <code>playable</code> / <code>polished</code></li>
+      </ul>
+
+      <h2>Authoring a Level</h2>
+      <p>Use the wizard for guided authoring (recommended): <code>npm run spec</code> &rarr; "Design a level".
+      The wizard prompts for status, traces, and duration, then patches them into the scaffolded file.</p>
+
+      <p>Manual scaffolding:</p>
+      <pre><code>npx mda new level "Tutorial Forest"
+# &rarr; design/levels/tutorial-forest.level.md (LVL-001 assigned automatically)</code></pre>
+
+      <h2>See Also</h2>
+      <ul>
+        <li><a href="pipeline.html">Spec Wizard</a> &mdash; the guided authoring tool</li>
+        <li><a href="spec-mechanics.html">Mechanics</a> &mdash; what a level's encounters surface</li>
+        <li><a href="spec-dynamics.html">Dynamics</a> &mdash; what a level's beat chart drives</li>
+        <li><a href="spec-aesthetics.html">Aesthetics</a> &mdash; what a level's beats target</li>
+      </ul>
+
+      <div class="page-nav">
+        <a href="spec-bindings.html">
+          <span class="label">Previous</span>
+          <span class="title">&larr; Engine Bindings</span>
+        </a>
+        <a href="pipeline.html" class="next">
+          <span class="label">Next</span>
+          <span class="title">Spec Wizard &rarr;</span>
+        </a>
+      </div>
+    </main>
+  </div>
+  <script src="js/main.js"></script>
+</body>
+</html>
