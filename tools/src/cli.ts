@@ -12,6 +12,7 @@ import { writeFile, readFile, mkdir } from "node:fs/promises";
 import chalk from "chalk";
 import { scaffold, VALID_LAYERS } from "./scaffold.js";
 import type { ScaffoldResult } from "./scaffold.js";
+import { registerAssetPlanCommands } from "./asset-plan/index.js";
 
 const VALID_GATES: GateLayer[] = ["concept", "aesthetic", "dynamic", "mechanic", "implementation"];
 
@@ -148,5 +149,7 @@ program
       process.exit(1);
     }
   });
+
+registerAssetPlanCommands(program);
 
 program.parse();

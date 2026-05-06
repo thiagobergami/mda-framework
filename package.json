@@ -2,7 +2,9 @@
   "private": true,
   "scripts": {
     "spec": "tsx design/pipeline/cli/index.ts",
-    "spec:check": "tsc -p design/pipeline/cli/tsconfig.json"
+    "spec:check": "tsc -p design/pipeline/cli/tsconfig.json",
+    "asset-plan": "tsx tools/src/cli.ts asset-plan",
+    "tools:check": "tsc -p tools/tsconfig.json --noEmit"
   },
   "devDependencies": {
     "@inquirer/prompts": "^7.2.0",
