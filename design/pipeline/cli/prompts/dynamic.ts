@@ -3,7 +3,6 @@ import { resolve } from "node:path";
 import chalk from "chalk";
 
 import { patchFrontmatter } from "../lib/patchFrontmatter.js";
-import { listExistingSpecs } from "../lib/existingSpecs.js";
 import { extractIds } from "../lib/extractIds.js";
 
 function slugify(name: string): string {
@@ -12,19 +11,14 @@ function slugify(name: string): string {
 
 export async function runDynamicPrompt(
   root: string,
+  game: string,
   runMda: (args: string[]) => Promise<number>,
 ): Promise<void> {
-  console.log(chalk.cyan("\n New Dynamic Spec\n"));
+  console.log(chalk.cyan(`\n New Dynamic Spec (game: ${game})\n`));
 
-  const existing = await listExistingSpecs(root);
-  if (existing.aesthetics.length === 0) {
-    console.log(chalk.yellow(" No aesthetics exist yet — add at least one before authoring a dynamic."));
-    return;
-  }
-
-  const aestheticIds = await extractIds(root, "specs/aesthetics");
+  const aestheticIds = await extractIds(root, game, "specs/aesthetics");
   if (aestheticIds.length === 0) {
-    console.log(chalk.yellow(" No AES IDs found in specs/aesthetics — check frontmatter."));
+    console.log(chalk.yellow(" No aesthetics exist yet — add at least one before authoring a dynamic."));
     return;
   }
 
@@ -42,14 +36,14 @@ export async function runDynamicPrompt(
     validate: (v) => v.length > 0 || "Pick at least one — dynamics must trace to an aesthetic",
   });
 
-  const code = await runMda(["new", "dynamic", name]);
+  const code = await runMda(["new", "dynamic", name, "--game", game]);
   if (code !== 0) {
     console.log(chalk.red(" `mda new dynamic` failed; aborting."));
     return;
   }
 
   const slug = slugify(name);
-  const file = resolve(root, "specs/dynamics", `${slug}.dyn.md`);
+  const file = resolve(root, "games", game, "specs/dynamics", `${slug}.dyn.md`);
 
   try {
     await patchFrontmatter(file, { traces_to_aesthetics: tracesTo });

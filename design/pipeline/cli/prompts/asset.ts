@@ -11,11 +11,12 @@ function slugify(name: string): string {
 
 export async function runAssetPrompt(
   root: string,
+  game: string,
   runMda: (args: string[]) => Promise<number>,
 ): Promise<void> {
-  console.log(chalk.cyan("\n New Asset Spec\n"));
+  console.log(chalk.cyan(`\n New Asset Spec (game: ${game})\n`));
 
-  const mecIds = await extractIds(root, "specs/mechanics");
+  const mecIds = await extractIds(root, game, "specs/mechanics");
   if (mecIds.length === 0) {
     console.log(chalk.yellow(" No mechanics exist yet — assets must trace to a mechanic. Add a MEC spec first."));
     return;
@@ -43,14 +44,14 @@ export async function runAssetPrompt(
     default: "concept",
   });
 
-  const code = await runMda(["new", "asset", name]);
+  const code = await runMda(["new", "asset", name, "--game", game]);
   if (code !== 0) {
     console.log(chalk.red(" `mda new asset` failed; aborting."));
     return;
   }
 
   const slug = slugify(name);
-  const file = resolve(root, "specs/assets", `${slug}.asset.md`);
+  const file = resolve(root, "games", game, "specs/assets", `${slug}.asset.md`);
 
   try {
     await patchFrontmatter(file, {

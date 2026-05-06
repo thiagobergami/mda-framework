@@ -58,18 +58,26 @@
         <tbody>
           <tr><td><code>--dry-run</code></td><td>Print what <code>mda</code> commands would run; write nothing</td></tr>
           <tr><td><code>--dir PATH</code></td><td>Operate on a different project root (default: cwd)</td></tr>
+          <tr><td><code>--game NAME</code></td><td>Skip the "which game?" prompt and operate on this game directly</td></tr>
         </tbody>
       </table>
 
+      <h2>Per-Game Scoping</h2>
+      <p>Every wizard session is scoped to one game. The first prompt is "Which game?" — pick
+      an existing game from <code>games/</code> or "+ Create a new game" (which runs
+      <code>mda init game</code> for you). Use the "Switch to a different game" menu item to
+      re-target without exiting.</p>
+
       <h2>Menu Branching</h2>
-      <p>The top-level menu is computed on each iteration from <code>listExistingSpecs()</code>:</p>
+      <p>After a game is chosen, the top-level menu is computed on each iteration from
+      <code>listExistingSpecs(game)</code>, which reads <code>games/&lt;game&gt;/specs/</code>:</p>
       <ul>
-        <li>If <code>specs/concept/</code> is empty &rarr; only "Start a new concept" is offered.</li>
+        <li>If the game's <code>specs/concept/</code> is empty &rarr; only "Start a new concept" is offered.</li>
         <li>If a concept exists but no aesthetics &rarr; "Add an aesthetic" appears (with a "/3+ recommended" hint).</li>
         <li>If aesthetics exist &rarr; "Add a dynamic" appears.</li>
         <li>If dynamics exist &rarr; "Add a mechanic" appears.</li>
         <li>If mechanics exist &rarr; "Add an asset", "Add a tuning spec", and "Design a level" all appear.</li>
-        <li>"Validate all specs" and "Exit" are always available.</li>
+        <li>"Validate this game", "Switch to a different game", and "Exit" are always available.</li>
       </ul>
 
       <h2>Per-Layer Prompts</h2>
@@ -89,9 +97,9 @@
 
       <h2>Architecture</h2>
       <pre><code>design/pipeline/cli/
-├── index.ts                # entry point, top-level menu, --dry-run
+├── index.ts                # entry point: which-game prompt → top-level menu, --dry-run
 ├── prompts/
-│   ├── concept.ts
+│   ├── concept.ts          # all prompts take (root, game, runMda)
 │   ├── aesthetic.ts
 │   ├── dynamic.ts
 │   ├── mechanic.ts
@@ -99,8 +107,9 @@
 │   ├── tuning.ts
 │   └── level.ts
 ├── lib/
-│   ├── existingSpecs.ts    # reads specs/ + design/levels/ for menu branching
-│   ├── extractIds.ts       # parses (id, name) pairs for trace prompts
+│   ├── games.ts            # lists games/&lt;slug&gt;/ and runs `mda init game`
+│   ├── existingSpecs.ts    # reads one game's specs/ + design/levels/
+│   ├── extractIds.ts       # parses (id, name) pairs for trace prompts (per-game)
 │   └── patchFrontmatter.ts # writes wizard answers into scaffolded files
 ├── tsconfig.json           # type-check only (run via tsx)
 └── README.md</code></pre>

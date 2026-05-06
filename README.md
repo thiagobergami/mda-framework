@@ -106,21 +106,27 @@ npm run spec -- --dir /path     # operate on a different project root
 
 ### Quick Start (manual)
 
-If you prefer to author files by hand, the same scaffolding is available without the wizard:
+If you prefer to author files by hand, the same scaffolding is available without the wizard.
+All game-specific commands take `--game <slug>` to target a game under `games/<slug>/`:
 
 ```bash
-# 1. Scaffold a game concept
-npx mda new concept "My Game"
+# 1. Bootstrap a game directory
+npx mda init game "My Game"
+# → games/my-game/ with empty spec dirs and a fresh traceability.md
 
-# 2. Fill in the generated template at specs/concept/my-game.concept.md
+# 2. Scaffold a concept inside that game
+npx mda new concept "My Game" --game my-game
 
-# 3. Run the concept readiness gate
+# 3. Fill in the generated template at games/my-game/specs/concept/my-game.concept.md
+
+# 4. Run the concept readiness gate
 npx mda gate concept
 
-# 4. Fix any gate failures, then scaffold the next layer
-npx mda new aesthetic "Core Feature"
+# 5. Scaffold the next layer
+npx mda new aesthetic "Core Feature" --game my-game
 
-# 5. Validate all specs at any time
+# 6. Validate just this game (or all scopes)
+npx mda validate --scope game:my-game
 npx mda validate
 ```
 
@@ -133,14 +139,17 @@ The `mda` CLI provides three commands for working with specs.
 Runs 8 validation rules against all specs to catch structural issues.
 
 ```bash
-# Validate all scopes (specs/ and any examples/)
+# Validate all scopes (framework + every game + any examples)
 npx mda validate
+
+# Validate one game only
+npx mda validate --scope game:lantern-woods
+
+# Validate just the framework foundation
+npx mda validate --scope specs
 
 # JSON output (for CI or tooling)
 npx mda validate --json
-
-# Validate a specific scope only
-npx mda validate --scope specs
 
 # Validate from a different project root
 npx mda validate --dir /path/to/project
@@ -195,26 +204,40 @@ npx mda gate implementation --json
 
 Gate results are saved to `specs/.gate-status.json` for tracking.
 
+### `mda init game <name>` — Bootstrap a new game
+
+Creates `games/<slug>/` with empty spec directories and a fresh per-game `traceability.md`.
+
+```bash
+npx mda init game "Lantern Woods"
+# → games/lantern-woods/ with specs/{concept,aesthetics,...}/ and design/levels/
+```
+
 ### `mda new <layer> <name>` — Scaffold a new spec
 
 Creates a new spec file from a template with auto-assigned ID and updates traceability.
+Game-specific layers require `--game <slug>`.
 
 ```bash
-# Scaffold specs at each layer
-npx mda new concept "Lantern Woods"
-npx mda new aesthetic "Forest Discovery"
-npx mda new dynamic "Creature Reveal Cycle"
-npx mda new mechanic "Lantern Interaction"
-npx mda new tuning "Lantern Pacing"
-npx mda new asset "Firefly Creature"
-npx mda new binding "Lantern Roblox Binding"
-npx mda new level "Tutorial Forest"        # writes to design/levels/
+# All game-specific scaffolding takes --game
+npx mda new concept "Lantern Woods" --game lantern-woods
+npx mda new aesthetic "Forest Discovery" --game lantern-woods
+npx mda new dynamic "Creature Reveal Cycle" --game lantern-woods
+npx mda new mechanic "Lantern Interaction" --game lantern-woods
+npx mda new tuning "Lantern Pacing" --game lantern-woods
+npx mda new asset "Firefly Creature" --game lantern-woods
+npx mda new binding "Lantern Roblox Binding" --game lantern-woods
+npx mda new level "Tutorial Forest" --game lantern-woods    # → games/.../design/levels/
+
+# Framework-tool specs (rare) bypass the game requirement
+npx mda new mechanic "Some Framework Tool" --framework
 ```
 
 **What it does:**
-- Assigns the next sequential ID for that layer (e.g., `AES-002`, `LVL-003`)
-- Creates a file at `specs/{layer}/{slug}.{ext}` (or `design/levels/` for level)
-- Updates `specs/traceability.md` with a new row (Levels go in their own table)
+- Assigns the next sequential ID for that layer **scoped to the game** (each game's
+  AES-001 is independent)
+- Creates a file at `games/<slug>/specs/{layer}/{slug}.{ext}` (or `.../design/levels/` for level)
+- Updates `games/<slug>/specs/traceability.md` with a new row
 
 ## Level Design
 
@@ -272,24 +295,28 @@ demand from the menu. Source: `design/pipeline/cli/{index.ts,prompts/,lib/}`.
 ## Project Structure
 
 ```
-specs/                              # Canonical M/D/A truth — behavioral contracts, balance, experience
+specs/                              # FRAMEWORK FOUNDATION — schemas + framework-tool specs only
 ├── WORKFLOW.md                     # 8-step process: idea -> implementation
 ├── glossary.md                     # Shared MDA vocabulary
-├── traceability.md                 # Bidirectional links between all specs
-├── concept/_schema.md              # Game vision, aesthetic profile, feature map
-├── aesthetics/_schema.md           # Player experience goals (observable proxies)
-├── dynamics/_schema.md             # Feedback systems, invariants, interaction patterns
-├── mechanics/_schema.md            # Player affordances, rules, behavioral contracts
-├── tuning/_schema.md               # Parameter ranges, trade-offs, iteration logs
-├── assets/_schema.md               # Emotional intent, technical reqs, placeholders
-└── bindings/
-    ├── _schema.md                  # Engine-specific mapping specs
-    └── equivalence.md              # Cross-engine concept mapping table
+├── traceability.md                 # Framework traceability template (no user data)
+├── concept/_schema.md              # Templates only (one per layer)
+├── aesthetics/_schema.md
+├── dynamics/_schema.md
+├── mechanics/{_schema.md, mda-logger.mec.md}   # MEC-003 is framework-tool
+├── tuning/_schema.md
+├── assets/_schema.md
+└── bindings/{_schema.md, equivalence.md}
 
-design/                             # Iterative artifacts — consume specs, never define new primitives
-├── README.md                       # Boundary between specs/ and design/
-├── levels/                         # Spatial layouts, beat charts, encounters
-├── flows/                          # Player journeys: onboarding, progression
+games/                              # USER GAME DATA — one isolated subdirectory per game
+├── README.md
+└── {slug}/
+    ├── README.md
+    ├── specs/{traceability.md, concept/, aesthetics/, dynamics/, mechanics/, tuning/, assets/, bindings/}
+    └── design/levels/
+
+design/                             # FRAMEWORK-LEVEL design artifacts (schemas + tools, no game data)
+├── README.md
+├── levels/_schema.md               # Level schema and reference example
 └── pipeline/                       # Guided spec-authoring tool — `npm run spec`
     ├── cli/                        # Node.js wizard
     └── web/                        # Web UI (deferred)

@@ -11,11 +11,12 @@ function slugify(name: string): string {
 
 export async function runMechanicPrompt(
   root: string,
+  game: string,
   runMda: (args: string[]) => Promise<number>,
 ): Promise<void> {
-  console.log(chalk.cyan("\n New Mechanic Spec\n"));
+  console.log(chalk.cyan(`\n New Mechanic Spec (game: ${game})\n`));
 
-  const dynIds = await extractIds(root, "specs/dynamics");
+  const dynIds = await extractIds(root, game, "specs/dynamics");
   if (dynIds.length === 0) {
     console.log(chalk.yellow(" No dynamics exist yet — mechanics must trace to a dynamic. Add a DYN spec first."));
     return;
@@ -35,14 +36,14 @@ export async function runMechanicPrompt(
     validate: (v) => v.length > 0 || "Pick at least one — mechanics cannot exist in isolation",
   });
 
-  const code = await runMda(["new", "mechanic", name]);
+  const code = await runMda(["new", "mechanic", name, "--game", game]);
   if (code !== 0) {
     console.log(chalk.red(" `mda new mechanic` failed; aborting."));
     return;
   }
 
   const slug = slugify(name);
-  const file = resolve(root, "specs/mechanics", `${slug}.mec.md`);
+  const file = resolve(root, "games", game, "specs/mechanics", `${slug}.mec.md`);
 
   try {
     await patchFrontmatter(file, { traces_to_dynamics: tracesTo });

@@ -11,14 +11,15 @@ function slugify(name: string): string {
 
 export async function runTuningPrompt(
   root: string,
+  game: string,
   runMda: (args: string[]) => Promise<number>,
 ): Promise<void> {
-  console.log(chalk.cyan("\n New Tuning Spec\n"));
+  console.log(chalk.cyan(`\n New Tuning Spec (game: ${game})\n`));
 
   const [mecIds, dynIds, aesIds] = await Promise.all([
-    extractIds(root, "specs/mechanics"),
-    extractIds(root, "specs/dynamics"),
-    extractIds(root, "specs/aesthetics"),
+    extractIds(root, game, "specs/mechanics"),
+    extractIds(root, game, "specs/dynamics"),
+    extractIds(root, game, "specs/aesthetics"),
   ]);
 
   if (mecIds.length === 0 || dynIds.length === 0 || aesIds.length === 0) {
@@ -47,14 +48,14 @@ export async function runTuningPrompt(
     validate: (v) => v.length > 0 || "At least one AES is required",
   });
 
-  const code = await runMda(["new", "tuning", name]);
+  const code = await runMda(["new", "tuning", name, "--game", game]);
   if (code !== 0) {
     console.log(chalk.red(" `mda new tuning` failed; aborting."));
     return;
   }
 
   const slug = slugify(name);
-  const file = resolve(root, "specs/tuning", `${slug}.tune.md`);
+  const file = resolve(root, "games", game, "specs/tuning", `${slug}.tune.md`);
 
   try {
     await patchFrontmatter(file, {

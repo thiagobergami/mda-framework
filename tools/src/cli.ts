@@ -10,7 +10,7 @@ import { runGate, type GateLayer } from "./gates/index.js";
 import type { SpecContent } from "./types.js";
 import { writeFile, readFile, mkdir } from "node:fs/promises";
 import chalk from "chalk";
-import { scaffold, VALID_LAYERS } from "./scaffold.js";
+import { scaffold, VALID_LAYERS, GAME_SPECIFIC_LAYERS, initGame } from "./scaffold.js";
 import type { ScaffoldResult } from "./scaffold.js";
 
 const VALID_GATES: GateLayer[] = ["concept", "aesthetic", "dynamic", "mechanic", "implementation"];
@@ -129,9 +129,11 @@ program
 
 program
   .command("new <layer> <name...>")
-  .description("Scaffold a new spec (concept, aesthetic, dynamic, mechanic, tuning, asset, binding)")
+  .description("Scaffold a new spec (concept, aesthetic, dynamic, mechanic, tuning, asset, binding, level)")
   .option("-d, --dir <path>", "Project root directory", ".")
-  .action(async (layer: string, nameParts: string[], opts: { dir: string }) => {
+  .option("-g, --game <name>", "Target game under games/<name>/ (required for game-specific layers)")
+  .option("--framework", "Allow scaffolding into the framework root instead of a game (rare; for framework-tool specs only)")
+  .action(async (layer: string, nameParts: string[], opts: { dir: string; game?: string; framework?: boolean }) => {
     if (!VALID_LAYERS.includes(layer as any)) {
       console.error(`Unknown layer: ${layer}. Valid layers: ${VALID_LAYERS.join(", ")}`);
       process.exit(1);
@@ -140,11 +142,53 @@ program
     const name = nameParts.join(" ");
     const root = resolve(opts.dir);
 
+    const requiresGame = GAME_SPECIFIC_LAYERS.has(layer as any);
+    if (requiresGame && !opts.game && !opts.framework) {
+      console.error(chalk.red(
+        `'${layer}' is a game-specific layer. Pass --game <name> to target a game ` +
+        `(e.g., --game my-game), or --framework to override (only for framework-tool specs).`
+      ));
+      console.error(chalk.gray(`  Bootstrap a new game first: npx mda init game "<name>"`));
+      process.exit(1);
+    }
+
     try {
-      const result = await scaffold(root, layer as any, name);
+      const result = await scaffold(root, layer as any, name, {
+        game: opts.framework ? null : (opts.game ?? null),
+      });
       console.log(chalk.green(`Created ${result.id}`) + ` → ${result.file}`);
     } catch (err) {
       console.error(chalk.red("Failed to scaffold:"), err instanceof Error ? err.message : err);
+      process.exit(1);
+    }
+  });
+
+program
+  .command("init <kind> <name...>")
+  .description("Bootstrap a project structure. Currently supports: 'game' — creates games/<slug>/ with empty spec dirs.")
+  .option("-d, --dir <path>", "Project root directory", ".")
+  .action(async (kind: string, nameParts: string[], opts: { dir: string }) => {
+    if (kind !== "game") {
+      console.error(chalk.red(`Unknown init kind: '${kind}'. Currently supported: 'game'.`));
+      process.exit(1);
+    }
+    const name = nameParts.join(" ");
+    if (!name.trim()) {
+      console.error(chalk.red("Game name is required"));
+      process.exit(1);
+    }
+    const root = resolve(opts.dir);
+    try {
+      const result = await initGame(root, name);
+      if (result.created) {
+        console.log(chalk.green(`Created game directory`) + ` → ${result.dir}`);
+        console.log(chalk.gray(`  Next: npx mda new concept "${name}" --game ${result.game}`));
+      } else {
+        console.log(chalk.yellow(`Game already exists`) + ` → ${result.dir}`);
+        console.log(chalk.gray(`  (Missing subdirs were created; existing files left untouched.)`));
+      }
+    } catch (err) {
+      console.error(chalk.red("Failed to init game:"), err instanceof Error ? err.message : err);
       process.exit(1);
     }
   });

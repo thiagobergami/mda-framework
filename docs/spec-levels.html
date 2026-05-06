@@ -35,10 +35,10 @@
       </p>
 
       <p>
-        <strong>File pattern:</strong> <code>design/levels/{slug}.level.md</code><br>
-        <strong>ID format:</strong> <code>LVL-{NNN}</code><br>
-        <strong>Scaffold:</strong> <code>npx mda new level "Tutorial Forest"</code><br>
-        <strong>Schema source:</strong> <code>design/levels/_schema.md</code>
+        <strong>File pattern:</strong> <code>games/&lt;game&gt;/design/levels/{slug}.level.md</code><br>
+        <strong>ID format:</strong> <code>LVL-{NNN}</code> (namespaced per game)<br>
+        <strong>Scaffold:</strong> <code>npx mda new level "Tutorial Forest" --game &lt;slug&gt;</code><br>
+        <strong>Schema source:</strong> <code>design/levels/_schema.md</code> (framework foundation)
       </p>
 
       <div class="callout">
@@ -118,9 +118,10 @@ estimated_duration: {seconds}
       <p>Use the wizard for guided authoring (recommended): <code>npm run spec</code> &rarr; "Design a level".
       The wizard prompts for status, traces, and duration, then patches them into the scaffolded file.</p>
 
-      <p>Manual scaffolding:</p>
-      <pre><code>npx mda new level "Tutorial Forest"
-# &rarr; design/levels/tutorial-forest.level.md (LVL-001 assigned automatically)</code></pre>
+      <p>Manual scaffolding (requires <code>--game</code>):</p>
+      <pre><code>npx mda init game "Lantern Woods"            # bootstrap the game first
+npx mda new level "Tutorial Forest" --game lantern-woods
+# &rarr; games/lantern-woods/design/levels/tutorial-forest.level.md (LVL-001)</code></pre>
 
       <h2>See Also</h2>
       <ul>

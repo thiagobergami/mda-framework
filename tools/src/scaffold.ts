@@ -1,25 +1,44 @@
-import { readFile, writeFile, readdir } from "node:fs/promises";
+import { readFile, writeFile, readdir, mkdir } from "node:fs/promises";
 import { resolve, join } from "node:path";
 import { parseAll } from "./parser.js";
 import type { SpecLayer } from "./types.js";
 
 type ScaffoldLayer = "concept" | "aesthetic" | "dynamic" | "mechanic" | "tuning" | "asset" | "binding" | "level";
 
-const LAYER_MAP: Record<ScaffoldLayer, { prefix: SpecLayer; dir: string; ext: string }> = {
-  concept:   { prefix: "GAME", dir: "specs/concept",    ext: "concept.md" },
-  aesthetic: { prefix: "AES",  dir: "specs/aesthetics",  ext: "aes.md" },
-  dynamic:   { prefix: "DYN",  dir: "specs/dynamics",    ext: "dyn.md" },
-  mechanic:  { prefix: "MEC",  dir: "specs/mechanics",   ext: "mec.md" },
-  tuning:    { prefix: "TUN",  dir: "specs/tuning",      ext: "tune.md" },
-  asset:     { prefix: "AST",  dir: "specs/assets",      ext: "asset.md" },
-  binding:   { prefix: "BIND", dir: "specs/bindings",    ext: "bind.md" },
-  level:     { prefix: "LVL",  dir: "design/levels",     ext: "level.md" },
+/**
+ * Layers that produce game-specific data MUST be scaffolded into a game's directory.
+ * Binding specs are also game-specific (they map a game's MECs/ASTs to engine APIs).
+ * Only `level` lives outside specs/ (under design/levels/).
+ */
+const LAYER_DIRS: Record<ScaffoldLayer, { prefix: SpecLayer; subdir: string; ext: string }> = {
+  concept:   { prefix: "GAME", subdir: "specs/concept",    ext: "concept.md" },
+  aesthetic: { prefix: "AES",  subdir: "specs/aesthetics", ext: "aes.md" },
+  dynamic:   { prefix: "DYN",  subdir: "specs/dynamics",   ext: "dyn.md" },
+  mechanic:  { prefix: "MEC",  subdir: "specs/mechanics",  ext: "mec.md" },
+  tuning:    { prefix: "TUN",  subdir: "specs/tuning",     ext: "tune.md" },
+  asset:     { prefix: "AST",  subdir: "specs/assets",     ext: "asset.md" },
+  binding:   { prefix: "BIND", subdir: "specs/bindings",   ext: "bind.md" },
+  level:     { prefix: "LVL",  subdir: "design/levels",    ext: "level.md" },
 };
 
-/** Find the next sequential ID for a layer */
-async function nextId(root: string, prefix: SpecLayer): Promise<string> {
+/**
+ * Resolve where a scaffolded file should land. If `game` is set, all layers go under
+ * `games/<game>/{specs,design}/...`. If unset (legacy), they go to the framework root —
+ * intended only for framework-tool specs and is gated by the CLI.
+ */
+function resolveScaffoldDir(root: string, layer: ScaffoldLayer, game: string | null): string {
+  const { subdir } = LAYER_DIRS[layer];
+  if (game) {
+    return resolve(root, "games", game, subdir);
+  }
+  return resolve(root, subdir);
+}
+
+/** Find the next sequential ID for a layer, scoped to the target game (or framework). */
+async function nextId(root: string, prefix: SpecLayer, game: string | null): Promise<string> {
   const allScopes = await parseAll(root);
-  const specs = allScopes.get("specs") ?? [];
+  const scopeKey = game ? `game:${game}` : "specs";
+  const specs = allScopes.get(scopeKey) ?? [];
   const ids = specs
     .filter((s) => s.layer === prefix)
     .map((s) => {
@@ -388,36 +407,48 @@ export interface ScaffoldResult {
   layer: ScaffoldLayer;
 }
 
+export interface ScaffoldOptions {
+  /** Target game directory under games/<game>/. Required for non-framework specs. */
+  game?: string | null;
+}
+
 /** Create a new spec file from template */
 export async function scaffold(
   root: string,
   layer: ScaffoldLayer,
   name: string,
+  options: ScaffoldOptions = {},
 ): Promise<ScaffoldResult> {
-  const config = LAYER_MAP[layer];
-  const id = await nextId(root, config.prefix);
+  const game = options.game ?? null;
+  const config = LAYER_DIRS[layer];
+  const id = await nextId(root, config.prefix, game);
   const slug = slugify(name);
   const fileName = `${slug}.${config.ext}`;
-  const filePath = resolve(root, config.dir, fileName);
+  const targetDir = resolveScaffoldDir(root, layer, game);
+  const filePath = resolve(targetDir, fileName);
   const content = template(layer, id, name);
 
+  await mkdir(targetDir, { recursive: true });
   await writeFile(filePath, content);
 
+  // Resolve which traceability.md to update — framework's or the game's
+  const traceFile = game
+    ? resolve(root, "games", game, "specs", "traceability.md")
+    : resolve(root, "specs", "traceability.md");
+
   if (layer === "level") {
-    await appendLevelTraceRow(root, id, name);
+    await appendLevelTraceRow(traceFile, id, name);
   } else {
-    // Update traceability.md — append to matrix
-    const traceFile = resolve(root, "specs", "traceability.md");
     try {
       let trace = await readFile(traceFile, "utf-8");
       const matrixRow = buildTraceRow(layer, id, name);
       if (matrixRow) {
-        // Insert before the "## Reading Guide" section, but the Levels block now sits
-        // between the matrix and Reading Guide, so anchor on the first occurrence.
-        trace = trace.replace(
-          /\n## Levels/,
-          `\n${matrixRow}\n\n## Levels`,
-        );
+        // Insert before the Levels block (which sits between matrix and Reading Guide)
+        if (/\n## Levels/.test(trace)) {
+          trace = trace.replace(/\n## Levels/, `\n${matrixRow}\n\n## Levels`);
+        } else if (/\n## Reading Guide/.test(trace)) {
+          trace = trace.replace(/\n## Reading Guide/, `\n${matrixRow}\n\n## Reading Guide`);
+        }
         await writeFile(traceFile, trace);
       }
     } catch {
@@ -425,7 +456,12 @@ export async function scaffold(
     }
   }
 
-  return { id, file: join(config.dir, fileName), layer };
+  // Path for the success message — relative to game dir if applicable
+  const relPath = game
+    ? join("games", game, config.subdir, fileName)
+    : join(config.subdir, fileName);
+
+  return { id, file: relPath, layer };
 }
 
 function buildTraceRow(layer: ScaffoldLayer, id: string, name: string): string | null {
@@ -450,20 +486,17 @@ function buildTraceRow(layer: ScaffoldLayer, id: string, name: string): string |
   }
 }
 
-/** Append a row to the Levels table in traceability.md */
-async function appendLevelTraceRow(root: string, id: string, name: string): Promise<void> {
-  const traceFile = resolve(root, "specs", "traceability.md");
+/** Append a row to the Levels table in a traceability.md (framework or per-game) */
+async function appendLevelTraceRow(traceFile: string, id: string, name: string): Promise<void> {
   try {
     let trace = await readFile(traceFile, "utf-8");
     const row = `| ${id}  | ${name} | — | — | — | — | blockout |`;
-    // Insert after the placeholder row, before the orphan-example sentence
     if (trace.includes("*Add rows as level specs are created*")) {
       trace = trace.replace(
         /\| \*Add rows as level specs are created\* \| \| \| \| \| \| \|/,
         row,
       );
     } else if (trace.includes("## Levels")) {
-      // Append before the next ## section after Levels
       trace = trace.replace(
         /(## Levels[\s\S]*?\n\|[^\n]*\n)([\s\S]*?)(\n##)/,
         `$1${row}\n$2$3`,
@@ -478,3 +511,148 @@ async function appendLevelTraceRow(root: string, id: string, name: string): Prom
 export const VALID_LAYERS: ScaffoldLayer[] = [
   "concept", "aesthetic", "dynamic", "mechanic", "tuning", "asset", "binding", "level",
 ];
+
+/** Layers that produce game-specific data and require a `--game` target. */
+export const GAME_SPECIFIC_LAYERS: Set<ScaffoldLayer> = new Set([
+  "concept", "aesthetic", "dynamic", "mechanic", "tuning", "asset", "binding", "level",
+]);
+
+export interface InitGameResult {
+  game: string;
+  dir: string;
+  created: boolean;
+}
+
+/**
+ * Bootstrap a new game directory under games/<slug>/ with empty spec dirs and a fresh
+ * per-game traceability.md. Idempotent: returns `created: false` if the dir already exists.
+ */
+export async function initGame(root: string, name: string): Promise<InitGameResult> {
+  const slug = slugify(name);
+  if (!slug) throw new Error(`Invalid game name: "${name}"`);
+
+  const gameRoot = resolve(root, "games", slug);
+  const gameRel = join("games", slug);
+
+  let created = true;
+  try {
+    await readdir(gameRoot);
+    created = false;
+  } catch {
+    // doesn't exist — proceed
+  }
+
+  const subdirs = [
+    "specs/concept",
+    "specs/aesthetics",
+    "specs/dynamics",
+    "specs/mechanics",
+    "specs/tuning",
+    "specs/assets",
+    "specs/bindings",
+    "design/levels",
+  ];
+  for (const sub of subdirs) {
+    await mkdir(resolve(gameRoot, sub), { recursive: true });
+  }
+
+  // Per-game traceability.md (only written if absent)
+  const tracePath = resolve(gameRoot, "specs", "traceability.md");
+  try {
+    await readFile(tracePath, "utf-8");
+  } catch {
+    await writeFile(tracePath, perGameTraceabilityTemplate(name));
+  }
+
+  // Per-game README so users know what lives where
+  const readmePath = resolve(gameRoot, "README.md");
+  try {
+    await readFile(readmePath, "utf-8");
+  } catch {
+    await writeFile(readmePath, perGameReadme(name, slug));
+  }
+
+  return { game: slug, dir: gameRel, created };
+}
+
+function perGameTraceabilityTemplate(name: string): string {
+  return `# Traceability — ${name}
+
+Bidirectional links between this game's spec layers. Use this to navigate in both directions:
+
+- **Designer (M → D → A)**: left-to-right — what mechanics produce what experience
+- **Player (A → D → M)**: right-to-left — trace an experience problem to its mechanical cause
+
+## Matrix
+
+| Aesthetic | Dynamic | Mechanic | Tuning | Assets | Validation Method |
+|-----------|---------|----------|--------|--------|-------------------|
+| *Add rows as specs are created* | | | | | |
+
+## Levels
+
+Level specs live in \`design/levels/\` (a sibling of this \`specs/\`). They reference M/D/A
+specs by ID and compose them into spatial/temporal arrangements.
+
+| Level ID | Name             | Aesthetics    | Dynamics  | Mechanics | Assets | Status   |
+|----------|------------------|---------------|-----------|-----------|--------|----------|
+| *Add rows as level specs are created* | | | | | | |
+
+## Reading Guide
+
+See the framework's \`specs/traceability.md\` for the full reading guide, debugging workflow,
+and dependency-graph templates. They apply identically here.
+`;
+}
+
+function perGameReadme(name: string, slug: string): string {
+  return `# ${name}
+
+This directory holds all spec and design data for the **${name}** game. The framework
+foundation (schemas, glossary, validation rules) lives at the repo root in \`specs/\` and
+is shared across all games.
+
+## Layout
+
+\`\`\`
+games/${slug}/
+├── README.md
+├── specs/
+│   ├── traceability.md           # this game's M/D/A traceability
+│   ├── concept/                  # GAME-NNN concept docs
+│   ├── aesthetics/               # AES-NNN
+│   ├── dynamics/                 # DYN-NNN
+│   ├── mechanics/                # MEC-NNN
+│   ├── tuning/                   # TUN-NNN
+│   ├── assets/                   # AST-NNN
+│   └── bindings/                 # BIND-NNN (engine mappings)
+└── design/
+    └── levels/                   # LVL-NNN level specs
+\`\`\`
+
+## Authoring
+
+Use the wizard:
+
+\`\`\`bash
+npm run spec
+# pick "${slug}" from the game prompt
+\`\`\`
+
+Or scaffold manually:
+
+\`\`\`bash
+npx mda new aesthetic "Forest Discovery" --game ${slug}
+npx mda new level "Tutorial Forest" --game ${slug}
+\`\`\`
+
+## Validation
+
+\`\`\`bash
+npx mda validate --scope game:${slug}
+\`\`\`
+
+IDs (AES-001, DYN-001, etc.) are namespaced per game — this game's AES-001 is independent
+of any other game's AES-001.
+`;
+}

@@ -1,15 +1,16 @@
 #!/usr/bin/env tsx
 /**
- * MDA Spec Wizard — guided spec authoring.
+ * MDA Spec Wizard — guided spec authoring, scoped to one game.
  *
- * Walks the user through Concept → Aesthetics → Dynamics → Mechanics → Assets → Tuning →
- * Levels by reading what already exists in `specs/` and asking the right questions in the
- * right order. Shells out to the existing `mda` CLI for file scaffolding, then optionally
- * patches frontmatter from the wizard's answers.
+ * Each session targets a single game under games/<game>/. The wizard prompts you to pick
+ * a game (or create a new one) up front, then walks Concept → Aesthetics → Dynamics →
+ * Mechanics → Assets → Tuning → Levels for that game. Branching menus reflect what already
+ * exists in the chosen game's specs/.
  *
  * Flags:
  *   --dry-run   Print what would happen without scaffolding files or patching frontmatter.
  *   --dir PATH  Run against an alternate project root (default: cwd).
+ *   --game NAME Skip the "which game?" prompt and operate on this game directly.
  */
 
 import { select, confirm } from "@inquirer/prompts";
@@ -25,18 +26,23 @@ import { runAssetPrompt } from "./prompts/asset.js";
 import { runTuningPrompt } from "./prompts/tuning.js";
 import { runLevelPrompt } from "./prompts/level.js";
 import { listExistingSpecs } from "./lib/existingSpecs.js";
+import { pickGame } from "./lib/games.js";
 
 interface CliOpts {
   dryRun: boolean;
   root: string;
+  game: string | null;
 }
 
 function parseArgs(argv: string[]): CliOpts {
-  const opts: CliOpts = { dryRun: false, root: process.cwd() };
+  const opts: CliOpts = { dryRun: false, root: process.cwd(), game: null };
   for (let i = 2; i < argv.length; i++) {
     if (argv[i] === "--dry-run") opts.dryRun = true;
     else if (argv[i] === "--dir" && argv[i + 1]) {
       opts.root = resolve(argv[i + 1]);
+      i++;
+    } else if (argv[i] === "--game" && argv[i + 1]) {
+      opts.game = argv[i + 1];
       i++;
     }
   }
@@ -52,10 +58,11 @@ type MenuChoice =
   | "tuning"
   | "level"
   | "validate"
+  | "switch_game"
   | "exit";
 
-async function topMenu(root: string): Promise<MenuChoice> {
-  const existing = await listExistingSpecs(root);
+async function topMenu(root: string, game: string): Promise<MenuChoice> {
+  const existing = await listExistingSpecs(root, game);
 
   const choices: { name: string; value: MenuChoice; description?: string }[] = [];
 
@@ -116,11 +123,12 @@ async function topMenu(root: string): Promise<MenuChoice> {
     }
   }
 
-  choices.push({ name: "Validate all specs", value: "validate" });
+  choices.push({ name: `Validate this game (game:${game})`, value: "validate" });
+  choices.push({ name: "Switch to a different game", value: "switch_game" });
   choices.push({ name: "Exit", value: "exit" });
 
   return await select<MenuChoice>({
-    message: "What do you want to do?",
+    message: `What do you want to do? (game: ${game})`,
     choices,
   });
 }
@@ -152,19 +160,30 @@ async function main(): Promise<void> {
   }
   console.log(chalk.gray(" Walks you through MDA spec authoring. Ctrl+C to exit at any time.\n"));
 
+  let game: string | null = opts.game ?? (await pickGame(opts.root, opts.dryRun));
+  if (!game) {
+    console.log(chalk.yellow(" No game selected; exiting."));
+    return;
+  }
+
   let continueLoop = true;
   while (continueLoop) {
-    const choice = await topMenu(opts.root);
+    const choice = await topMenu(opts.root, game);
 
     switch (choice) {
-      case "concept":   await runConceptPrompt(opts.root, runMda); break;
-      case "aesthetic": await runAestheticPrompt(opts.root, runMda); break;
-      case "dynamic":   await runDynamicPrompt(opts.root, runMda); break;
-      case "mechanic":  await runMechanicPrompt(opts.root, runMda); break;
-      case "asset":     await runAssetPrompt(opts.root, runMda); break;
-      case "tuning":    await runTuningPrompt(opts.root, runMda); break;
-      case "level":     await runLevelPrompt(opts.root, runMda); break;
-      case "validate":  await runMda(["validate"]); break;
+      case "concept":   await runConceptPrompt(opts.root, game, runMda); break;
+      case "aesthetic": await runAestheticPrompt(opts.root, game, runMda); break;
+      case "dynamic":   await runDynamicPrompt(opts.root, game, runMda); break;
+      case "mechanic":  await runMechanicPrompt(opts.root, game, runMda); break;
+      case "asset":     await runAssetPrompt(opts.root, game, runMda); break;
+      case "tuning":    await runTuningPrompt(opts.root, game, runMda); break;
+      case "level":     await runLevelPrompt(opts.root, game, runMda); break;
+      case "validate":  await runMda(["validate", "--scope", `game:${game}`]); break;
+      case "switch_game": {
+        const next = await pickGame(opts.root, opts.dryRun);
+        if (next) game = next;
+        break;
+      }
       case "exit":      continueLoop = false; break;
     }
 

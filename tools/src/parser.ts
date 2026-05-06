@@ -136,14 +136,26 @@ export function parseFile(
   return results;
 }
 
-/** Discover validation scopes: specs/ is the main scope, each examples/{name}/ is isolated */
+/**
+ * Discover validation scopes:
+ *   - `specs`            — framework foundation (schemas, framework-tool specs)
+ *   - `game:<name>`      — each games/{name}/specs/ is isolated per game
+ *   - `example:<name>`   — each examples/{name}/specs/ is isolated (legacy support)
+ */
 export async function discoverScopes(root: string): Promise<Map<string, string>> {
   const scopes = new Map<string, string>();
 
-  // Main scope
+  // Framework foundation scope
   scopes.set("specs", resolve(root, "specs"));
 
-  // Example scopes
+  // Per-game scopes — user game data lives here
+  const gameDirs = await glob("games/*/specs", { cwd: root });
+  for (const dir of gameDirs) {
+    const scopeName = dir.split("/")[1];
+    scopes.set(`game:${scopeName}`, resolve(root, dir));
+  }
+
+  // Example scopes (legacy/reference)
   const exampleDirs = await glob("examples/*/specs", { cwd: root });
   for (const dir of exampleDirs) {
     const scopeName = dir.split("/")[1];
@@ -153,10 +165,22 @@ export async function discoverScopes(root: string): Promise<Map<string, string>>
   return scopes;
 }
 
-/** Extra spec roots that share the main `specs` graph (level specs live under design/). */
+/**
+ * Extra spec roots that share a scope's graph. Levels live under design/, so the
+ * framework's design/levels merges into `specs`, and each game's design/levels merges
+ * into its `game:<name>` scope.
+ */
 export function extraRootsForScope(scope: string, root: string): string[] {
   if (scope === "specs") {
     return [resolve(root, "design/levels")];
+  }
+  if (scope.startsWith("game:")) {
+    const name = scope.slice("game:".length);
+    return [resolve(root, "games", name, "design/levels")];
+  }
+  if (scope.startsWith("example:")) {
+    const name = scope.slice("example:".length);
+    return [resolve(root, "examples", name, "design/levels")];
   }
   return [];
 }

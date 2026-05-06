@@ -11,15 +11,16 @@ function slugify(name: string): string {
 
 export async function runLevelPrompt(
   root: string,
+  game: string,
   runMda: (args: string[]) => Promise<number>,
 ): Promise<void> {
-  console.log(chalk.cyan("\n New Level Spec\n"));
+  console.log(chalk.cyan(`\n New Level Spec (game: ${game})\n`));
 
   const [mecIds, dynIds, aesIds, astIds] = await Promise.all([
-    extractIds(root, "specs/mechanics"),
-    extractIds(root, "specs/dynamics"),
-    extractIds(root, "specs/aesthetics"),
-    extractIds(root, "specs/assets"),
+    extractIds(root, game, "specs/mechanics"),
+    extractIds(root, game, "specs/dynamics"),
+    extractIds(root, game, "specs/aesthetics"),
+    extractIds(root, game, "specs/assets"),
   ]);
 
   if (mecIds.length === 0 || dynIds.length === 0 || aesIds.length === 0) {
@@ -70,22 +71,20 @@ export async function runLevelPrompt(
     validate: (v) => /^\d+$/.test(v) || "Whole seconds only",
   });
 
-  const code = await runMda(["new", "level", name]);
+  const code = await runMda(["new", "level", name, "--game", game]);
   if (code !== 0) {
     console.log(chalk.red(" `mda new level` failed; aborting."));
     return;
   }
 
   const slug = slugify(name);
-  const file = resolve(root, "design/levels", `${slug}.level.md`);
+  const file = resolve(root, "games", game, "design/levels", `${slug}.level.md`);
 
   try {
     await patchFrontmatter(file, {
       status,
       estimated_duration: duration,
     });
-    // The references block is YAML-mapping shaped — patch it as raw text since
-    // patchFrontmatter only handles flat keys.
     const { readFile, writeFile } = await import("node:fs/promises");
     let content = await readFile(file, "utf-8");
     const refsBlock = `references:\n  aesthetics: [${aes.join(", ")}]\n  dynamics:   [${dyn.join(", ")}]\n  mechanics:  [${mec.join(", ")}]\n  assets:     [${ast.join(", ")}]`;

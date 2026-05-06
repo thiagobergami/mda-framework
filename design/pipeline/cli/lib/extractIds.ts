@@ -1,6 +1,7 @@
 /**
  * Reads markdown files in a directory and extracts (id, name) pairs from frontmatter.
- * Used by prompts that need to ask "which AES does this trace to?" with real choices.
+ * Used by prompts that need to ask "which AES does this trace to?" with real choices,
+ * scoped to a specific game.
  */
 
 import { readdir, readFile } from "node:fs/promises";
@@ -15,8 +16,8 @@ export interface SpecRef {
 const ID_REGEX = /^id:\s*(\S+)\s*$/m;
 const NAME_REGEX = /^name:\s*(.+?)\s*$/m;
 
-export async function extractIds(root: string, relDir: string): Promise<SpecRef[]> {
-  const dir = resolve(root, relDir);
+export async function extractIds(root: string, game: string, relDir: string): Promise<SpecRef[]> {
+  const dir = resolve(root, "games", game, relDir);
   let entries: string[];
   try {
     entries = await readdir(dir);

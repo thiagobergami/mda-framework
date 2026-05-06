@@ -36,9 +36,11 @@ cd tools && npx tsc --watch
 | Directory | Contents | Language |
 |-----------|----------|----------|
 | `tools/src/` | CLI tool (validator, gates, scaffolding) | TypeScript |
-| `specs/` | Spec schemas, glossary, workflow — canonical M/D/A truth | Markdown |
-| `design/levels/` | Level specs (LVL-NNN) — compose specs into spatial layouts | Markdown |
+| `specs/` | Framework foundation: schemas, glossary, framework-tool specs | Markdown |
+| `design/levels/` | Level **schema** and reference example (no game data) | Markdown |
 | `design/pipeline/cli/` | Spec wizard (`npm run spec`) | TypeScript (run via tsx) |
+| `games/<slug>/specs/` | One game's M/D/A specs | Markdown |
+| `games/<slug>/design/levels/` | One game's level compositions (LVL-NNN) | Markdown |
 | `src/shared/` | Runtime logger module | Luau |
 | `src/tools/` | Legacy Luau validator | Luau |
 
@@ -138,9 +140,11 @@ the MDA Logger that don't fit the normal M->D->A chain.
 
 ### Scoped Validation
 
-- `specs/` is the main validation scope
-- Each `examples/*/` directory is an isolated scope
-- Cross-scope trace references are not validated
+- `specs/` (root) is the framework-foundation scope, named `specs`
+- Each `games/*/` is its own scope, named `game:<slug>`
+- Each `examples/*/` is its own scope, named `example:<slug>` (legacy)
+- Cross-scope trace references are not validated — each game's IDs are independent
+- A game's `design/levels/` is merged into that game's scope (not a separate scope)
 
 ## Commit Messages
 

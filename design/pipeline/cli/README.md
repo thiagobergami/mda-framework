@@ -1,8 +1,9 @@
 # MDA Spec Wizard (CLI)
 
-A guided spec-authoring wizard. Walks you through Concept → Aesthetics → Dynamics → Mechanics
-→ Assets → Tuning → Levels by reading what already exists in `specs/` and asking the right
-questions in the right order.
+A guided spec-authoring wizard, scoped to one game per session. Asks "which game?" up front,
+then walks you through Concept → Aesthetics → Dynamics → Mechanics → Assets → Tuning → Levels
+for that game by reading what already exists in `games/<game>/specs/` and branching its menu
+accordingly.
 
 ## Usage
 
@@ -12,9 +13,11 @@ From the repo root:
 npm run spec
 ```
 
-The wizard branches its top-level menu based on what's already in `specs/`. If the project
-has no concept yet, only "Start a new game concept" is offered. After a concept exists,
-"Add an aesthetic" appears, and so on.
+First prompt: pick an existing game from `games/` or create a new one (which runs
+`mda init game` for you). After that, the top-level menu reflects the chosen game's state —
+if it has no concept yet, only "Start a new game concept" is offered; once a concept exists,
+"Add an aesthetic" appears, and so on. Use the "Switch to a different game" menu item to
+re-target without exiting.
 
 ## What it does (vs. `mda new`)
 
@@ -40,6 +43,7 @@ templates flows through automatically.
 
 - `--dry-run` — show what `mda` invocations would happen without scaffolding files.
 - `--dir PATH` — run against an alternate project root (default: cwd).
+- `--game NAME` — skip the "which game?" prompt and operate on this game directly.
 
 See `../../plan.md` for the full plan.
 
@@ -47,7 +51,7 @@ See `../../plan.md` for the full plan.
 
 ```
 design/pipeline/cli/
-├── index.ts                # entry point, top-level menu, --dry-run
+├── index.ts                # entry point, "which game?" prompt, top-level menu, --dry-run
 ├── prompts/
 │   ├── concept.ts
 │   ├── aesthetic.ts
@@ -55,10 +59,11 @@ design/pipeline/cli/
 │   ├── mechanic.ts
 │   ├── asset.ts
 │   ├── tuning.ts
-│   └── level.ts
+│   └── level.ts            # all prompts take (root, game, runMda)
 ├── lib/
-│   ├── existingSpecs.ts    # reads what's already in specs/ + design/levels/
-│   ├── extractIds.ts       # parses (id, name) pairs for trace prompts
+│   ├── games.ts            # lists games/<slug>/ and runs `mda init game`
+│   ├── existingSpecs.ts    # reads one game's specs/ + design/levels/
+│   ├── extractIds.ts       # parses (id, name) pairs for trace prompts (per-game)
 │   └── patchFrontmatter.ts # writes wizard answers into scaffolded files
 ├── tsconfig.json           # type-check only (run via tsx)
 └── README.md

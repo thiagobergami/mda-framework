@@ -21,12 +21,13 @@ function slugify(name: string): string {
 
 export async function runConceptPrompt(
   root: string,
+  game: string,
   runMda: (args: string[]) => Promise<number>,
 ): Promise<void> {
-  console.log(chalk.cyan("\n New Game Concept\n"));
+  console.log(chalk.cyan(`\n New Game Concept (game: ${game})\n`));
 
   const name = await input({
-    message: "Game name:",
+    message: "Concept name (often the same as the game):",
     validate: (v) => v.trim().length > 0 || "Name is required",
   });
 
@@ -61,14 +62,14 @@ export async function runConceptPrompt(
 
   console.log(chalk.gray("\n Scaffolding concept file..."));
 
-  const code = await runMda(["new", "concept", name]);
+  const code = await runMda(["new", "concept", name, "--game", game]);
   if (code !== 0) {
     console.log(chalk.red(" `mda new concept` failed; aborting wizard step."));
     return;
   }
 
   const slug = slugify(name);
-  const file = resolve(root, "specs/concept", `${slug}.concept.md`);
+  const file = resolve(root, "games", game, "specs/concept", `${slug}.concept.md`);
 
   try {
     await patchFrontmatter(file, {

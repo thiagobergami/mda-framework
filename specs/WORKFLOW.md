@@ -21,10 +21,15 @@ Each step only requires the output of the previous step. AI can assist at any st
 but the earlier steps require more design judgment (human-driven), while the later
 steps become increasingly implementable by AI alone.
 
-The fastest path through Steps 1–6 (and 9) is `npm run spec`, which prompts you for the
-high-level fields and pre-fills frontmatter. Steps 7 and 8 are automatic side-effects:
-`mda new` updates traceability on every scaffold, and `mda validate` runs the full integrity
-check on demand.
+The fastest path through Steps 1–6 (and 9) is `npm run spec`, which asks "which game?"
+first, then prompts you for the high-level fields and pre-fills frontmatter. Steps 7 and 8
+are automatic side-effects: `mda new` updates the target game's traceability on every
+scaffold, and `mda validate` runs the full integrity check on demand.
+
+**Where specs live**: every game has its own isolated directory at `games/<slug>/specs/`
+and `games/<slug>/design/levels/`. The framework's root `specs/` only holds schemas and
+framework-tool specs. Bootstrap a new game with `npx mda init game "Name"` (or pick
+"+ Create a new game" in the wizard).
 
 ---
 

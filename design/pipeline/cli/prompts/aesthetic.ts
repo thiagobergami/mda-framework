@@ -21,9 +21,10 @@ function slugify(name: string): string {
 
 export async function runAestheticPrompt(
   root: string,
+  game: string,
   runMda: (args: string[]) => Promise<number>,
 ): Promise<void> {
-  console.log(chalk.cyan("\n New Aesthetic Spec\n"));
+  console.log(chalk.cyan(`\n New Aesthetic Spec (game: ${game})\n`));
 
   const name = await input({
     message: "Aesthetic name (e.g. 'Forest Discovery'):",
@@ -42,14 +43,14 @@ export async function runAestheticPrompt(
 
   console.log(chalk.gray("\n Scaffolding aesthetic file..."));
 
-  const code = await runMda(["new", "aesthetic", name]);
+  const code = await runMda(["new", "aesthetic", name, "--game", game]);
   if (code !== 0) {
     console.log(chalk.red(" `mda new aesthetic` failed; aborting wizard step."));
     return;
   }
 
   const slug = slugify(name);
-  const file = resolve(root, "specs/aesthetics", `${slug}.aes.md`);
+  const file = resolve(root, "games", game, "specs/aesthetics", `${slug}.aes.md`);
 
   const patch: Record<string, string | string[]> = {
     primary_aesthetic: primary,

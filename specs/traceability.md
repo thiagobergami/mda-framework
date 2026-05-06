@@ -1,29 +1,38 @@
-# Traceability Matrix
+# Traceability — Framework Foundation
 
-Bidirectional links between all spec layers. Use this to navigate in both directions:
+This file is part of the **framework foundation**. It documents the traceability pattern
+that every game's own `traceability.md` follows. **User game data does not live here** — each
+game has its own `games/<game>/specs/traceability.md`, scaffolded automatically by
+`mda init game`.
+
+The matrix below is intentionally empty. The only specs that may legitimately appear here
+are framework-tool specs (e.g., `MEC-003 MDA Logger`) that ship with the framework itself.
 
 - **Designer (M → D → A)**: Read left-to-right to understand what mechanics produce what experience
 - **Player (A → D → M)**: Read right-to-left to trace an experience problem to its mechanical cause
 
-## Matrix
+## Matrix Template
+
+Each per-game `traceability.md` uses this shape:
 
 | Aesthetic | Dynamic | Mechanic | Tuning | Assets | Validation Method |
 |-----------|---------|----------|--------|--------|-------------------|
 | *Add rows as specs are created* | | | | | |
 
-| GAME-001 Test Game | — | — | — | — | Concept gate |
+## Framework-Tool Specs
 
-| GAME-001 Don't get virus | — | — | — | — | Concept gate |
+Specs with `scope: framework-tool` ship with the framework and are exempt from per-game
+trace rules. They appear here, not in any game directory.
+
+| Spec ID | Name                | Purpose                                             |
+|---------|---------------------|-----------------------------------------------------|
+| MEC-003 | MDA Logger          | Structured runtime logging used by all games        |
 
 ## Levels
 
-Level specs live in `design/levels/` (not `specs/`). They reference M/D/A specs by ID and
-compose them into spatial/temporal arrangements. See `design/levels/_schema.md` for the
-schema and `design/README.md` for why levels live outside `specs/`.
-
-| Level ID | Name             | Aesthetics    | Dynamics  | Mechanics | Assets | Status   |
-|----------|------------------|---------------|-----------|-----------|--------|----------|
-| *Add rows as level specs are created* | | | | | | |
+Level specs live in each game's `games/<game>/design/levels/` directory and roll up into
+that game's own traceability. The framework's `design/levels/_schema.md` defines the shape;
+see `design/README.md` for why levels live in `design/` rather than `specs/`.
 
 A reference example (not a real level, validator-skipped) lives at `design/levels/_example.level.md`.
 

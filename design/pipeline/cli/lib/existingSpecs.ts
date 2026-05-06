@@ -1,7 +1,7 @@
 /**
- * Reads what specs already exist on disk so the wizard can branch its menu.
- * Walks `specs/{concept,aesthetics,dynamics,mechanics,tuning,assets}` and returns a
- * lightweight summary keyed by layer. Falls back to empty arrays if a directory is missing.
+ * Reads what specs already exist on disk for a specific game so the wizard can branch
+ * its menu. Walks `games/<game>/specs/{...}` and `games/<game>/design/levels/`. Returns
+ * empty arrays for missing directories.
  */
 
 import { readdir } from "node:fs/promises";
@@ -26,15 +26,16 @@ async function listMarkdown(dir: string): Promise<string[]> {
   }
 }
 
-export async function listExistingSpecs(root: string): Promise<ExistingSpecs> {
+export async function listExistingSpecs(root: string, game: string): Promise<ExistingSpecs> {
+  const gameRoot = resolve(root, "games", game);
   const [concepts, aesthetics, dynamics, mechanics, tuning, assets, levels] = await Promise.all([
-    listMarkdown(resolve(root, "specs/concept")),
-    listMarkdown(resolve(root, "specs/aesthetics")),
-    listMarkdown(resolve(root, "specs/dynamics")),
-    listMarkdown(resolve(root, "specs/mechanics")),
-    listMarkdown(resolve(root, "specs/tuning")),
-    listMarkdown(resolve(root, "specs/assets")),
-    listMarkdown(resolve(root, "design/levels")),
+    listMarkdown(resolve(gameRoot, "specs/concept")),
+    listMarkdown(resolve(gameRoot, "specs/aesthetics")),
+    listMarkdown(resolve(gameRoot, "specs/dynamics")),
+    listMarkdown(resolve(gameRoot, "specs/mechanics")),
+    listMarkdown(resolve(gameRoot, "specs/tuning")),
+    listMarkdown(resolve(gameRoot, "specs/assets")),
+    listMarkdown(resolve(gameRoot, "design/levels")),
   ]);
   return { concepts, aesthetics, dynamics, mechanics, tuning, assets, levels };
 }

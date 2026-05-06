@@ -10,38 +10,40 @@ the media that streams out of it towards the player.**
 ## Project Structure
 
 ```
-specs/                           # Canonical M/D/A truth — behavioral contracts, balance, experience
-├── WORKFLOW.md                  # Step-by-step spec authoring process — read this for process
-├── glossary.md                  # Shared vocabulary — read this for terminology
-├── traceability.md              # Bidirectional links between all specs
-├── concept/
-│   ├── _schema.md               # How to write game concept docs
-│   └── {game}.concept.md        # The root — game vision, aesthetic profile, feature map
-├── aesthetics/
-│   ├── _schema.md               # How to write aesthetic specs
-│   └── {feature}.aes.md         # Player experience goals (WHY)
-├── dynamics/
-│   ├── _schema.md               # How to write dynamic specs
-│   └── {feature}.dyn.md         # Emergent behavior & feedback systems (WHAT emerges)
+specs/                           # FRAMEWORK FOUNDATION — schemas, glossary, framework-tool specs only
+├── WORKFLOW.md                  # Step-by-step spec authoring process
+├── glossary.md                  # Shared MDA vocabulary
+├── traceability.md              # Framework traceability template (no user game data)
+├── concept/_schema.md           # How to write a game concept (template only)
+├── aesthetics/_schema.md
+├── dynamics/_schema.md
 ├── mechanics/
-│   ├── _schema.md               # How to write mechanic specs
-│   └── {feature}.mec.md         # Player actions, rules & content (HOW it works)
-├── tuning/
-│   ├── _schema.md               # How to write tuning specs
-│   └── {feature}.tune.md        # Adjustable parameters & iteration log (BALANCE)
-└── assets/
-    ├── _schema.md               # How to write asset specs
-    ├── catalog.md               # Master registry of all game assets
-    └── {name}.asset.md          # Asset requirements, emotional intent, placeholders
+│   ├── _schema.md
+│   └── mda-logger.mec.md        # Framework-tool spec (scope: framework-tool)
+├── tuning/_schema.md
+├── assets/_schema.md
+└── bindings/_schema.md
 
-design/                          # Iterative artifacts that CONSUME specs — never define new primitives
-├── README.md                    # Explains the boundary between specs/ and design/
-├── levels/                      # Level / environment design
-│   ├── _schema.md               # How to write a level spec
-│   └── {level}.level.md         # Spatial layout, beat chart, encounters, affordances
-├── flows/                       # Player journeys: onboarding, progression, retention
-│   └── {flow}.flow.md
-└── pipeline/                    # Guided spec-authoring tool — `npm run spec`
+games/                           # USER GAME DATA — one subdirectory per game, fully isolated
+├── README.md                    # How games/ works
+└── {game-slug}/
+    ├── README.md
+    ├── specs/
+    │   ├── traceability.md      # this game's M/D/A traceability
+    │   ├── concept/             # GAME-NNN
+    │   ├── aesthetics/          # AES-NNN (namespaced per game)
+    │   ├── dynamics/            # DYN-NNN
+    │   ├── mechanics/           # MEC-NNN
+    │   ├── tuning/              # TUN-NNN
+    │   ├── assets/              # AST-NNN
+    │   └── bindings/            # BIND-NNN
+    └── design/
+        └── levels/              # LVL-NNN level specs
+
+design/                          # FRAMEWORK-LEVEL design artifacts (schemas + tools, no game data)
+├── README.md                    # Boundary between specs/ and design/
+├── levels/_schema.md            # How to write a level spec (template only)
+└── pipeline/                    # The spec wizard — `npm run spec`
     ├── cli/                     # Node.js CLI wizard
     └── web/                     # Web UI (deferred)
 
@@ -117,27 +119,39 @@ Aesthetics → set the tone for → Dynamics → which expose → Mechanics
 - Follow `specs/WORKFLOW.md` for the step-by-step process
 - Always start from the Game Concept — new features must appear in the feature map
 - Spec in order: Concept → Aesthetics → Dynamics → Mechanics → Assets → Tuning → Levels
-- Prefer `npm run spec` (the wizard) — it branches its menu off existing specs and pre-fills
-  frontmatter. `npx mda new <layer> <name>` is the manual fallback.
-- Run `npx mda validate` after adding specs to check integrity
-- `mda new` auto-updates `specs/traceability.md`; manual edits to traceability are rarely needed
+- All game-specific specs live under `games/<slug>/` — never write game data into the
+  framework root's `specs/` directory
+- Prefer `npm run spec` (the wizard) — it asks "which game?" first, then branches its menu
+  off existing specs and pre-fills frontmatter
+- Manual fallback: `npx mda new <layer> <name> --game <slug>` (the `--game` flag is
+  required for game-specific layers)
+- Run `npx mda validate --scope game:<slug>` to check just one game; `npx mda validate`
+  alone checks framework + all games
+- `mda new` auto-updates the target game's `traceability.md`; manual edits are rare
+
+### Bootstrapping a new game:
+- `npx mda init game "Game Name"` creates `games/<slug>/` with empty spec dirs and a fresh
+  per-game `traceability.md`
+- The wizard's "+ Create a new game" option does the same thing
+- Each game has its own `AES-001`, `MEC-001`, etc. — IDs are namespaced per game
 
 ### When working with levels:
-- Levels live in `design/levels/`, NOT `specs/` — they compose existing M/D/A specs into a
-  spatial/temporal arrangement and never define new primitives
+- Levels live in `games/<slug>/design/levels/`, NOT under `specs/` and NOT under the
+  framework's `design/` — they belong to a specific game
 - Every level MUST reference at least one AES, one DYN, and one MEC via the `references:`
   block in frontmatter (enforced by the `level-references` validator rule)
-- Use `design/levels/_schema.md` as the authoritative spec for the 11 required sections
-- `design/levels/_example.level.md` is reference documentation (skipped by the validator)
+- Use the framework's `design/levels/_schema.md` as the authoritative spec for the 11
+  required sections; `design/levels/_example.level.md` is reference documentation
 - `status` is one of `blockout | playable | polished` — promote only after the prior state's
   goals (geometry, encounter wiring, art/audio) are met
 
-### Things in `design/` vs `specs/`:
-- `specs/` holds canonical M/D/A truth: behavioral contracts, balance, experience goals
-- `design/` holds iterative artifacts that *consume* specs: levels, flows, the wizard tool
-- Artifacts in `design/` MUST reference specs by ID — never introduce new aesthetic, dynamic,
-  mechanic, or asset primitives there
-- See `design/README.md` for the full boundary rules
+### Things in `design/` vs `specs/` vs `games/`:
+- `specs/` (root) — framework foundation: schemas, glossary, framework-tool specs only
+- `design/` (root) — framework-level design artifacts: schemas + the wizard tool
+- `games/<slug>/specs/` — one game's canonical M/D/A truth
+- `games/<slug>/design/levels/` — one game's level compositions
+- Game data NEVER goes in the framework root; framework primitives NEVER go in `games/`
+- See `design/README.md` and `games/README.md` for the full boundary rules
 
 ## The 8 Aesthetic Categories (Quick Reference)
 
