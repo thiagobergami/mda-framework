@@ -1,4 +1,5 @@
-import { input, checkbox, select } from "@inquirer/prompts";
+import { input, checkbox, confirm, select } from "@inquirer/prompts";
+import { readFile } from "node:fs/promises";
 import { resolve } from "node:path";
 import chalk from "chalk";
 
@@ -63,4 +64,58 @@ export async function runAssetPrompt(
   }
 
   console.log(chalk.gray("\n Next step: define emotional intent, technical reqs, and placeholder protocol."));
+
+  // Phase 8: optional hand-off to the asset-plan pipeline
+  const wantsPlan = await confirm({
+    message: "Generate an implementation plan for this asset now?",
+    default: false,
+  });
+  if (!wantsPlan) {
+    console.log(
+      chalk.dim(
+        " You can generate one later with `mda asset-plan generate <asset-id>` once your reference inputs are in design/asset-plans/<id>/refs/.",
+      ),
+    );
+    return;
+  }
+
+  const assetId = await readAssetId(file);
+  if (!assetId) {
+    console.log(chalk.yellow(" Couldn't read the new asset's ID — skipping plan generation."));
+    return;
+  }
+
+  console.log(
+    chalk.dim(
+      `\n Drop reference inputs into design/asset-plans/${assetId}/refs/ before continuing.`,
+    ),
+  );
+  const refsReady = await confirm({
+    message: "References are in place. Proceed with `mda asset-plan generate`?",
+    default: true,
+  });
+  if (!refsReady) {
+    console.log(chalk.dim(` Run \`mda asset-plan generate ${assetId}\` when ready.`));
+    return;
+  }
+
+  const planCode = await runMda(["asset-plan", "generate", assetId]);
+  if (planCode !== 0) {
+    console.log(
+      chalk.yellow(
+        ` Plan generation exited with code ${planCode}. Re-run \`mda asset-plan generate ${assetId}\` after fixing the cause.`,
+      ),
+    );
+  }
+}
+
+/** Read the AST-NNN id from the freshly scaffolded asset spec frontmatter. */
+async function readAssetId(file: string): Promise<string | null> {
+  try {
+    const content = await readFile(file, "utf-8");
+    const m = content.match(/^id:\s*(AST-\d+)\s*$/m);
+    return m ? m[1] : null;
+  } catch {
+    return null;
+  }
 }
