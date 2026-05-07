@@ -15,6 +15,7 @@ Step 6: Tuning Specs      → The adjustable parameters
 Step 7: Traceability      → The bidirectional links
 Step 8: Validation        → The integrity check
 Step 9: Level Composition → Spatial/temporal arrangements (optional, for level-based games)
+Step 10: Asset Implementation → MCP-driven plans that build the assets (optional)
 ```
 
 Each step only requires the output of the previous step. AI can assist at any step,
@@ -287,6 +288,39 @@ aesthetics. A level spec is a composition document.
 - Validate affordances: does the geometry actually teach the mechanic listed?
 - Check for missing encounters: every mechanic listed in `references.mechanics` should appear
   in at least one beat or encounter
+
+---
+
+## Step 10: Asset Implementation (Optional)
+
+**Input**: An asset spec (Step 5) at `concept` or later status
+**Output**: A versioned plan at `design/asset-plans/{asset-id}/{asset-id}.v{N}.plan.md` and
+            (after execution) the produced artifact in the engine
+**Spec**: `design/asset-plans/spec.md`
+
+The asset-implementation pipeline routes each asset through the appropriate authoring tool
+(Blender for models, Reaper for music/sound, Photoshop for UI, Substance for textures,
+Mixamo for animation, Houdini for particles), generates a step-by-step plan with
+milestone-level checkpoints, and either dispatches the work via MCP or prints the steps as
+manual instructions when no MCP is configured.
+
+### What to do:
+1. Place reference inputs (image, audio, text) in `design/asset-plans/{asset-id}/refs/`
+2. Run `mda asset-plan generate <asset-id>` — produces a `vN.plan.md` reviewed against the
+   AES, concept, and global style-guide
+3. Run `mda asset-plan exec <asset-id>` — walks each milestone, prompting accept /
+   reject-and-revise / reject-and-stop after every step
+4. Run `mda asset-plan import <asset-id>` — once the plan reaches `executed` status,
+   lands the artifact at the engine path declared in the asset spec's `target-path:` or
+   `Container` field, applies CollectionService tags and Attributes
+5. The asset spec's status (`concept | placeholder | draft | final`) is *suggested* but
+   never auto-edited — advance it manually
+
+### Validation checkpoint:
+- [ ] `mda validate` passes the `asset-plan-integrity` rule (no orphan plan dirs, every
+      plan resolves to a real asset / tool / engine, no illegal status transitions)
+- [ ] Plan frontmatter `status` reflects what's on disk: `imported` only after engine
+      import succeeded; every milestone in `executed` or `skipped-mcp` for `imported` plans
 
 ---
 

@@ -13,6 +13,7 @@ import chalk from "chalk";
 import { scaffold, VALID_LAYERS } from "./scaffold.js";
 import type { ScaffoldResult } from "./scaffold.js";
 import { registerAssetPlanCommands } from "./asset-plan/index.js";
+import { validateAssetPlans } from "./asset-plan/integrity.js";
 
 const VALID_GATES: GateLayer[] = ["concept", "aesthetic", "dynamic", "mechanic", "implementation"];
 
@@ -42,6 +43,16 @@ program
     for (const [scopeName, specs] of scopeEntries) {
       const graph = buildGraph(specs);
       const result = runRules(graph, allRules);
+
+      // Asset-plan integrity (filesystem-aware) only runs against the main "specs"
+      // scope — example projects don't share the design/asset-plans/ tree.
+      if (scopeName === "specs") {
+        const planDiagnostics = await validateAssetPlans(root, graph);
+        result.diagnostics.push(...planDiagnostics);
+        if (planDiagnostics.some((d) => d.level === "error")) {
+          result.passed = false;
+        }
+      }
 
       if (opts.json) {
         console.log(JSON.stringify({ scope: scopeName, ...result }, null, 2));
