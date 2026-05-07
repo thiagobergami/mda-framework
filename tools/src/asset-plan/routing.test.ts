@@ -45,17 +45,19 @@ describe("parseRoutingTable", () => {
 describe("loadRouting", () => {
   it("loads the project's _routing.md", async () => {
     const t = await loadRouting(ROOT);
-    assert.equal(t.get("3d-model"), "blender");
-    assert.equal(t.get("2d-art"), "photoshop");
+    assert.equal(t.get("model"), "blender");
+    assert.equal(t.get("ui"), "photoshop");
     assert.equal(t.get("music"), "reaper");
+    assert.equal(t.get("sound"), "reaper");
     assert.equal(t.get("texture"), "substance");
     assert.equal(t.get("animation"), "mixamo");
+    assert.equal(t.get("particle"), "houdini");
   });
 });
 
 describe("resolveTool", () => {
-  it("resolves 3d-model to the Blender profile", async () => {
-    const profile = await resolveTool(ROOT, "3d-model");
+  it("resolves model to the Blender profile", async () => {
+    const profile = await resolveTool(ROOT, "model");
     assert.equal(profile.id, "TOOL-blender");
     assert.equal(profile.name, "Blender");
   });
@@ -74,7 +76,7 @@ describe("resolveTool", () => {
   });
 
   it("throws when routing points to a tool whose profile does not list the type", async () => {
-    // 2d-art routes to photoshop, but no _tools/photoshop.md exists yet (Phase 6).
-    await assert.rejects(() => resolveTool(ROOT, "2d-art"), /Tool profile not found/);
+    // ui routes to photoshop, but no _tools/photoshop.md exists yet (Phase 6).
+    await assert.rejects(() => resolveTool(ROOT, "ui"), /Tool profile not found/);
   });
 });

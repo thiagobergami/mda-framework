@@ -2,21 +2,21 @@
 id: TOOL-blender
 name: Blender
 mcp-required: blender-mcp
-asset-types: [3d-model, animation, vfx-simple]
+asset-types: [model]
 ---
 
 # Blender — Tool Profile
 
 > **Phase 1 minimal stub.** Inputs and the first milestone are real; remaining
-> milestones for `3d-model`, plus `animation` and `vfx-simple`, are filled in
+> milestones for `model`, plus `animation` and `vfx-simple`, are filled in
 > by Phase 3 (full Blender profile) and Phase 4 (executor + MCP integration).
 
-## Inputs: 3d-model
+## Inputs: model
 
 - image (required) — Reference photo or sketch (front view recommended)
 - text (optional) — Style or mood description
 
-## Milestones: 3d-model
+## Milestones: model
 
 ### M1 — Blockout
 

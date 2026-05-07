@@ -150,9 +150,9 @@ describe("loadToolProfile (real Blender stub)", () => {
     assert.equal(p.id, "TOOL-blender");
     assert.equal(p.name, "Blender");
     assert.equal(p.mcpRequired, "blender-mcp");
-    assert.ok(p.assetTypes.includes("3d-model"));
-    assert.ok(p.inputsByType["3d-model"].length >= 1);
-    assert.ok(p.milestonesByType["3d-model"].length >= 1);
+    assert.ok(p.assetTypes.includes("model"));
+    assert.ok(p.inputsByType["model"].length >= 1);
+    assert.ok(p.milestonesByType["model"].length >= 1);
   });
 
   it("throws clearly when the profile file is missing", async () => {

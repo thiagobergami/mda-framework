@@ -100,19 +100,21 @@ aesthetic, dynamic, or mechanic primitives.
 - **FR-5.** `npm run asset-plan --list` shows every asset and its plan status.
 
 ### Asset → Tool routing
-- **FR-6.** Routing is declared in `design/asset-plans/_routing.md` (table form). v1
-  defaults:
+- **FR-6.** Routing is declared in `design/asset-plans/_routing.md` (table form).
+  Asset types match the `type:` field in `specs/assets/_schema.md`. v1 defaults:
 
-  | Asset type        | Tool                |
-  |-------------------|---------------------|
-  | 3D model          | Blender             |
-  | 2D art            | Photoshop           |
-  | Music             | Reaper              |
-  | Texture (3D)      | Substance Painter   |
-  | Animation         | Mixamo              |
-  | VFX (complex)     | Houdini             |
-  | VFX (simple)      | Engine-native       |
-  | Terrain / lighting| Engine              |
+  | Asset type | Tool      |
+  |------------|-----------|
+  | model      | Blender   |
+  | animation  | Mixamo    |
+  | sound      | Reaper    |
+  | music      | Reaper    |
+  | texture    | Substance |
+  | particle   | Houdini   |
+  | ui         | Photoshop |
+
+  Simple particles can be authored directly in the engine by overriding the
+  asset's frontmatter with `tool: engine-native` (skips external authoring).
 
 - **FR-7.** The user can override routing per asset by setting `tool:` in the
   `.asset.md` frontmatter (validated against existing tool profiles).
