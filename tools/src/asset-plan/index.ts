@@ -3,6 +3,7 @@ import { resolve } from "node:path";
 import chalk from "chalk";
 
 import { generatePlan } from "./generate.js";
+import { executePlan } from "./execute.js";
 
 const stub = (label: string) => () => {
   console.log(chalk.yellow(`[${label}] not yet implemented (Phase 0 stub).`));
@@ -12,6 +13,23 @@ const stub = (label: string) => () => {
 interface GenerateOpts {
   newVersion?: boolean;
   dir?: string;
+}
+
+interface ExecOpts {
+  resume?: boolean;
+  dir?: string;
+}
+
+async function execAction(assetId: string, opts: ExecOpts): Promise<void> {
+  const root = resolve(opts.dir ?? ".");
+  try {
+    await executePlan(root, assetId, { resume: opts.resume });
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    console.error(chalk.red("Failed to execute plan:"));
+    console.error(message);
+    process.exit(1);
+  }
 }
 
 async function generateAction(assetId: string, opts: GenerateOpts): Promise<void> {
@@ -53,8 +71,9 @@ export function registerAssetPlanCommands(program: Command): void {
   ap
     .command("exec <asset-id>")
     .description("Execute the latest plan for the given asset, milestone by milestone")
+    .option("-d, --dir <path>", "Project root directory", ".")
     .option("--resume", "Resume from the first non-executed milestone")
-    .action(stub("asset-plan exec"));
+    .action(execAction);
 
   ap
     .command("list")
