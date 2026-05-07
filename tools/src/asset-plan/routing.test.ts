@@ -75,8 +75,20 @@ describe("resolveTool", () => {
     );
   });
 
-  it("throws when routing points to a tool whose profile does not list the type", async () => {
-    // ui routes to photoshop, but no _tools/photoshop.md exists yet (Phase 6).
-    await assert.rejects(() => resolveTool(ROOT, "ui"), /Tool profile not found/);
+  it("resolves every routing-table entry to a real tool profile", async () => {
+    // After Phase 6 every asset type has a profile shipped.
+    const expected: Record<string, string> = {
+      model: "TOOL-blender",
+      ui: "TOOL-photoshop",
+      music: "TOOL-reaper",
+      sound: "TOOL-reaper",
+      texture: "TOOL-substance",
+      animation: "TOOL-mixamo",
+      particle: "TOOL-houdini",
+    };
+    for (const [type, id] of Object.entries(expected)) {
+      const profile = await resolveTool(ROOT, type);
+      assert.equal(profile.id, id, `routing for ${type}`);
+    }
   });
 });
