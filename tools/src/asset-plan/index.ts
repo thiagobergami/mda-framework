@@ -4,6 +4,7 @@ import chalk from "chalk";
 
 import { generatePlan } from "./generate.js";
 import { executePlan } from "./execute.js";
+import { runEngineImport } from "./engine-import.js";
 
 const stub = (label: string) => () => {
   console.log(chalk.yellow(`[${label}] not yet implemented (Phase 0 stub).`));
@@ -23,10 +24,33 @@ interface ExecOpts {
 async function execAction(assetId: string, opts: ExecOpts): Promise<void> {
   const root = resolve(opts.dir ?? ".");
   try {
-    await executePlan(root, assetId, { resume: opts.resume });
+    const result = await executePlan(root, assetId, { resume: opts.resume });
+    if (result.finalStatus === "executed") {
+      console.log(
+        chalk.dim(
+          `\nNext: run \`mda asset-plan import ${assetId}\` to land the artifact in the engine.`,
+        ),
+      );
+    }
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
     console.error(chalk.red("Failed to execute plan:"));
+    console.error(message);
+    process.exit(1);
+  }
+}
+
+interface ImportOpts {
+  dir?: string;
+}
+
+async function importAction(assetId: string, opts: ImportOpts): Promise<void> {
+  const root = resolve(opts.dir ?? ".");
+  try {
+    await runEngineImport(root, assetId);
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    console.error(chalk.red("Failed to import asset:"));
     console.error(message);
     process.exit(1);
   }
@@ -74,6 +98,12 @@ export function registerAssetPlanCommands(program: Command): void {
     .option("-d, --dir <path>", "Project root directory", ".")
     .option("--resume", "Resume from the first non-executed milestone")
     .action(execAction);
+
+  ap
+    .command("import <asset-id>")
+    .description("Run the engine-import step for an asset whose plan is in 'executed' status")
+    .option("-d, --dir <path>", "Project root directory", ".")
+    .action(importAction);
 
   ap
     .command("list")
