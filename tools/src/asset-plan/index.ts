@@ -5,11 +5,7 @@ import chalk from "chalk";
 import { generatePlan } from "./generate.js";
 import { executePlan } from "./execute.js";
 import { runEngineImport } from "./engine-import.js";
-
-const stub = (label: string) => () => {
-  console.log(chalk.yellow(`[${label}] not yet implemented (Phase 0 stub).`));
-  console.log(chalk.dim("Tracked by design/asset-plans/plan.md."));
-};
+import { listAssetPlans, formatRows } from "./list.js";
 
 interface GenerateOpts {
   newVersion?: boolean;
@@ -42,6 +38,23 @@ async function execAction(assetId: string, opts: ExecOpts): Promise<void> {
 
 interface ImportOpts {
   dir?: string;
+}
+
+interface ListOpts {
+  dir?: string;
+}
+
+async function listAction(opts: ListOpts): Promise<void> {
+  const root = resolve(opts.dir ?? ".");
+  try {
+    const rows = await listAssetPlans(root);
+    console.log(formatRows(rows));
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    console.error(chalk.red("Failed to list asset plans:"));
+    console.error(message);
+    process.exit(1);
+  }
 }
 
 async function importAction(assetId: string, opts: ImportOpts): Promise<void> {
@@ -108,5 +121,6 @@ export function registerAssetPlanCommands(program: Command): void {
   ap
     .command("list")
     .description("List every asset and its plan status")
-    .action(stub("asset-plan list"));
+    .option("-d, --dir <path>", "Project root directory", ".")
+    .action(listAction);
 }
