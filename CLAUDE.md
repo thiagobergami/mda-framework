@@ -41,6 +41,14 @@ design/                          # Iterative artifacts that CONSUME specs — ne
 │   └── {level}.level.md         # Spatial layout, beat chart, encounters, affordances
 ├── flows/                       # Player journeys: onboarding, progression, retention
 │   └── {flow}.flow.md
+├── asset-plans/                 # MCP-driven asset implementation pipeline
+│   ├── spec.md                  # Feature spec (SDD)
+│   ├── plan.md                  # Implementation plan
+│   ├── _routing.md              # Asset type → tool routing table
+│   ├── _style-guide.md          # Global style anchors
+│   ├── _tools/{tool}.md         # Per-tool profiles (blender, photoshop, …)
+│   ├── _engines/{engine}.md     # Per-engine import profiles
+│   └── {asset-id}/              # Generated per asset: refs/, plan versions, output/
 └── pipeline/                    # Guided spec-authoring tool — `npm run spec`
     ├── cli/                     # Node.js CLI wizard
     └── web/                     # Web UI (deferred)
@@ -121,6 +129,17 @@ Aesthetics → set the tone for → Dynamics → which expose → Mechanics
   frontmatter. `npx mda new <layer> <name>` is the manual fallback.
 - Run `npx mda validate` after adding specs to check integrity
 - `mda new` auto-updates `specs/traceability.md`; manual edits to traceability are rarely needed
+
+### When implementing an asset (MCP-driven pipeline):
+- Place reference inputs in `design/asset-plans/{asset-id}/refs/` before generating
+- `mda asset-plan generate <asset-id>` produces `{asset-id}.v{N}.plan.md` — does NOT execute
+- `mda asset-plan exec <asset-id>` walks milestones, prompts after each, persists state
+- `mda asset-plan import <asset-id>` lands the artifact in the engine after exec succeeds
+- Tool profiles live in `design/asset-plans/_tools/{tool}.md`; engine profiles in `_engines/`
+- When MCP servers are absent, every command degrades gracefully — instructions print and
+  state still tracks; re-run with `--resume` to continue
+- See `design/asset-plans/spec.md` for the full feature spec, `plan.md` for the
+  implementation plan
 
 ### When working with levels:
 - Levels live in `design/levels/`, NOT `specs/` — they compose existing M/D/A specs into a

@@ -80,3 +80,84 @@ export interface GateResult {
   overridden: boolean;
   overrideReason?: string;
 }
+
+// ============================================================================
+// Asset Plan Pipeline (FEAT-asset-plan)
+// See design/asset-plans/spec.md, design/asset-plans/plan.md
+// ============================================================================
+
+/** Lifecycle status of a plan file */
+export type PlanStatus = "draft" | "approved" | "executed" | "imported";
+
+/** Per-milestone execution status within a plan */
+export type MilestoneStatus = "pending" | "executed" | "rejected" | "skipped-mcp";
+
+/** Lightweight reference to a milestone in a plan's frontmatter */
+export interface MilestoneRef {
+  id: string;
+  status: MilestoneStatus;
+}
+
+/** A required input declared by a tool profile for a given asset type */
+export interface InputRequirement {
+  /** Content kind: "image" | "audio" | "text" | "video" | "model3d" | etc. */
+  kind: string;
+  /** Whether at least one of this kind must be present before plan generation */
+  required: boolean;
+  /** Human-readable description shown by the intake prompt */
+  description: string;
+}
+
+/** A single milestone declared by a tool profile */
+export interface MilestoneSpec {
+  id: string;
+  description: string;
+  /** MCP call block (raw template — variables resolved at compose-time) */
+  mcpCalls: string;
+  /** Validation criteria for the produced artifact */
+  validation: string;
+  /** Path of the artifact this milestone produces, relative to output/ */
+  expectedArtifact: string;
+}
+
+/** A tool profile read from design/asset-plans/_tools/{tool}.md */
+export interface ToolProfile {
+  id: string;
+  name: string;
+  /** MCP server name the tool requires (or "none" for doc-only profiles) */
+  mcpRequired: string;
+  /** Asset types this tool can produce */
+  assetTypes: string[];
+  /** Milestones declared per asset type */
+  milestonesByType: Record<string, MilestoneSpec[]>;
+  /** Required inputs per asset type */
+  inputsByType: Record<string, InputRequirement[]>;
+}
+
+/** An engine profile read from design/asset-plans/_engines/{engine}.md */
+export interface EngineProfile {
+  id: string;
+  name: string;
+  mcpRequired: string;
+  importFormats: string[];
+  /** Raw markdown body of the import-steps section */
+  importSteps: string;
+}
+
+/** Frontmatter contract for a {asset-id}.v{N}.plan.md file */
+export interface PlanFile {
+  id: string;
+  assetId: string;
+  version: number;
+  status: PlanStatus;
+  tool: string;
+  engine: string;
+  references: {
+    assetSpec: string;
+    aesSpecs: string[];
+    concept: string;
+    styleGuide: string;
+  };
+  inputs: string[];
+  milestones: MilestoneRef[];
+}
