@@ -269,6 +269,33 @@ the bare `mda new` doesn't:
 The wizard shells out to `mda new` for actual file creation and runs `mda validate` on
 demand from the menu. Source: `design/pipeline/cli/{index.ts,prompts/,lib/}`.
 
+## MDA Studio (operator surface)
+
+Specs and the `mda` CLI cover authoring — version-controlled markdown is the source of truth
+for game design. **MDA Studio** (`mda-studio/`) is the running service that owns the
+*operational* data those sessions accumulate: studio identity, issue counters, pause state,
+budget tracking, and (soon) asset-plan execution state.
+
+It's a pnpm workspace with three packages:
+
+- `@mda-studio/shared` — zod-validated constants and API path helpers
+- `@mda-studio/db` — drizzle schema plus a config resolver that picks between an external
+  Postgres (`DATABASE_URL`) or an embedded data directory under `~/.mda-studio/instances/`
+- `@mda-studio/server` — an Express app exposing `/api/health` today, with structured JSON
+  logging and `X-Request-Id` propagation
+
+Quick start:
+
+```bash
+cd mda-studio
+pnpm install
+pnpm dev                            # 127.0.0.1:3100 by default
+curl http://127.0.0.1:3100/api/health
+```
+
+Full docs — environment variables, schema, package layout, scripts — live in
+[`mda-studio/README.md`](mda-studio/README.md).
+
 ## Project Structure
 
 ```
@@ -305,6 +332,11 @@ tools/                              # CLI tooling (TypeScript)
 │   ├── rules/                      # 8 validation rules
 │   └── gates/                      # 5 quality gates
 └── dist/                           # Compiled output (git-ignored)
+
+mda-studio/                         # Operator surface — see mda-studio/README.md
+├── server/                         # @mda-studio/server: Express app, /api/health
+├── packages/shared/                # @mda-studio/shared: constants, api-path helpers
+└── packages/db/                    # @mda-studio/db: drizzle schema + config resolver
 
 src/                                # Runtime tools (Luau)
 ├── shared/MDALogger.luau           # Structured logging with MDA layer tagging
