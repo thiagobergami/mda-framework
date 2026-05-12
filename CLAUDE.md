@@ -56,6 +56,12 @@ design/                          # Iterative artifacts that CONSUME specs — ne
 src/
 ├── shared/MDALogger.luau        # Structured runtime logging (MEC-003)
 └── tools/validate-specs.luau    # Spec integrity validator
+
+mda-studio/                      # Operator surface — pnpm workspace, separate from root npm project
+├── README.md                    # How to install, run, and configure the studio
+├── server/                      # @mda-studio/server: Express app, /api/health
+├── packages/shared/             # @mda-studio/shared: constants, api-path helpers
+└── packages/db/                 # @mda-studio/db: drizzle schema + DB config resolver
 ```
 
 ## The Dual Perspective
@@ -158,6 +164,25 @@ Aesthetics → set the tone for → Dynamics → which expose → Mechanics
   mechanic, or asset primitives there
 - See `design/README.md` for the full boundary rules
 
+### When working in `mda-studio/`:
+- It's a **pnpm workspace** (pinned to `pnpm@9.11.0`), NOT the root npm project. Run
+  `pnpm install` / `pnpm dev` / `pnpm test` from `mda-studio/`, never `npm` there
+- Packages cross-reference via `workspace:*` — when adding a package, register it in
+  `pnpm-workspace.yaml` (or under an existing glob) before adding deps that point to it
+- The studio is the *operator surface*: persistent state about studios, issue counters,
+  pauses, budgets, and (future) run telemetry. Specs in `specs/` remain the source of
+  truth for design — never move design primitives into the database
+- DB config resolves via `resolveDatabaseConfig` (`packages/db/src/config.ts`): set
+  `DATABASE_URL` for external Postgres, otherwise it falls back to embedded mode rooted
+  at `~/.mda-studio/instances/{MDA_STUDIO_INSTANCE | "default"}/db`
+- Schema lives in `packages/db/src/schema/`. The `studios` table is the only one defined;
+  `pnpm db:generate` / `pnpm db:migrate` are stubbed until drizzle-kit is wired
+- HTTP paths are built via `apiPath()` / `healthPath()` in `@mda-studio/shared` — don't
+  hardcode `/api/...` strings in the server
+- Every package ships a `vitest.config.ts` and tests live next to source. Run
+  `pnpm --filter @mda-studio/<pkg> test` for a single package
+- See `mda-studio/README.md` for env vars, scripts, and the full schema reference
+
 ## The 8 Aesthetic Categories (Quick Reference)
 
 | # | Aesthetic  | Frame                        |
@@ -241,7 +266,10 @@ Log.summary()
 
 ## Platform
 
-- Runtime: Roblox (Luau)
+- Game runtime: Roblox (Luau)
 - Specs reference Roblox services, instances, and APIs where applicable
 - Logger module: `src/shared/MDALogger.luau` (MEC-003)
 - Validator: `src/tools/validate-specs.luau`
+- Spec CLI / wizard (`tools/`, `design/pipeline/cli/`): Node.js >= 18, run via `npm` from
+  the repo root
+- Studio service (`mda-studio/`): Node.js >= 20, run via `pnpm` from `mda-studio/`
