@@ -25,7 +25,7 @@
 
   <div class="layout">
     <aside class="sidebar">
-      <nav>
+            <nav>
         <div class="nav-group">
           <div class="nav-group-title">
             <svg class="chevron" viewBox="0 0 12 12" fill="currentColor"><path d="M4.7 2.3a1 1 0 00-1.4 1.4L6.6 7l-3.3 3.3a1 1 0 001.4 1.4l4-4a1 1 0 000-1.4l-4-4z"/></svg>
@@ -61,9 +61,20 @@
             <li><a href="spec-mechanics.html">Mechanics</a></li>
             <li><a href="spec-tuning.html">Tuning</a></li>
             <li><a href="spec-assets.html">Assets</a></li>
-            <li><a href="spec-bindings.html">Engine Bindings</a></li><li><a href="spec-levels.html">Levels</a></li>
+            <li><a href="spec-bindings.html">Engine Bindings</a></li>
+            <li><a href="spec-levels.html">Levels</a></li>
           </ul>
-        </div><div class="nav-group"><div class="nav-group-title"><svg class="chevron" viewBox="0 0 12 12" fill="currentColor"><path d="M4.7 2.3a1 1 0 00-1.4 1.4L6.6 7l-3.3 3.3a1 1 0 001.4 1.4l4-4a1 1 0 000-1.4l-4-4z"/></svg> Design</div><ul class="nav-items"><li><a href="pipeline.html">Spec Wizard</a></li></ul></div>
+        </div>
+
+        <div class="nav-group">
+          <div class="nav-group-title">
+            <svg class="chevron" viewBox="0 0 12 12" fill="currentColor"><path d="M4.7 2.3a1 1 0 00-1.4 1.4L6.6 7l-3.3 3.3a1 1 0 001.4 1.4l4-4a1 1 0 000-1.4l-4-4z"/></svg>
+            Design
+          </div>
+          <ul class="nav-items">
+            <li><a href="pipeline.html">Spec Wizard</a></li>
+          </ul>
+        </div>
 
         <div class="nav-group">
           <div class="nav-group-title">
@@ -74,6 +85,18 @@
             <li><a href="cli.html">CLI Reference</a></li>
             <li><a href="logger.html">MDA Logger</a></li>
             <li><a href="multi-engine.html">Multi-Engine Support</a></li>
+          </ul>
+        </div>
+
+        <div class="nav-group">
+          <div class="nav-group-title">
+            <svg class="chevron" viewBox="0 0 12 12" fill="currentColor"><path d="M4.7 2.3a1 1 0 00-1.4 1.4L6.6 7l-3.3 3.3a1 1 0 001.4 1.4l4-4a1 1 0 000-1.4l-4-4z"/></svg>
+            Studio
+          </div>
+          <ul class="nav-items">
+            <li><a href="studio.html">Overview</a></li>
+            <li><a href="studio-operator.html">Operator Guide</a></li>
+            <li><a href="studio-architecture.html">Architecture</a></li>
           </ul>
         </div>
 
@@ -163,6 +186,38 @@ Assets (CONTENT)      "Baby character: 5k tri, R15 rig, 8 emotion blendshapes
         <strong>bottom-up</strong> (A&rarr;D&rarr;M) to trace problems when debugging.
       </p>
 
+      <h2>Two sides: authoring and operating</h2>
+      <p>
+        The framework has two halves that share the same MDA vocabulary:
+      </p>
+
+      <div class="features">
+        <div class="feature-card">
+          <span class="feature-icon">&#128221;</span>
+          <h3>Authoring (CLI + Wizard)</h3>
+          <p>
+            <code>npx mda</code> and <a href="pipeline.html"><code>npm run spec</code></a> scaffold,
+            validate, and gate the markdown specs under <code>specs/</code> and <code>design/</code>.
+            Files are the source of truth and live in version control.
+          </p>
+        </div>
+        <div class="feature-card">
+          <span class="feature-icon">&#128187;</span>
+          <h3>Operating (<a href="studio.html">MDA Studio</a>)</h3>
+          <p>
+            A web UI that reads those same specs and renders the MDA tree
+            as the home for every game, with live issues, costs, validator
+            warnings, approvals, and an activity log. Boot once and survey
+            every game's design state at a glance.
+          </p>
+        </div>
+      </div>
+
+      <p>
+        The CLI writes; the studio reads. You can use the CLI without ever
+        booting the studio &mdash; the studio is purely additive.
+      </p>
+
       <h2>Key Features</h2>
 
       <div class="features">
@@ -205,6 +260,15 @@ Assets (CONTENT)      "Baby character: 5k tri, R15 rig, 8 emotion blendshapes
           <span class="feature-icon">&#129302;</span>
           <h3>AI-Optimized</h3>
           <p>Designed for AI assistants to read and implement with full design context via CLAUDE.md.</p>
+        </div>
+        <div class="feature-card">
+          <span class="feature-icon">&#127765;</span>
+          <h3>Spec-Tree Studio</h3>
+          <p>
+            <a href="studio.html">MDA Studio</a> renders every game as a
+            live MDA tree with drawers, lenses, command palette, deep links,
+            and SSE-driven live updates.
+          </p>
         </div>
       </div>
 

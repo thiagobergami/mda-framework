@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Studio Operator Guide - MDA Spec Framework</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header class="site-header">
+    <button class="menu-toggle" aria-label="Toggle menu">
+      <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 010 2H4a1 1 0 01-1-1zm0 5a1 1 0 011-1h12a1 1 0 010 2H4a1 1 0 01-1-1zm0 5a1 1 0 011-1h12a1 1 0 010 2H4a1 1 0 01-1-1z" clip-rule="evenodd"/></svg>
+    </button>
+    <a href="index.html" class="header-logo"><span class="logo-icon">M</span> MDA Framework</a>
+    <nav class="header-nav"><a href="getting-started.html">Guide</a><a href="cli.html">CLI</a><a href="studio.html">Studio</a></nav>
+  </header>
+
+  <div class="layout">
+    <aside class="sidebar">
+      <nav>
+        <div class="nav-group">
+          <div class="nav-group-title">
+            <svg class="chevron" viewBox="0 0 12 12" fill="currentColor"><path d="M4.7 2.3a1 1 0 00-1.4 1.4L6.6 7l-3.3 3.3a1 1 0 001.4 1.4l4-4a1 1 0 000-1.4l-4-4z"/></svg>
+            Introduction
+          </div>
+          <ul class="nav-items">
+            <li><a href="index.html">Overview</a></li>
+            <li><a href="getting-started.html">Getting Started</a></li>
+            <li><a href="concepts.html">Core Concepts</a></li>
+          </ul>
+        </div>
+
+        <div class="nav-group">
+          <div class="nav-group-title">
+            <svg class="chevron" viewBox="0 0 12 12" fill="currentColor"><path d="M4.7 2.3a1 1 0 00-1.4 1.4L6.6 7l-3.3 3.3a1 1 0 001.4 1.4l4-4a1 1 0 000-1.4l-4-4z"/></svg>
+            Workflow
+          </div>
+          <ul class="nav-items">
+            <li><a href="workflow.html">8-Step Process</a></li>
+            <li><a href="example.html">Walkthrough Example</a></li>
+          </ul>
+        </div>
+
+        <div class="nav-group">
+          <div class="nav-group-title">
+            <svg class="chevron" viewBox="0 0 12 12" fill="currentColor"><path d="M4.7 2.3a1 1 0 00-1.4 1.4L6.6 7l-3.3 3.3a1 1 0 001.4 1.4l4-4a1 1 0 000-1.4l-4-4z"/></svg>
+            Spec Schemas
+          </div>
+          <ul class="nav-items">
+            <li><a href="spec-concept.html">Game Concept</a></li>
+            <li><a href="spec-aesthetics.html">Aesthetics</a></li>
+            <li><a href="spec-dynamics.html">Dynamics</a></li>
+            <li><a href="spec-mechanics.html">Mechanics</a></li>
+            <li><a href="spec-tuning.html">Tuning</a></li>
+            <li><a href="spec-assets.html">Assets</a></li>
+            <li><a href="spec-bindings.html">Engine Bindings</a></li>
+            <li><a href="spec-levels.html">Levels</a></li>
+          </ul>
+        </div>
+
+        <div class="nav-group">
+          <div class="nav-group-title">
+            <svg class="chevron" viewBox="0 0 12 12" fill="currentColor"><path d="M4.7 2.3a1 1 0 00-1.4 1.4L6.6 7l-3.3 3.3a1 1 0 001.4 1.4l4-4a1 1 0 000-1.4l-4-4z"/></svg>
+            Design
+          </div>
+          <ul class="nav-items">
+            <li><a href="pipeline.html">Spec Wizard</a></li>
+          </ul>
+        </div>
+
+        <div class="nav-group">
+          <div class="nav-group-title">
+            <svg class="chevron" viewBox="0 0 12 12" fill="currentColor"><path d="M4.7 2.3a1 1 0 00-1.4 1.4L6.6 7l-3.3 3.3a1 1 0 001.4 1.4l4-4a1 1 0 000-1.4l-4-4z"/></svg>
+            Tools
+          </div>
+          <ul class="nav-items">
+            <li><a href="cli.html">CLI Reference</a></li>
+            <li><a href="logger.html">MDA Logger</a></li>
+            <li><a href="multi-engine.html">Multi-Engine Support</a></li>
+          </ul>
+        </div>
+
+        <div class="nav-group">
+          <div class="nav-group-title">
+            <svg class="chevron" viewBox="0 0 12 12" fill="currentColor"><path d="M4.7 2.3a1 1 0 00-1.4 1.4L6.6 7l-3.3 3.3a1 1 0 001.4 1.4l4-4a1 1 0 000-1.4l-4-4z"/></svg>
+            Studio
+          </div>
+          <ul class="nav-items">
+            <li><a href="studio.html">Overview</a></li>
+            <li><a href="studio-operator.html">Operator Guide</a></li>
+            <li><a href="studio-architecture.html">Architecture</a></li>
+          </ul>
+        </div>
+
+        <div class="nav-group">
+          <div class="nav-group-title">
+            <svg class="chevron" viewBox="0 0 12 12" fill="currentColor"><path d="M4.7 2.3a1 1 0 00-1.4 1.4L6.6 7l-3.3 3.3a1 1 0 001.4 1.4l4-4a1 1 0 000-1.4l-4-4z"/></svg>
+            Community
+          </div>
+          <ul class="nav-items">
+            <li><a href="contributing.html">Contributing</a></li>
+          </ul>
+        </div>
+      </nav>
+    </aside>
+
+    <main class="content">
+      <h1>Studio Operator Guide</h1>
+      <p class="subtitle">
+        How to use the MDA Studio day-to-day &mdash; the surfaces, the
+        lenses, the keyboard shortcuts, the URL structure, and how to
+        get unstuck.
+      </p>
+
+      <h2 id="quickstart">Quickstart</h2>
+      <h3>Prerequisites</h3>
+      <ul>
+        <li>Node.js &ge; 20</li>
+        <li>pnpm 9.x (<code>corepack prepare pnpm@9.11.0 --activate</code>)</li>
+        <li>Optional: Postgres 14+ for external DB mode</li>
+      </ul>
+
+      <h3>Install</h3>
+      <pre><code>cd mda-studio
+pnpm install</code></pre>
+
+      <h3>Register a game</h3>
+      <p>
+        The studio needs to know where a game's <code>specs/</code> and
+        <code>design/</code> live. For V1 this comes from environment
+        variables set when you boot the server.
+      </p>
+      <table>
+        <thead><tr><th>Variable</th><th>What it is</th></tr></thead>
+        <tbody>
+          <tr><td><code>MDA_STUDIO_GAME_ID</code></td><td>URL-safe id, e.g. <code>virus-hunter</code></td></tr>
+          <tr><td><code>MDA_STUDIO_GAME_NAME</code></td><td>Human label shown in chrome and game cards</td></tr>
+          <tr><td><code>MDA_STUDIO_GAME_SPECS_ROOT</code></td><td>Absolute path containing <code>specs/</code> and <code>design/</code></td></tr>
+          <tr><td><code>MDA_STUDIO_GAME_CONCEPT_PATH</code></td><td>Path to concept doc, relative to <code>SPECS_ROOT</code></td></tr>
+          <tr><td><code>MDA_STUDIO_GAME_PRIMARY_AESTHETIC</code></td><td>Free text, surfaced in chrome</td></tr>
+          <tr><td><code>MDA_STUDIO_GAME_CONCEPT_TITLE</code></td><td>Free text, the title shown on the game card</td></tr>
+          <tr><td><code>MDA_STUDIO_SEED_FIXTURE_ISSUES</code></td><td><code>true</code> to seed demo issues / costs / approvals on boot</td></tr>
+        </tbody>
+      </table>
+
+      <h3>Boot</h3>
+      <p>Two processes &mdash; the API server and the Vite dev UI:</p>
+      <pre><code># terminal 1 - API at 127.0.0.1:3100
+MDA_STUDIO_GAME_ID=virus-hunter \
+MDA_STUDIO_GAME_NAME="Virus Hunter" \
+MDA_STUDIO_GAME_SPECS_ROOT=/abs/path/to/your/repo \
+MDA_STUDIO_GAME_CONCEPT_PATH=specs/concept/virus-hunter.concept.md \
+MDA_STUDIO_GAME_PRIMARY_AESTHETIC=Fellowship \
+MDA_STUDIO_GAME_CONCEPT_TITLE="Virus Hunter" \
+MDA_STUDIO_SEED_FIXTURE_ISSUES=true \
+pnpm --filter @mda-studio/server dev
+
+# terminal 2 - UI at 127.0.0.1:3101 (proxies /api -> 3100)
+pnpm --filter @mda-studio/ui dev</code></pre>
+      <p>Visit <code>http://127.0.0.1:3101</code>.</p>
+
+      <div class="callout tip">
+        <div class="callout-title">API down?</div>
+        <p>
+          The UI falls back to a bundled <code>virus-hunter</code> fixture
+          so the surface always renders. A <code>local fixture</code>
+          badge in the tree header makes the source honest. Writes won't
+          persist in fixture mode and SSE auto-disables.
+        </p>
+      </div>
+
+      <hr>
+
+      <h2 id="spec-tree">The spec tree (home screen)</h2>
+      <p>Every game's home is its MDA tree:</p>
+      <div class="diagram">
+<pre><code>CONCEPT  virus-hunter
++-- A  AES-001  Fellowship under pressure       frozen  @aes-lead  $5.40
+|   +-- D  DYN-001  Co-op revive loop           draft   @dyn-1     $3.40
+|   |   +-- M  MEC-001  Revive interaction      impl    @mech-1    $11.60
+|   |   |   +-- AST  AST-007  Revive VFX        concept            $2.00  WARN 1
+|   |   +-- M  MEC-002  Downed state            draft   @mech-1           WARN 1
+|   +-- D  DYN-002  Threat escalation           frozen
+|       +-- M  MEC-003  MDALogger               impl   (also serves AES-002)
++-- A  AES-002  Discovery (puzzle rooms)        draft
++-- LEVEL  tutorial-lab                          blockout
+    refs -&gt; AES-001, DYN-001, MEC-001</code></pre>
+      </div>
+
+      <p>Each row carries the same shape, left to right:</p>
+      <table>
+        <thead><tr><th>Column</th><th>What it shows</th></tr></thead>
+        <tbody>
+          <tr><td>Disclosure</td><td><code>&rsaquo;</code> collapsed, <code>v</code> expanded, <code>&middot;</code> leaf</td></tr>
+          <tr><td>Layer glyph</td><td>A, D, M, AST, TUNE, LEVEL &mdash; color-coded</td></tr>
+          <tr><td>Status glyph</td><td>concept / draft / frozen / impl / blockout / playable / polished</td></tr>
+          <tr><td>Spec id</td><td><code>AES-001</code>, <code>MEC-003</code>, etc. &mdash; canonical from frontmatter</td></tr>
+          <tr><td>Title</td><td>Frontmatter <code>name</code> or first H1</td></tr>
+          <tr><td>"also serves"</td><td>Multi-parent specs show e.g. <code>also serves 2</code></td></tr>
+          <tr><td>"refs"</td><td>LEVEL nodes show outgoing reference count</td></tr>
+          <tr><td>Assignee chip</td><td><code>@handle</code> + green/amber/red run-status dot</td></tr>
+          <tr><td>Cost chip</td><td>MTD subtree spend; hover for own + subtree breakdown</td></tr>
+          <tr><td>Warn badge</td><td>Number of validator warnings</td></tr>
+        </tbody>
+      </table>
+
+      <h3>Defaults</h3>
+      <ul>
+        <li><strong>Expansion</strong> &mdash; the Concept node and every Aesthetic (A) node are expanded by default; D / M / AST / TUNE / LEVEL are collapsed.</li>
+        <li><strong>Per-user state</strong> &mdash; expansion lives in <code>localStorage</code> keyed by gameId.</li>
+        <li><strong>Empty tree</strong> &mdash; if a game has only a concept doc, the tree pane shows an inline <code>mda new aes ...</code> CTA.</li>
+      </ul>
+
+      <h3>Multi-parent specs (DAG handling)</h3>
+      <p>
+        Some specs serve multiple parents (e.g. <code>MEC-003 MDALogger</code>
+        is used by several dynamics). The tree shows each spec under its
+        <strong>canonical parent</strong> &mdash; the first entry in its
+        <code>traceability:</code> frontmatter &mdash; and adds an
+        "also serves N" chip. The drawer Trace tab lists every parent.
+      </p>
+
+      <h3>Tree keyboard navigation</h3>
+      <ul>
+        <li><kbd>&uarr;</kbd> / <kbd>&darr;</kbd> &mdash; move between rows</li>
+        <li><kbd>&larr;</kbd> / <kbd>&rarr;</kbd> &mdash; collapse / expand the focused row</li>
+        <li><kbd>Enter</kbd> / <kbd>Space</kbd> &mdash; select the focused row (opens the drawer)</li>
+      </ul>
+      <p>Or deep-link: <code>?game=&lt;id&gt;&amp;node=&lt;spec&gt;</code> opens straight into the drawer.</p>
+
+      <hr>
+
+      <h2 id="node-drawer">The node drawer</h2>
+      <p>Clicking any tree row opens a 520 px right-side drawer with six tabs:</p>
+      <table>
+        <thead><tr><th>Tab</th><th>What it shows</th></tr></thead>
+        <tbody>
+          <tr><td>Spec</td><td>Rendered markdown of the source file (path shown at top)</td></tr>
+          <tr><td>Issues</td><td>Active + historical issues for this spec; inline status edit</td></tr>
+          <tr><td>Comments</td><td>Newest 10 comments across all linked issues</td></tr>
+          <tr><td>Work products</td><td>Newest 10 work products (PRs, asset drops, etc.)</td></tr>
+          <tr><td>Costs</td><td>Own + subtree MTD; per-billing-code breakdown; "See full breakdown for &lt;spec&gt; &rarr;" deep-links to the chrome Costs page scoped to this subtree</td></tr>
+          <tr><td>Trace</td><td>Canonical path from the studio root, secondary parents, outgoing refs</td></tr>
+        </tbody>
+      </table>
+      <p>
+        The breadcrumb under the drawer title is the trace upward &mdash;
+        clickable segments let you walk the chain without closing the
+        drawer.
+      </p>
+
+      <h3>Editing an issue's status</h3>
+      <p>
+        In the <strong>Issues</strong> tab, each row has a status
+        dropdown showing only the <strong>legal next states</strong> from
+        the issue state machine. The PATCH is applied immediately; the
+        tree row updates without a refresh (via SSE). Illegal transitions
+        return 409 and surface as an inline error.
+      </p>
+
+      <hr>
+
+      <h2 id="chrome">The chrome bar</h2>
+      <p>Top, left to right:</p>
+      <ul>
+        <li><strong>Studio name</strong> &mdash; disabled selector (single-tenant V1)</li>
+        <li><strong>Game name</strong> &mdash; click to return to the studio home</li>
+        <li><strong>Search input</strong> &mdash; typing applies a free-text lens to the tree</li>
+        <li><strong>Costs</strong> / <strong>Org</strong> / <strong>Asset Plans</strong> / <strong>Settings</strong> &mdash; secondary surfaces</li>
+        <li><strong>Activity</strong> &mdash; slide-out for recent studio events</li>
+        <li><strong>&#8984;K</strong> &mdash; opens command palette</li>
+        <li><strong>?</strong> &mdash; toggles the keymap help overlay</li>
+        <li><strong>Approvals &middot; N</strong> &mdash; pulsing badge with pending count</li>
+      </ul>
+      <p>The active surface is highlighted via <code>aria-pressed</code>.</p>
+
+      <hr>
+
+      <h2 id="lenses">Lenses (filtering)</h2>
+      <p>
+        Lenses are composable, URL-driven filters over the tree. Any
+        combination narrows the tree to nodes matching <strong>all</strong>
+        active lenses, and their <strong>ancestors stay visible</strong> so
+        the path to a match never collapses.
+      </p>
+      <table>
+        <thead><tr><th>Lens</th><th>URL form</th><th>What it does</th></tr></thead>
+        <tbody>
+          <tr><td>Agent</td><td><code>?agent=mech-1</code></td><td>Show specs assigned to <code>@mech-1</code></td></tr>
+          <tr><td>Status</td><td><code>?status=draft</code></td><td>Show specs in <code>draft</code> status</td></tr>
+          <tr><td>Layer</td><td><code>?layer=M</code></td><td>Show only MEC specs (other layers hide)</td></tr>
+          <tr><td>Warnings</td><td><code>?lens=warnings</code></td><td>Show nodes with <code>warningCount &gt; 0</code></td></tr>
+          <tr><td>Free-text</td><td><code>?q=revive</code></td><td>Title / spec id / agent handle substring</td></tr>
+        </tbody>
+      </table>
+      <p>
+        Active lenses appear as chips in the bar between chrome and tree.
+        <code>&times;</code> on a chip removes that lens. "Clear all" wipes them.
+      </p>
+
+      <hr>
+
+      <h2 id="palette">&#8984;K command palette</h2>
+      <p>
+        <kbd>&#8984;K</kbd> (macOS) or <kbd>Ctrl+K</kbd> opens a
+        fuzzy-search palette over:
+      </p>
+      <ul>
+        <li>All spec nodes in the current game (jumps to the drawer)</li>
+        <li>All known agent handles (applies an agent lens)</li>
+        <li>All active issues (jumps to the spec drawer)</li>
+      </ul>
+      <p>
+        <kbd>&uarr;</kbd> / <kbd>&darr;</kbd> walks results,
+        <kbd>Enter</kbd> picks, <kbd>Esc</kbd> closes. First match is
+        highlighted on open so a typed query + Enter is a two-key
+        navigation.
+      </p>
+
+      <hr>
+
+      <h2 id="surfaces">Secondary surfaces</h2>
+      <p>
+        These are reachable from the chrome, not as tree nodes. They open
+        over the tree (URL <code>view=...</code>) rather than next to it,
+        and <kbd>Esc</kbd> returns to the tree.
+      </p>
+
+      <h3>Approvals queue (<code>?view=approvals</code>)</h3>
+      <p>
+        Studio-scoped list of pending approvals. Each row shows the spec id,
+        kind (<code>spec-freeze</code> / <code>mechanic-impl</code> /
+        <code>asset-final</code> / ...), requester, title, and body.
+        Operators add an optional comment and click <strong>Approve</strong>
+        or <strong>Reject</strong>; the PATCH runs the resolve state
+        machine and the chrome badge updates via SSE.
+      </p>
+
+      <h3>Activity slide-out (<code>?activity=1</code>)</h3>
+      <p>
+        Right-side overlay listing the most recent studio events,
+        newest first. Each row may carry a spec chip that deep-links into
+        the tree. Narrows to the current game automatically when one is
+        open.
+      </p>
+
+      <h3>Costs detail (<code>?view=costs[&amp;scope=&lt;spec&gt;]</code>)</h3>
+      <p>Four sections:</p>
+      <ol class="steps">
+        <li><strong>Header</strong> &mdash; total MTD spend + orphan total (events with no <code>billing_code</code>)</li>
+        <li><strong>By layer</strong> &mdash; bar rollup per MDA layer with %-of-total</li>
+        <li><strong>Top specs</strong> &mdash; table of top spenders with own + subtree cents; spec id chips deep-link to the tree</li>
+        <li><strong>Recent events</strong> &mdash; most recent 30 cost ingestion events</li>
+      </ol>
+      <p>
+        The <code>scope=&lt;specId&gt;</code> URL param scopes everything
+        to a canonical-parent subtree. Triggered from a node's drawer
+        Costs tab via the "See full breakdown" button.
+      </p>
+
+      <h3>Org chart (<code>?view=org</code>)</h3>
+      <p>
+        V1 has no agents table; the roster is derived from observed issue
+        assignees. Agents are grouped under the MDA layer where most of
+        their issues land. Read-only, not interactive.
+      </p>
+
+      <h3>Asset plans (<code>?view=asset-plans</code>)</h3>
+      <p>
+        Scans <code>&lt;specsRoot&gt;/design/asset-plans/&lt;asset-id&gt;/</code>
+        and lists each asset's state derived from on-disk shape:
+      </p>
+      <table>
+        <thead><tr><th>State</th><th>Meaning</th></tr></thead>
+        <tbody>
+          <tr><td><code>no-plan</code></td><td>Directory exists but no <code>&lt;asset&gt;.v&lt;N&gt;.plan.md</code></td></tr>
+          <tr><td><code>planned</code></td><td>Plan present, no <code>output/</code> artifacts</td></tr>
+          <tr><td><code>in-progress</code></td><td>Plan + at least one output artifact</td></tr>
+          <tr><td><code>imported</code></td><td>Plan + outputs + <code>.imported</code> marker</td></tr>
+          <tr><td><code>unknown</code></td><td>Directory unreadable</td></tr>
+        </tbody>
+      </table>
+
+      <h3>Settings (<code>?view=settings</code>)</h3>
+      <p>
+        Stubbed shell with three tabs: <strong>Secrets</strong>,
+        <strong>Plugins</strong>, <strong>Routines</strong>. Each names
+        where its backing configuration lives today. Settings is
+        studio-scoped, so it works even without a game selected.
+      </p>
+
+      <hr>
+
+      <h2 id="flows">Common operator flows</h2>
+
+      <h3>"Why does this issue exist?"</h3>
+      <ol class="steps">
+        <li>Click the spec row in the tree</li>
+        <li>Read the <strong>Trace</strong> tab &mdash; it lists the canonical path up to Concept, any secondary parents, and any outgoing references</li>
+        <li>The drawer breadcrumb under the title is the same trace, clickable</li>
+      </ol>
+
+      <h3>"Where is our money going this month?"</h3>
+      <ol class="steps">
+        <li>Chrome &rarr; <strong>Costs</strong></li>
+        <li>Read the layer rollup at the top</li>
+        <li>The Top specs table shows the biggest spenders; click a chip to open that spec's drawer</li>
+        <li>To scope: pick a tree node, drawer &rarr; Costs tab &rarr; "See full breakdown for &lt;spec&gt; &rarr;"</li>
+      </ol>
+
+      <h3>"Show me only what @mech-1 owns"</h3>
+      <ul>
+        <li>Chrome search: type <code>mech-1</code>, or</li>
+        <li>Open the command palette (&#8984;K), type <code>@mech-1</code>, pick the agent entry</li>
+      </ul>
+      <p>The tree narrows to specs assigned to that handle, with ancestors kept visible.</p>
+
+      <h3>"Promote MEC-001 from draft to impl"</h3>
+      <ol class="steps">
+        <li>Drawer &rarr; Issues tab &rarr; pick the relevant issue &rarr; change status to <code>in_review</code></li>
+        <li>(Out of band: validator passes, code review approves)</li>
+        <li>Approvals queue &rarr; find the <code>mechanic-impl</code> request &rarr; Approve</li>
+        <li>The spec's <code>status</code> field gets flipped to <code>impl</code> by the spec-update routine</li>
+      </ol>
+
+      <h3>"Triage validator warnings"</h3>
+      <ul>
+        <li>URL: <code>?lens=warnings</code> (or click any warn badge)</li>
+        <li>Tree shows only specs with warnings; click each &rarr; drawer &rarr; Spec / Issues tabs to inspect</li>
+      </ul>
+
+      <hr>
+
+      <h2 id="keymap">Keyboard shortcuts</h2>
+      <table>
+        <thead><tr><th>Key</th><th>Action</th></tr></thead>
+        <tbody>
+          <tr><td><kbd>&#8984;K</kbd> / <kbd>Ctrl+K</kbd></td><td>Open command palette</td></tr>
+          <tr><td><kbd>/</kbd></td><td>Focus the chrome search input</td></tr>
+          <tr><td><kbd>?</kbd></td><td>Toggle the keymap help overlay</td></tr>
+          <tr><td><kbd>Esc</kbd></td><td>Close palette &rarr; help &rarr; activity &rarr; secondary surface &rarr; drawer</td></tr>
+          <tr><td><kbd>&uarr;</kbd> / <kbd>&darr;</kbd></td><td>Navigate palette results or tree rows</td></tr>
+          <tr><td><kbd>Enter</kbd> / <kbd>Space</kbd></td><td>Open the selected spec / activate a result</td></tr>
+          <tr><td><kbd>&larr;</kbd> / <kbd>&rarr;</kbd></td><td>Collapse / expand the focused tree row</td></tr>
+        </tbody>
+      </table>
+      <p>
+        Shortcuts that produce printable characters no-op while an input
+        is focused. <kbd>Esc</kbd> always works.
+      </p>
+
+      <hr>
+
+      <h2 id="urls">URL structure</h2>
+      <p>
+        The URL is the authoritative state for what you're looking at.
+        Deep links share cleanly; back / forward work as expected.
+      </p>
+      <table>
+        <thead><tr><th>Param</th><th>Form</th><th>Meaning</th></tr></thead>
+        <tbody>
+          <tr><td><code>game</code></td><td><code>game=virus-hunter</code></td><td>The active game (omitted = studio home)</td></tr>
+          <tr><td><code>node</code></td><td><code>node=MEC-001</code></td><td>Open the drawer on this spec</td></tr>
+          <tr><td><code>view</code></td><td><code>view=approvals</code></td><td>Open a secondary surface over the tree</td></tr>
+          <tr><td><code>scope</code></td><td><code>scope=MEC-001</code></td><td>Subtree scope for the Costs page</td></tr>
+          <tr><td><code>activity</code></td><td><code>activity=1</code></td><td>The activity slide-out is open</td></tr>
+          <tr><td><code>agent</code></td><td><code>agent=mech-1</code></td><td>Agent lens</td></tr>
+          <tr><td><code>status</code></td><td><code>status=draft</code></td><td>Status lens</td></tr>
+          <tr><td><code>layer</code></td><td><code>layer=M</code></td><td>Layer lens</td></tr>
+          <tr><td><code>lens</code></td><td><code>lens=warnings</code></td><td>Boolean lens (e.g. warnings-only)</td></tr>
+          <tr><td><code>q</code></td><td><code>q=revive</code></td><td>Free-text lens</td></tr>
+        </tbody>
+      </table>
+
+      <h3>Examples</h3>
+      <pre><code>/?game=virus-hunter                              tree, no filters
+/?game=virus-hunter&amp;node=MEC-001                tree + drawer on MEC-001
+/?game=virus-hunter&amp;view=costs                  chrome Costs page
+/?game=virus-hunter&amp;view=costs&amp;scope=MEC-001    Costs page, subtree-scoped
+/?game=virus-hunter&amp;layer=M&amp;status=draft        MEC nodes in draft + ancestors
+/?game=virus-hunter&amp;activity=1                  tree with activity slide-out open</code></pre>
+
+      <hr>
+
+      <h2 id="data">Data sources and freshness</h2>
+      <table>
+        <thead><tr><th>Surface</th><th>API endpoint</th></tr></thead>
+        <tbody>
+          <tr><td>Spec tree</td><td><code>GET /api/games/:id/spec-tree</code></td></tr>
+          <tr><td>Node drawer</td><td><code>GET /api/games/:id/spec-tree/node/:specId</code></td></tr>
+          <tr><td>Costs detail</td><td><code>GET /api/games/:id/costs[?subtree=]</code></td></tr>
+          <tr><td>Org chart</td><td><code>GET /api/games/:id/agents</code></td></tr>
+          <tr><td>Asset plans</td><td><code>GET /api/games/:id/asset-plans</code></td></tr>
+          <tr><td>Approvals queue</td><td><code>GET /api/studios/:id/approvals</code></td></tr>
+          <tr><td>Activity slide-out</td><td><code>GET /api/studios/:id/activity</code></td></tr>
+          <tr><td>SSE live updates</td><td><code>GET /api/studios/:id/events</code></td></tr>
+        </tbody>
+      </table>
+
+      <h3>How it stays fresh</h3>
+      <p>
+        Live updates flow through an <code>EventSource</code> stream.
+        The server publishes <code>node-changed</code>,
+        <code>issue-status-changed</code>, <code>cost-event</code>,
+        <code>validator-run-completed</code>, and
+        <code>approval-changed</code> events; each invalidates the
+        relevant fetched data without a page reload. There is no polling.
+      </p>
+
+      <h3>Manually rebuilding the spec cache</h3>
+      <p>If you've just edited specs on disk and want the studio to re-read them:</p>
+      <pre><code>curl -X POST http://127.0.0.1:3100/api/games/virus-hunter/spec-tree/refresh</code></pre>
+
+      <hr>
+
+      <h2 id="troubleshooting">Troubleshooting</h2>
+
+      <div class="callout warning">
+        <div class="callout-title">"Could not load spec tree"</div>
+        <p>
+          The server is unreachable or the requested game isn't registered.
+          Verify <code>curl http://127.0.0.1:3100/api/health</code> and
+          re-export your <code>MDA_STUDIO_GAME_*</code> env vars in the
+          same shell you ran the server from.
+        </p>
+      </div>
+
+      <div class="callout warning">
+        <div class="callout-title">"local fixture" badge appears</div>
+        <p>
+          The UI couldn't reach the API and fell back to the bundled
+          fixture. The tree renders so the UI never goes blank, but
+          writes won't persist. Check the API process.
+        </p>
+      </div>
+
+      <div class="callout warning">
+        <div class="callout-title">Chrome buttons don't appear</div>
+        <p>
+          Costs / Org / Asset Plans require a selected game &mdash; pick
+          one from the studio home first. Settings is the exception:
+          it's studio-scoped and always available.
+        </p>
+      </div>
+
+      <div class="callout warning">
+        <div class="callout-title">Tree doesn't refresh after I edited a spec file</div>
+        <p>
+          Force a rebuild via <code>POST /api/games/:id/spec-tree/refresh</code>,
+          then reload the page (the refresh endpoint doesn't currently
+          emit an SSE event &mdash; known V1 limitation).
+        </p>
+      </div>
+
+      <div class="callout warning">
+        <div class="callout-title">Asset Plans is empty</div>
+        <p>
+          Expected unless your game has subdirectories under
+          <code>&lt;specsRoot&gt;/design/asset-plans/</code>. Underscore-prefixed
+          entries are intentionally skipped &mdash; they're profile docs,
+          not assets.
+        </p>
+      </div>
+
+      <hr>
+
+      <h2 id="glossary">Glossary</h2>
+      <table>
+        <thead><tr><th>Term</th><th>Meaning</th></tr></thead>
+        <tbody>
+          <tr><td><strong>MDA layer</strong></td><td>One of A / D / M / AST / TUNE / LEVEL (Aesthetic, Dynamic, Mechanic, Asset, Tuning, Level)</td></tr>
+          <tr><td><strong>Canonical parent</strong></td><td>The first parent listed in a spec's <code>traceability:</code> block &mdash; the spec renders under this parent in the tree</td></tr>
+          <tr><td><strong>Secondary parent</strong></td><td>Any further parent &mdash; rendered as an "also serves" chip; excluded from the cost subtree rollup</td></tr>
+          <tr><td><strong>Subtree cost</strong></td><td>Sum of own cost over the canonical-parent subtree (multi-parent specs are not double-counted)</td></tr>
+          <tr><td><strong>Lens</strong></td><td>A composable URL-driven filter over the tree</td></tr>
+          <tr><td><strong>Drawer</strong></td><td>The 520 px right-side panel that opens when you click a tree row</td></tr>
+          <tr><td><strong>Chrome</strong></td><td>The top bar with selectors, search, secondary nav, and badges</td></tr>
+          <tr><td><strong>Surface</strong></td><td>Any chrome-reachable view that isn't the tree itself</td></tr>
+          <tr><td><strong>SSE</strong></td><td>Server-Sent Events &mdash; the live-update channel from server to UI</td></tr>
+          <tr><td><strong>Orphan cost</strong></td><td>A cost event with <code>billing_code = null</code> &mdash; counted in the studio total but not attributed to any spec</td></tr>
+          <tr><td><strong>Fixture</strong></td><td>The bundled <code>virus-hunter</code> data the UI falls back to when the API is unreachable</td></tr>
+        </tbody>
+      </table>
+
+      <div class="page-nav">
+        <a href="studio.html">
+          <span class="label">Previous</span>
+          <span class="title">&larr; Studio Overview</span>
+        </a>
+        <a href="studio-architecture.html" class="next">
+          <span class="label">Next</span>
+          <span class="title">Architecture &rarr;</span>
+        </a>
+      </div>
+    </main>
+  </div>
+
+  <script src="js/main.js"></script>
+</body>
+</html>

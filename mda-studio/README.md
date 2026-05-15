@@ -10,14 +10,31 @@ counters, pause state, and budget tracking.
 
 ## Status
 
-Early scaffold. Working endpoints:
+The spec-tree-first operator UI ships through Phase U8 of
+[`design/mda-studio/spec-tree-ui/plan.md`](../design/mda-studio/spec-tree-ui/plan.md).
+**For day-to-day operator usage, read [`docs/operator-guide.md`](docs/operator-guide.md).**
 
-| Method | Path          | Returns                  |
-|--------|---------------|--------------------------|
-| GET    | `/api/health` | `{ "status": "ok" }`     |
+Working today:
 
-Everything else (studio CRUD, run orchestration, budget enforcement) is unimplemented — the
-schema, shared constants, and middleware are in place to receive it.
+| Surface                              | Path                                                |
+|--------------------------------------|-----------------------------------------------------|
+| Spec tree home                       | `GET /api/games/:id/spec-tree`                      |
+| Node drawer detail                   | `GET /api/games/:id/spec-tree/node/:specId`         |
+| Force tree-cache rebuild             | `POST /api/games/:id/spec-tree/refresh`             |
+| Issues (status state machine)        | `GET /api/issues/:id` · `PATCH /api/issues/:id`     |
+| Cost-event ingestion                 | `POST /api/studios/:id/cost-events`                 |
+| Chrome Costs detail (subtree-scoped) | `GET /api/games/:id/costs[?subtree=]`               |
+| Org chart roster                     | `GET /api/games/:id/agents`                         |
+| Asset-plan executor states           | `GET /api/games/:id/asset-plans`                    |
+| Validator runs                       | `POST /api/games/:id/validator/runs` · `GET …/warnings` |
+| Approvals queue                      | `GET /api/studios/:id/approvals` · `PATCH /api/approvals/:id` |
+| Activity log                         | `GET /api/studios/:id/activity[?gameId=&since=&limit=]` |
+| SSE live updates                     | `GET /api/studios/:id/events`                       |
+| Health                               | `GET /api/health`                                   |
+
+Persistence is in-memory today; the Drizzle tables that will back each
+store (`spec_frontmatter_cache`, `issues`, `cost_events`, `validator_runs`,
+`approvals`, `activity_log`) are scheduled once drizzle-kit wiring lands.
 
 ## Prerequisites
 
@@ -164,6 +181,24 @@ pnpm --filter @mda-studio/server test
 ```
 
 Coverage is collected via `@vitest/coverage-v8` and written to `<package>/coverage/`.
+
+## Further reading
+
+- [`docs/operator-guide.md`](docs/operator-guide.md) — day-to-day usage
+  guide for operators: surfaces, lenses, command palette, deep links,
+  troubleshooting
+- [`docs/architecture.md`](docs/architecture.md) — developer-facing
+  architecture: wire contracts, request lifecycle, state model, algorithms,
+  extension points
+- [`ui/README.md`](ui/README.md) — UI build / test commands and a
+  phase-by-phase implementation log (U1 → U8)
+- [`../design/mda-studio/plan.md`](../design/mda-studio/plan.md) — the
+  parent implementation plan for the studio
+- [`../design/mda-studio/spec-tree-ui/plan.md`](../design/mda-studio/spec-tree-ui/plan.md)
+  — the UI architecture spec; the source of truth for any decision
+  question about the operator surface
+- [`../system.md`](../system.md) — the broader system architecture
+  blueprint (DB, agents, adapters, costs, governance)
 
 ## How it relates to the spec framework
 
