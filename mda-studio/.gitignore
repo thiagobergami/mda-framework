@@ -6,3 +6,11 @@ coverage/
 .env
 .env.local
 .DS_Store
+
+# Playwright
+playwright-report/
+test-results/
+.cache/
+
+# Lighthouse CI
+.lighthouseci/
