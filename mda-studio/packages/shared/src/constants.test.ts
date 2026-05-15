@@ -2,6 +2,7 @@ import { describe, it, expect } from "vitest";
 import {
   DEFAULT_PORT,
   DEFAULT_HOST_LOOPBACK,
+  DEFAULT_STUDIO_ID,
   HEARTBEAT_MIN_INTERVAL_SEC,
   HEARTBEAT_DEFAULT_MAX_CONCURRENT_RUNS,
   HEARTBEAT_MAX_CONCURRENT_RUNS_CAP,
@@ -14,6 +15,12 @@ describe("network defaults", () => {
 
   it("DEFAULT_HOST_LOOPBACK is 127.0.0.1 — never 0.0.0.0", () => {
     expect(DEFAULT_HOST_LOOPBACK).toBe("127.0.0.1");
+  });
+});
+
+describe("studio defaults", () => {
+  it('DEFAULT_STUDIO_ID is the single-tenant fallback "default"', () => {
+    expect(DEFAULT_STUDIO_ID).toBe("default");
   });
 });
 
