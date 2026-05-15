@@ -1,0 +1,96 @@
+/*
+ * Design tokens for the spec-tree-first UI.
+ * See `design/mda-studio/spec-tree-ui/plan.md §10` for the source of truth.
+ *
+ * Tokens come in two families:
+ *   --mda-layer-*    one per MDA layer (A/D/M/AST/TUNE/LEVEL)
+ *   --mda-status-*   one per spec status (concept/draft/frozen/impl/blockout/...)
+ */
+
+:root {
+  color-scheme: light dark;
+
+  /* Layer colors */
+  --mda-layer-a: #d97706;        /* warm orange — Aesthetic */
+  --mda-layer-d: #0891b2;        /* cyan — Dynamic */
+  --mda-layer-m: #4f46e5;        /* indigo — Mechanic */
+  --mda-layer-ast: #db2777;      /* rose — Asset */
+  --mda-layer-tune: #475569;     /* slate — Tuning */
+  --mda-layer-level: #65a30d;    /* lime — Level */
+
+  /* Status colors */
+  --mda-status-concept: #94a3b8;   /* grey */
+  --mda-status-draft: #d97706;     /* amber */
+  --mda-status-frozen: #16a34a;    /* green */
+  --mda-status-impl: #16a34a;      /* green */
+  --mda-status-blockout: #2563eb;  /* blue */
+  --mda-status-playable: #7c3aed;  /* violet */
+  --mda-status-polished: #16a34a;  /* green */
+  --mda-status-warn: #dc2626;      /* red */
+
+  /* Surfaces */
+  --mda-bg: #0b0d12;
+  --mda-bg-elev-1: #14171f;
+  --mda-bg-elev-2: #1c2030;
+  --mda-border: #2a3142;
+  --mda-text: #e4e7ee;
+  --mda-text-muted: #95a0b2;
+  --mda-text-dim: #67748a;
+  --mda-accent: #818cf8;
+
+  --mda-radius-sm: 4px;
+  --mda-radius-md: 6px;
+  --mda-radius-lg: 10px;
+
+  --mda-font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas,
+    monospace;
+  --mda-font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
+    sans-serif;
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    --mda-bg: #f7f8fa;
+    --mda-bg-elev-1: #ffffff;
+    --mda-bg-elev-2: #eef0f4;
+    --mda-border: #d8dde5;
+    --mda-text: #14171f;
+    --mda-text-muted: #475569;
+    --mda-text-dim: #94a3b8;
+  }
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+}
+
+body {
+  background: var(--mda-bg);
+  color: var(--mda-text);
+  font-family: var(--mda-font-sans);
+  font-size: 14px;
+  line-height: 1.45;
+  -webkit-font-smoothing: antialiased;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: 0;
+  cursor: pointer;
+}
+
+button:focus-visible {
+  outline: 2px solid var(--mda-accent);
+  outline-offset: 2px;
+  border-radius: var(--mda-radius-sm);
+}
