@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Studio Architecture - MDA Spec Framework</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header class="site-header">
+    <button class="menu-toggle" aria-label="Toggle menu">
+      <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 010 2H4a1 1 0 01-1-1zm0 5a1 1 0 011-1h12a1 1 0 010 2H4a1 1 0 01-1-1zm0 5a1 1 0 011-1h12a1 1 0 010 2H4a1 1 0 01-1-1z" clip-rule="evenodd"/></svg>
+    </button>
+    <a href="index.html" class="header-logo"><span class="logo-icon">M</span> MDA Framework</a>
+    <nav class="header-nav"><a href="getting-started.html">Guide</a><a href="cli.html">CLI</a><a href="studio.html">Studio</a></nav>
+  </header>
+
+  <div class="layout">
+    <aside class="sidebar">
+      <nav>
+        <div class="nav-group">
+          <div class="nav-group-title">
+            <svg class="chevron" viewBox="0 0 12 12" fill="currentColor"><path d="M4.7 2.3a1 1 0 00-1.4 1.4L6.6 7l-3.3 3.3a1 1 0 001.4 1.4l4-4a1 1 0 000-1.4l-4-4z"/></svg>
+            Introduction
+          </div>
+          <ul class="nav-items">
+            <li><a href="index.html">Overview</a></li>
+            <li><a href="getting-started.html">Getting Started</a></li>
+            <li><a href="concepts.html">Core Concepts</a></li>
+          </ul>
+        </div>
+
+        <div class="nav-group">
+          <div class="nav-group-title">
+            <svg class="chevron" viewBox="0 0 12 12" fill="currentColor"><path d="M4.7 2.3a1 1 0 00-1.4 1.4L6.6 7l-3.3 3.3a1 1 0 001.4 1.4l4-4a1 1 0 000-1.4l-4-4z"/></svg>
+            Workflow
+          </div>
+          <ul class="nav-items">
+            <li><a href="workflow.html">8-Step Process</a></li>
+            <li><a href="example.html">Walkthrough Example</a></li>
+          </ul>
+        </div>
+
+        <div class="nav-group">
+          <div class="nav-group-title">
+            <svg class="chevron" viewBox="0 0 12 12" fill="currentColor"><path d="M4.7 2.3a1 1 0 00-1.4 1.4L6.6 7l-3.3 3.3a1 1 0 001.4 1.4l4-4a1 1 0 000-1.4l-4-4z"/></svg>
+            Spec Schemas
+          </div>
+          <ul class="nav-items">
+            <li><a href="spec-concept.html">Game Concept</a></li>
+            <li><a href="spec-aesthetics.html">Aesthetics</a></li>
+            <li><a href="spec-dynamics.html">Dynamics</a></li>
+            <li><a href="spec-mechanics.html">Mechanics</a></li>
+            <li><a href="spec-tuning.html">Tuning</a></li>
+            <li><a href="spec-assets.html">Assets</a></li>
+            <li><a href="spec-bindings.html">Engine Bindings</a></li>
+            <li><a href="spec-levels.html">Levels</a></li>
+          </ul>
+        </div>
+
+        <div class="nav-group">
+          <div class="nav-group-title">
+            <svg class="chevron" viewBox="0 0 12 12" fill="currentColor"><path d="M4.7 2.3a1 1 0 00-1.4 1.4L6.6 7l-3.3 3.3a1 1 0 001.4 1.4l4-4a1 1 0 000-1.4l-4-4z"/></svg>
+            Design
+          </div>
+          <ul class="nav-items">
+            <li><a href="pipeline.html">Spec Wizard</a></li>
+          </ul>
+        </div>
+
+        <div class="nav-group">
+          <div class="nav-group-title">
+            <svg class="chevron" viewBox="0 0 12 12" fill="currentColor"><path d="M4.7 2.3a1 1 0 00-1.4 1.4L6.6 7l-3.3 3.3a1 1 0 001.4 1.4l4-4a1 1 0 000-1.4l-4-4z"/></svg>
+            Tools
+          </div>
+          <ul class="nav-items">
+            <li><a href="cli.html">CLI Reference</a></li>
+            <li><a href="logger.html">MDA Logger</a></li>
+            <li><a href="multi-engine.html">Multi-Engine Support</a></li>
+          </ul>
+        </div>
+
+        <div class="nav-group">
+          <div class="nav-group-title">
+            <svg class="chevron" viewBox="0 0 12 12" fill="currentColor"><path d="M4.7 2.3a1 1 0 00-1.4 1.4L6.6 7l-3.3 3.3a1 1 0 001.4 1.4l4-4a1 1 0 000-1.4l-4-4z"/></svg>
+            Studio
+          </div>
+          <ul class="nav-items">
+            <li><a href="studio.html">Overview</a></li>
+            <li><a href="studio-operator.html">Operator Guide</a></li>
+            <li><a href="studio-architecture.html">Architecture</a></li>
+          </ul>
+        </div>
+
+        <div class="nav-group">
+          <div class="nav-group-title">
+            <svg class="chevron" viewBox="0 0 12 12" fill="currentColor"><path d="M4.7 2.3a1 1 0 00-1.4 1.4L6.6 7l-3.3 3.3a1 1 0 001.4 1.4l4-4a1 1 0 000-1.4l-4-4z"/></svg>
+            Community
+          </div>
+          <ul class="nav-items">
+            <li><a href="contributing.html">Contributing</a></li>
+          </ul>
+        </div>
+      </nav>
+    </aside>
+
+    <main class="content">
+      <h1>Studio Architecture</h1>
+      <p class="subtitle">
+        How the spec-tree-first operator surface is built &mdash; the
+        wire contracts, the server services, the UI composition, the
+        data-flow guarantees, and the extension points.
+      </p>
+
+      <div class="callout tip">
+        <div class="callout-title">Who this page is for</div>
+        <p>
+          Developers extending the studio. If you just want to use the
+          studio day-to-day, read the
+          <a href="studio-operator.html">Operator Guide</a> instead.
+          Both pages assume you've seen the <a href="studio.html">overview</a>.
+        </p>
+      </div>
+
+      <h2 id="layers">The three layers</h2>
+      <p>
+        The studio is a pnpm workspace with one wire-contract package +
+        one server + one UI. Each layer has a single concern.
+      </p>
+      <div class="diagram">
+<pre><code>+-------------------------------------------------------------+
+|                @mda-studio/ui  (Vite + React)               |
+| components / hooks / lens model / SSE consumer / URL state  |
+|  ^                                                          |
+|  |  fetch + EventSource over /api  (Vite proxy -&gt; :3100)     |
+|  v                                                          |
+| @mda-studio/server  (Express + tsx)                         |
+| routes / services / in-memory stores / SSE publisher        |
+|  ^                                                          |
+|  |  workspace:* imports - shared zod schemas                 |
+|  v                                                          |
+| @mda-studio/shared  (TypeScript + zod)                      |
+| wire schemas + MDA vocabulary (layers/statuses/glyphs)      |
++-------------------------------------------------------------+</code></pre>
+      </div>
+
+      <p>Two rules hold this together:</p>
+      <ol class="steps">
+        <li>
+          <strong>The wire contract is the only shared code.</strong> Every
+          payload that crosses HTTP or SSE has a zod schema in
+          <code>@mda-studio/shared</code>. Both the server and the UI import
+          the parser. Drift on one side fails the typecheck or the runtime
+          validation on the other.
+        </li>
+        <li>
+          <strong>No layer reaches over its peer.</strong> UI never imports
+          server code; server never imports UI code. Both depend only on
+          <code>shared</code>.
+        </li>
+      </ol>
+
+      <h2 id="lifecycle">Request lifecycle &mdash; opening a game</h2>
+      <p>
+        End-to-end trace of what happens between "operator clicks a game
+        card" and "the spec tree appears with live updates wired up".
+      </p>
+
+      <h3>1. Chrome reads the URL</h3>
+      <p>
+        <code>App.tsx</code> reads <code>game</code> via
+        <code>useUrlSearchParams</code>. Clicking a card calls
+        <code>openGame(id)</code> which pushes a new
+        <code>URLSearchParams</code> with <code>game=&lt;id&gt;</code>. The
+        router (vanilla <code>history.pushState</code>) re-renders.
+      </p>
+
+      <h3>2. The tree fetch</h3>
+      <p>
+        <code>GameContainer</code> mounts and calls
+        <code>useSpecTree(gameId)</code>:
+      </p>
+      <ol class="steps">
+        <li>Sets state to <code>{ status: "loading" }</code></li>
+        <li>Fires <code>fetch(`/api/games/${gameId}/spec-tree`)</code></li>
+        <li>On 200: runs <code>specTreeResponseSchema.safeParse(json)</code></li>
+        <li>On any failure: looks up <code>FALLBACK_BY_GAME</code> and renders the bundled fixture with <code>source: "fixture"</code></li>
+      </ol>
+
+      <h3>3. The server side</h3>
+      <ol class="steps">
+        <li><code>getGame(gameId)</code> &mdash; pulls from the in-memory <code>games-registry</code>. 404 if unknown.</li>
+        <li><code>ensureCache(gameId, specsRoot)</code> &mdash; <code>rebuildSpecCache</code> walks six directories under the workspace, parses frontmatter via <code>spec-parser.ts</code>, classifies each spec's layer + canonical / secondary parents per layer rules (decision D1).</li>
+        <li><code>buildTreeResponse</code> composes the response from <code>findActiveIssueForSpec</code>, <code>computeCostRollup</code>, and <code>listValidatorWarnings</code>.</li>
+        <li><code>assembleSpecTreeResponse</code> zips them into one <code>SpecTreeNode</code> array sorted by <code>specId</code>.</li>
+      </ol>
+
+      <h3>4. UI render</h3>
+      <p>
+        <code>GameView</code> receives the parsed response and computes
+        <code>lensResult = applyLenses(tree.nodes, lenses)</code> &mdash;
+        pure model producing three sets (<code>visibleSpecIds</code>,
+        <code>ancestorSpecIds</code>, <code>matchingSpecIds</code>) &mdash;
+        then renders <code>LensBar</code>, <code>SpecTree</code>, optional
+        <code>NodeDrawer</code>, and the <code>CommandPalette</code>.
+      </p>
+
+      <h3>5. SSE subscription</h3>
+      <p>
+        In parallel, <code>useStudioEvents</code> opens an
+        <code>EventSource</code> on
+        <code>/api/studios/default/events</code> only if
+        <code>tree.source === "api"</code> (no SSE in fixture mode).
+      </p>
+
+      <h3>6. Drawer open</h3>
+      <p>
+        Clicking a row writes <code>node=&lt;specId&gt;</code> to the URL.
+        <code>useSpecNodeDetail</code> fetches
+        <code>GET /api/games/:id/spec-tree/node/:specId</code> which
+        returns the drawer bundle (spec body, issues, comments, work
+        products, costs, trace) in <strong>one</strong> round trip.
+      </p>
+
+      <h2 id="shared">@mda-studio/shared &mdash; the wire contract</h2>
+      <p>
+        One file per concern. Every exported <code>*Schema</code> has a
+        matching exported type derived via <code>z.infer</code>.
+      </p>
+      <table>
+        <thead><tr><th>Module</th><th>Wire shape</th></tr></thead>
+        <tbody>
+          <tr><td><code>mda</code></td><td>MDA vocabulary (layers, statuses, glyphs, tokens) &mdash; the <em>only</em> domain enum</td></tr>
+          <tr><td><code>spec-tree</code></td><td><code>SpecTreeNode</code>, <code>SpecTreeResponse</code>, <code>GameCard</code></td></tr>
+          <tr><td><code>spec-node-detail</code></td><td>Drawer bundle: spec, issues, comments, work products, costs, trace</td></tr>
+          <tr><td><code>issues</code></td><td><code>IssueSummary</code>, comments, work products, validator warning, issue status state machine</td></tr>
+          <tr><td><code>costs</code> + <code>costs-detail</code></td><td>Cost event ingestion + chrome Costs page payload</td></tr>
+          <tr><td><code>agents</code></td><td>Org-chart roster</td></tr>
+          <tr><td><code>asset-plans</code></td><td>Asset-plan list + per-asset state enum</td></tr>
+          <tr><td><code>approvals</code></td><td>Approvals queue + resolve input</td></tr>
+          <tr><td><code>activity</code></td><td>Activity log entry + list response</td></tr>
+          <tr><td><code>studio-events</code></td><td>SSE union: 5 event kinds</td></tr>
+        </tbody>
+      </table>
+
+      <h2 id="server">@mda-studio/server</h2>
+
+      <h3>The boundary</h3>
+      <p>
+        <code>routes/</code> are thin Express handlers that parse
+        params/body, call a service, and shape the response.
+        <code>services/</code> hold business logic + in-memory state with
+        no Express types. Each service is unit-testable in isolation; the
+        routes get integration tests against <code>createApp()</code>.
+      </p>
+
+      <h3>In-memory stores</h3>
+      <p>Each rebuilt on process restart:</p>
+      <table>
+        <thead><tr><th>Store</th><th>Backed by</th></tr></thead>
+        <tbody>
+          <tr><td><code>games-registry</code></td><td><code>Map&lt;gameId, GameRegistration&gt;</code> populated from env at boot</td></tr>
+          <tr><td><code>spec-cache</code></td><td><code>Map&lt;gameId, CacheEntry&gt;</code> rebuilt on demand from disk</td></tr>
+          <tr><td><code>issues-store</code></td><td><code>Map&lt;id, IssueSummary&gt;</code> + comment/work-product maps</td></tr>
+          <tr><td><code>cost-events-store</code></td><td><code>Map&lt;id, CostEvent&gt;</code> with monotonic <code>COST-NNN</code> ids</td></tr>
+          <tr><td><code>approvals-store</code></td><td><code>Map&lt;id, ApprovalSummary&gt;</code> with pending counter</td></tr>
+          <tr><td><code>validator-runs-store</code></td><td><code>Map&lt;gameId, ValidatorRun&gt;</code> keeping only the latest</td></tr>
+          <tr><td><code>activity-log-store</code></td><td>Bounded ring buffer of <code>ActivityEntry</code></td></tr>
+        </tbody>
+      </table>
+
+      <div class="callout tip">
+        <div class="callout-title">Forward-compatibility</div>
+        <p>
+          These stores are written as if they were the public surface of
+          a Drizzle-backed module. When the persistent tables land, one
+          file at a time gets a <code>@mda-studio/db</code>-backed
+          implementation; consumers don't change.
+        </p>
+      </div>
+
+      <h3>The SSE publisher</h3>
+      <p>
+        <code>studio-events.ts</code> is a tiny pub/sub: stores call
+        <code>publishStudioEvent(event)</code> after every successful
+        mutation; the SSE route subscribes a Response stream. Every
+        connected client gets every event.
+      </p>
+      <pre><code>type StudioEvent =
+  | { type: "node-changed";          gameId: string; specId: string }
+  | { type: "issue-status-changed";  gameId: string; specId: string; issueId: string }
+  | { type: "cost-event";            gameId: string; specId: string | null }
+  | { type: "validator-run-completed"; gameId: string }
+  | { type: "approval-changed";      studioId: string; approvalId: string };</code></pre>
+      <p>
+        The activity-log writer subscribes too &mdash; every event becomes
+        a row in the log, so the slide-out is a free byproduct.
+      </p>
+
+      <h3>Route inventory</h3>
+      <table>
+        <thead><tr><th>Method</th><th>Path</th><th>Returns</th></tr></thead>
+        <tbody>
+          <tr><td>GET</td><td><code>/api/health</code></td><td><code>{ status: "ok" }</code></td></tr>
+          <tr><td>GET</td><td><code>/api/games/:id/spec-tree</code></td><td><code>SpecTreeResponse</code></td></tr>
+          <tr><td>GET</td><td><code>/api/games/:id/spec-tree/node/:specId</code></td><td><code>SpecNodeDetail</code></td></tr>
+          <tr><td>POST</td><td><code>/api/games/:id/spec-tree/refresh</code></td><td><code>{ rebuiltAt, specCount, ... }</code></td></tr>
+          <tr><td>GET</td><td><code>/api/games/:id/costs[?subtree=]</code></td><td><code>CostsDetailResponse</code></td></tr>
+          <tr><td>GET</td><td><code>/api/games/:id/agents</code></td><td><code>AgentRosterResponse</code></td></tr>
+          <tr><td>GET</td><td><code>/api/games/:id/asset-plans</code></td><td><code>AssetPlanListResponse</code></td></tr>
+          <tr><td>POST</td><td><code>/api/games/:id/validator/runs</code></td><td><code>ValidatorRun</code></td></tr>
+          <tr><td>GET</td><td><code>/api/games/:id/validator/warnings</code></td><td><code>ValidatorWarning[]</code></td></tr>
+          <tr><td>GET / PATCH</td><td><code>/api/issues/:id</code></td><td><code>IssueSummary</code></td></tr>
+          <tr><td>POST</td><td><code>/api/studios/:id/cost-events</code></td><td><code>CostEvent</code></td></tr>
+          <tr><td>GET</td><td><code>/api/studios/:id/approvals</code></td><td><code>ApprovalListResponse</code></td></tr>
+          <tr><td>PATCH</td><td><code>/api/approvals/:id</code></td><td><code>ApprovalSummary</code></td></tr>
+          <tr><td>GET</td><td><code>/api/studios/:id/activity</code></td><td><code>ActivityListResponse</code></td></tr>
+          <tr><td>GET</td><td><code>/api/studios/:id/events</code></td><td>SSE stream of <code>StudioEvent</code></td></tr>
+        </tbody>
+      </table>
+
+      <h2 id="ui">@mda-studio/ui</h2>
+
+      <h3>The composition</h3>
+      <div class="diagram">
+<pre><code>App.tsx
++-- Chrome (top bar, secondary-nav buttons, search slot, badges)
++-- body (one of:)
+|   +-- ApprovalsPanel       (view=approvals)
+|   +-- CostsDetailPanel     (view=costs)
+|   +-- OrgChartPanel        (view=org)
+|   +-- AssetPlansPanel      (view=asset-plans)
+|   +-- SettingsPanel        (view=settings)
+|   +-- GameCardGrid         (no game selected)
+|   +-- GameContainer        (game selected, default)
+|        +-- GameView
+|             +-- LensBar
+|             +-- SpecTree
+|             +-- NodeDrawer (when node= is set)
++-- ActivitySlideout         (overlay, activity=1)
++-- CommandPalette           (overlay, &#8984;K)
++-- KeymapHelp               (overlay, ?)</code></pre>
+      </div>
+
+      <h3>Where state lives</h3>
+      <table>
+        <thead><tr><th>State</th><th>Lives in</th></tr></thead>
+        <tbody>
+          <tr><td>Active game, selected node, view, scope, lenses, activity-open</td><td>URL (<code>useUrlSearchParams</code>)</td></tr>
+          <tr><td>Server data (tree, drawer, approvals, activity, costs, ...)</td><td><code>useXxx</code> hooks (per-resource fetch+state)</td></tr>
+          <tr><td>Tree expansion state</td><td><code>localStorage</code> keyed <code>mda:tree-expansion:&lt;gameId&gt;</code></td></tr>
+          <tr><td>Drawer active tab</td><td>Local <code>useState</code> in <code>NodeDrawer</code></td></tr>
+          <tr><td>Command palette open + query</td><td>Local <code>useState</code> in <code>App</code></td></tr>
+          <tr><td>SSE subscription</td><td><code>useStudioEvents</code> (one-shot per gameId)</td></tr>
+        </tbody>
+      </table>
+      <p>
+        The choice is deliberate: anything reachable via a shared link goes
+        in the URL. Anything per-user / per-tab goes local. Anything
+        fetched goes in a hook so it can refetch.
+      </p>
+
+      <h3>The hook pattern</h3>
+      <p>Every server-resource hook has the same shape:</p>
+      <pre><code>export function useThing(opts): {
+  status: "idle" | "loading" | "ready" | "error";
+  data: ThingResponse | null;
+  error: string | null;
+  refetch: () =&gt; void;
+}</code></pre>
+      <p>
+        Fetches via <code>fetch</code>, parses with the matching zod
+        schema, exposes a stable <code>refetch()</code> so the SSE handler
+        can invalidate without remounting.
+      </p>
+
+      <h3>The lens model</h3>
+      <p><code>lib/lenses.ts</code> is <strong>pure</strong>:</p>
+      <pre><code>parseLenses(URLSearchParams) -&gt; ActiveLenses
+applyLensPatch(URLSearchParams, Partial&lt;ActiveLenses&gt;) -&gt; URLSearchParams
+applyLenses(nodes, lenses) -&gt; {
+  matchingSpecIds:  Set&lt;string&gt;,  // pass the filter
+  ancestorSpecIds:  Set&lt;string&gt;,  // need to stay visible to keep context
+  visibleSpecIds:   Set&lt;string&gt;,  // matches union ancestors
+}</code></pre>
+      <p>
+        <code>SpecTree</code> accepts these three sets as props. The
+        component itself has no knowledge of lenses &mdash; it just hides
+        everything not in <code>visibleSpecIds</code> and force-expands
+        <code>ancestorSpecIds</code>. This is why the same component
+        renders filtered and unfiltered views without branching.
+      </p>
+
+      <h2 id="algorithms">Algorithms worth understanding</h2>
+
+      <h3>DAG-to-tree projection (decision D1)</h3>
+      <p>
+        Many specs have multiple <code>traces_to_*</code> parents. The
+        plan picks the <strong>first</strong> parent in the relevant array
+        as the <em>canonical</em> parent; everything else is <em>secondary</em>.
+      </p>
+      <table>
+        <thead><tr><th>Layer</th><th>Canonical comes from</th><th>Secondary</th></tr></thead>
+        <tbody>
+          <tr><td>A</td><td>&mdash;</td><td>&mdash;</td></tr>
+          <tr><td>D</td><td><code>traces_to_aesthetics[0]</code></td><td><code>traces_to_aesthetics[1..]</code></td></tr>
+          <tr><td>M</td><td><code>traces_to_dynamics[0]</code></td><td><code>...[1..]</code> + all <code>traces_to_aesthetics</code></td></tr>
+          <tr><td>AST</td><td><code>traces_to_mechanics[0]</code></td><td><code>...[1..]</code> + all <code>traces_to_aesthetics</code></td></tr>
+          <tr><td>TUNE</td><td><code>traces_to_mechanics[0]</code></td><td><code>...[1..]</code> + dynamics + aesthetics</td></tr>
+          <tr><td>LEVEL</td><td>&mdash; (parallel root)</td><td>&mdash; (refs land in <code>outgoingRefSpecIds</code>)</td></tr>
+        </tbody>
+      </table>
+
+      <h3>Cost rollup &mdash; the no-double-count invariant</h3>
+      <p><code>services/cost-rollup.ts</code> computes <code>own</code> + <code>subtree</code> cents per spec:</p>
+      <ol class="steps">
+        <li><code>own[spec]</code> = sum of cost events with <code>billingCode === spec</code> in the current month (MTD).</li>
+        <li><code>subtree[spec]</code> = <code>own[spec]</code> + sum of <code>subtree[child]</code> for every <strong>canonical-parent</strong> child only. Secondary parents never see the cost.</li>
+      </ol>
+      <p>
+        This guarantees that summing <code>subtree[root_A_specs]</code>
+        equals <code>total_attributed_cents</code>. Orphan events
+        (<code>billingCode === null</code>) contribute to the game total
+        but never to any spec's rollup.
+      </p>
+
+      <h3>The "keep ancestors visible" lens filter</h3>
+      <p>
+        When a user filters by <code>?layer=M</code>, the tree should still
+        show the path <code>AES-001 &gt; DYN-001 &gt; MEC-001</code> &mdash;
+        otherwise context evaporates. <code>applyLenses</code>:
+      </p>
+      <ol class="steps">
+        <li>Compute <code>matching</code> = nodes that pass every lens</li>
+        <li>Walk each match upward via <code>canonicalParentSpecId</code> collecting <code>ancestors</code></li>
+        <li><code>visible = matching union ancestors</code></li>
+        <li><code>ancestorSpecIds</code> is returned separately so the tree can force-expand those rows</li>
+      </ol>
+
+      <h2 id="live-updates">Live updates end-to-end</h2>
+      <div class="diagram">
+<pre><code>[mutation in any store]
+        |
+        v
+publishStudioEvent(event)            &lt;- server (studio-events.ts)
+        |
+        +-- activity-log-store.ts -&gt; ring-buffer push
+        +-- studioEventsRouter -&gt; res.write("data: ...\n\n")
+                |
+                v
+        EventSource (UI, useStudioEvents)
+                |
+                v
+        handleStudioEvent (App.tsx) -&gt; refetch the relevant hook(s)
+                |
+                v
+        useSpecTree.refetch | useSpecNodeDetail.refetch
+        useApprovals.refetch | useActivity.refetch</code></pre>
+      </div>
+
+      <p>Two non-obvious properties:</p>
+      <ol class="steps">
+        <li><strong>Idempotent invalidation.</strong> Refetch hooks bump an integer; calling them repeatedly during a burst of events causes one fetch per <code>useEffect</code> cycle, not one fetch per event.</li>
+        <li><strong>Fixture mode disables SSE.</strong> <code>useStudioEvents({ enabled })</code> is false when the tree fell back to fixture data &mdash; there's no live server to subscribe to.</li>
+      </ol>
+
+      <h2 id="testing">Test strategy</h2>
+      <p>Four layers, each with a different job.</p>
+
+      <h3>Unit tests (<code>vitest</code>)</h3>
+      <p>
+        Every <code>*.ts</code> and <code>*.tsx</code> has a sibling
+        <code>*.test.ts(x)</code>. Coverage is gated per package at &ge; 80%
+        lines / statements / branches / functions in
+        <code>vitest.config.ts</code>.
+      </p>
+
+      <h3>A11y tests (<code>vitest-axe</code>)</h3>
+      <p>
+        <code>src/test/a11y.test.tsx</code> renders every chrome-reachable
+        surface and runs <code>axe-core</code> against the DOM. Violations
+        fail the test. The <code>region</code> and <code>color-contrast</code>
+        rules are disabled with rationale &mdash; they false-positive in
+        jsdom-isolated components, and Lighthouse covers them with real
+        layout.
+      </p>
+
+      <h3>End-to-end (<code>@playwright/test</code>)</h3>
+      <p>
+        <code>playwright.config.ts</code> boots the API server (with the
+        fixture studio registered via env) + the Vite dev server via
+        Playwright's <code>webServer</code> array.
+        <code>e2e/smoke.spec.ts</code> exercises: studio home &rarr; tree
+        &rarr; deep-linked drawer &rarr; issue status edit &rarr; every
+        chrome nav surface, the seeded approvals queue, free-text lens,
+        and the command palette.
+      </p>
+
+      <h3>Performance (<code>@lhci/cli</code>)</h3>
+      <p><code>lighthouserc.json</code> asserts a desktop budget:</p>
+      <pre><code>LCP        &le; 2500 ms
+TBT        &le;  200 ms
+CLS        &le;  0.1
+JS weight  &le;  600 KB
+perf score &ge;  0.85
+a11y score &ge;  0.9</code></pre>
+
+      <h2 id="extending">Extension points</h2>
+
+      <h3>Add a server route</h3>
+      <ol class="steps">
+        <li>Add the request / response shape to <code>@mda-studio/shared</code> as a zod schema + type, and ship a round-trip test</li>
+        <li>Build a service in <code>server/src/services/</code> with its own unit tests</li>
+        <li>Add the route file in <code>server/src/routes/</code> &mdash; thin handler that parses params + body, calls the service, returns the parsed shape</li>
+        <li>Mount it in <code>app.ts</code></li>
+        <li>If it mutates, publish a <code>StudioEvent</code> after the store write</li>
+      </ol>
+
+      <h3>Add a UI surface</h3>
+      <ol class="steps">
+        <li>Build a <code>useThing</code> hook in <code>ui/src/hooks/</code> mirroring the existing hooks' shape</li>
+        <li>Build the panel in <code>ui/src/components/&lt;Thing&gt;Panel.tsx</code>, using existing tokens for colors</li>
+        <li>Add CSS to <code>ui/src/styles/app.css</code></li>
+        <li>Wire <code>view=thing</code> in <code>App.tsx</code>'s body switch</li>
+        <li>Add <code>onOpenThing</code> / <code>Thing</code> button to <code>Chrome.tsx</code> and <code>App.tsx</code></li>
+        <li>Add an entry to the a11y test (<code>src/test/a11y.test.tsx</code>)</li>
+        <li>(Optional) Extend the Playwright smoke spec</li>
+      </ol>
+
+      <h3>Add a lens</h3>
+      <ol class="steps">
+        <li>Extend <code>ActiveLenses</code> in <code>lib/lenses.ts</code> + <code>parseLenses</code> + <code>applyLensPatch</code> + the filtering predicate inside <code>applyLenses</code></li>
+        <li>Add a chip case in <code>LensBar.tsx</code></li>
+        <li>Add a clear-key in <code>App.tsx</code> <code>clearLens</code></li>
+        <li>Update <code>lib/lenses.test.ts</code> and the <code>KeymapHelp</code> overlay</li>
+      </ol>
+
+      <h3>Add a status / layer</h3>
+      <p>The MDA vocabulary is fixed in V1. To extend:</p>
+      <ol class="steps">
+        <li>Add the value to <code>MDA_LAYERS</code> / <code>SPEC_STATUSES</code> / <code>STATUSES_BY_LAYER</code> in <code>shared/src/mda.ts</code></li>
+        <li>Add a glyph + color token in the same file and matching CSS variable in <code>ui/src/styles/tokens.css</code></li>
+        <li>Add the prefix in <code>ID_PREFIX_TO_LAYER</code> and update <code>layerFromSpecId</code></li>
+        <li>Update <code>spec-parser.ts</code> defaults if the new layer has a different default status</li>
+        <li>Run <code>pnpm typecheck</code> &mdash; exhaustive <code>switch</code> statements on the union will fail until handled</li>
+      </ol>
+
+      <h3>Add an SSE event type</h3>
+      <ol class="steps">
+        <li>Add the case to the union in <code>shared/src/studio-events.ts</code></li>
+        <li>Publish it from the relevant service</li>
+        <li>Handle it in <code>GameView.handleStudioEvent</code> &mdash; decide which queries to invalidate</li>
+        <li>Add to the activity-log writer if the event should also become a visible log row</li>
+      </ol>
+
+      <h2 id="next">Where the seams point next</h2>
+
+      <h3>Persistence</h3>
+      <p>
+        Every in-memory store has a method-shaped public API exactly so
+        it can be swapped for a Drizzle module:
+      </p>
+      <ol class="steps">
+        <li>Add the table to <code>packages/db/src/schema/</code></li>
+        <li>Replace the store's <code>Map&lt;...&gt;</code> internals with <code>db.insert/select</code></li>
+        <li>Leave the route file untouched; rerun the route's integration test against an embedded Postgres</li>
+      </ol>
+      <p>Tables waiting in <code>system.md</code>:</p>
+      <ul>
+        <li><code>spec_frontmatter_cache</code> (the spec-cache module)</li>
+        <li><code>issues</code>, <code>issue_comments</code>, <code>issue_work_products</code></li>
+        <li><code>cost_events</code></li>
+        <li><code>validator_runs</code></li>
+        <li><code>approvals</code></li>
+        <li><code>activity_log</code></li>
+      </ul>
+
+      <h3>Typed SSE client</h3>
+      <p>
+        Today the client casts JSON to <code>StudioEvent</code>. A small
+        codegen step could give the publisher a typed
+        <code>publish&lt;T extends StudioEvent&gt;(event: T)</code>
+        overload so an exhaustive <code>switch</code> on the UI side is
+        unmissable.
+      </p>
+
+      <h3>Persistent lens presets</h3>
+      <p>
+        Tree expansion already persists in <code>localStorage</code>. Saved
+        lens presets were intentionally deferred &mdash; URL-only for V1.
+        The hook boundary in <code>lib/lenses.ts</code> is the right place
+        to add named-preset read / write.
+      </p>
+
+      <h2 id="map">File-by-file map</h2>
+      <p>For the impatient. Read these in order to fully cover the system:</p>
+      <pre><code>shared/src/mda.ts                        # MDA vocabulary
+shared/src/spec-tree.ts                  # tree wire shapes
+shared/src/spec-node-detail.ts           # drawer wire shape
+shared/src/issues.ts                     # issue state machine
+shared/src/costs.ts + costs-detail.ts    # cost event + chrome page shapes
+shared/src/studio-events.ts              # SSE union
+shared/src/{approvals,activity,agents,asset-plans}.ts
+
+server/src/app.ts                        # route mounting
+server/src/index.ts                      # env-driven boot + seed
+server/src/services/spec-parser.ts       # frontmatter -&gt; ParsedSpec
+server/src/services/spec-cache.ts        # filesystem walk + cache
+server/src/services/spec-tree-assembly.ts
+server/src/services/cost-rollup.ts       # the DAG invariant lives here
+server/src/services/{costs-detail,agent-roster,asset-plans-scan}.ts
+server/src/services/{issues,approvals,activity-log,studio-events}-store.ts
+server/src/services/fixture-seed.ts
+server/src/routes/spec-tree.ts
+server/src/routes/secondary-surfaces.ts  # costs + agents + asset-plans
+server/src/routes/{issues,cost-events,approvals,activity,validator-runs,studio-events}.ts
+
+ui/src/App.tsx                           # composition + URL routing
+ui/src/lib/lenses.ts                     # pure lens model
+ui/src/hooks/useSpecTree.ts              # canonical hook shape
+ui/src/hooks/useStudioEvents.ts          # SSE consumer
+ui/src/components/SpecTree.tsx           # the tree
+ui/src/components/NodeDrawer.tsx         # the drawer
+ui/src/components/Chrome.tsx             # the top bar
+ui/src/components/{Costs,OrgChart,AssetPlans,Settings,Approvals,Activity}*.tsx
+ui/src/test/a11y.test.tsx                # axe matrix
+ui/e2e/smoke.spec.ts                     # Playwright smoke
+ui/playwright.config.ts + lighthouserc.json</code></pre>
+
+      <div class="page-nav">
+        <a href="studio-operator.html">
+          <span class="label">Previous</span>
+          <span class="title">&larr; Operator Guide</span>
+        </a>
+        <a href="contributing.html" class="next">
+          <span class="label">Next</span>
+          <span class="title">Contributing &rarr;</span>
+        </a>
+      </div>
+    </main>
+  </div>
+
+  <script src="js/main.js"></script>
+</body>
+</html>

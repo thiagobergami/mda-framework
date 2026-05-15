@@ -24,7 +24,7 @@
 
   <div class="layout">
     <aside class="sidebar">
-      <nav>
+            <nav>
         <div class="nav-group">
           <div class="nav-group-title">
             <svg class="chevron" viewBox="0 0 12 12" fill="currentColor"><path d="M4.7 2.3a1 1 0 00-1.4 1.4L6.6 7l-3.3 3.3a1 1 0 001.4 1.4l4-4a1 1 0 000-1.4l-4-4z"/></svg>
@@ -36,6 +36,7 @@
             <li><a href="concepts.html">Core Concepts</a></li>
           </ul>
         </div>
+
         <div class="nav-group">
           <div class="nav-group-title">
             <svg class="chevron" viewBox="0 0 12 12" fill="currentColor"><path d="M4.7 2.3a1 1 0 00-1.4 1.4L6.6 7l-3.3 3.3a1 1 0 001.4 1.4l4-4a1 1 0 000-1.4l-4-4z"/></svg>
@@ -46,6 +47,7 @@
             <li><a href="example.html">Walkthrough Example</a></li>
           </ul>
         </div>
+
         <div class="nav-group">
           <div class="nav-group-title">
             <svg class="chevron" viewBox="0 0 12 12" fill="currentColor"><path d="M4.7 2.3a1 1 0 00-1.4 1.4L6.6 7l-3.3 3.3a1 1 0 001.4 1.4l4-4a1 1 0 000-1.4l-4-4z"/></svg>
@@ -58,9 +60,21 @@
             <li><a href="spec-mechanics.html">Mechanics</a></li>
             <li><a href="spec-tuning.html">Tuning</a></li>
             <li><a href="spec-assets.html">Assets</a></li>
-            <li><a href="spec-bindings.html">Engine Bindings</a></li><li><a href="spec-levels.html">Levels</a></li>
+            <li><a href="spec-bindings.html">Engine Bindings</a></li>
+            <li><a href="spec-levels.html">Levels</a></li>
           </ul>
-        </div><div class="nav-group"><div class="nav-group-title"><svg class="chevron" viewBox="0 0 12 12" fill="currentColor"><path d="M4.7 2.3a1 1 0 00-1.4 1.4L6.6 7l-3.3 3.3a1 1 0 001.4 1.4l4-4a1 1 0 000-1.4l-4-4z"/></svg> Design</div><ul class="nav-items"><li><a href="pipeline.html">Spec Wizard</a></li></ul></div>
+        </div>
+
+        <div class="nav-group">
+          <div class="nav-group-title">
+            <svg class="chevron" viewBox="0 0 12 12" fill="currentColor"><path d="M4.7 2.3a1 1 0 00-1.4 1.4L6.6 7l-3.3 3.3a1 1 0 001.4 1.4l4-4a1 1 0 000-1.4l-4-4z"/></svg>
+            Design
+          </div>
+          <ul class="nav-items">
+            <li><a href="pipeline.html">Spec Wizard</a></li>
+          </ul>
+        </div>
+
         <div class="nav-group">
           <div class="nav-group-title">
             <svg class="chevron" viewBox="0 0 12 12" fill="currentColor"><path d="M4.7 2.3a1 1 0 00-1.4 1.4L6.6 7l-3.3 3.3a1 1 0 001.4 1.4l4-4a1 1 0 000-1.4l-4-4z"/></svg>
@@ -72,6 +86,19 @@
             <li><a href="multi-engine.html">Multi-Engine Support</a></li>
           </ul>
         </div>
+
+        <div class="nav-group">
+          <div class="nav-group-title">
+            <svg class="chevron" viewBox="0 0 12 12" fill="currentColor"><path d="M4.7 2.3a1 1 0 00-1.4 1.4L6.6 7l-3.3 3.3a1 1 0 001.4 1.4l4-4a1 1 0 000-1.4l-4-4z"/></svg>
+            Studio
+          </div>
+          <ul class="nav-items">
+            <li><a href="studio.html">Overview</a></li>
+            <li><a href="studio-operator.html">Operator Guide</a></li>
+            <li><a href="studio-architecture.html">Architecture</a></li>
+          </ul>
+        </div>
+
         <div class="nav-group">
           <div class="nav-group-title">
             <svg class="chevron" viewBox="0 0 12 12" fill="currentColor"><path d="M4.7 2.3a1 1 0 00-1.4 1.4L6.6 7l-3.3 3.3a1 1 0 001.4 1.4l4-4a1 1 0 000-1.4l-4-4z"/></svg>
@@ -90,8 +117,9 @@
 
       <h2>Prerequisites</h2>
       <ul>
-        <li><a href="https://nodejs.org/">Node.js</a> &gt;= 18</li>
+        <li><a href="https://nodejs.org/">Node.js</a> &gt;= 18 (for the CLI and Spec Wizard)</li>
         <li>npm (comes with Node.js)</li>
+        <li>Optional, for the <a href="studio.html">MDA Studio</a>: Node.js &ge; 20 and pnpm 9.x</li>
       </ul>
 
       <h2>Installation</h2>
@@ -125,6 +153,29 @@ npm install</code></pre>
           <strong>Validate all specs</strong>
           <pre><code>npx mda validate</code></pre>
           <p>Runs 8 validation rules to check structural integrity across all spec layers.</p>
+        </li>
+        <li>
+          <strong>(Optional) Boot the Studio to see your tree</strong>
+          <p>
+            Once you have a few specs, the <a href="studio.html">MDA Studio</a>
+            renders them as a live tree with issues, costs, validator
+            warnings, approvals, and an activity log. From the
+            <code>mda-studio/</code> workspace, in two terminals:
+          </p>
+          <pre><code># terminal 1 - API server (registers your game from env vars)
+cd mda-studio
+MDA_STUDIO_GAME_ID=my-game \
+MDA_STUDIO_GAME_NAME="My Game" \
+MDA_STUDIO_GAME_SPECS_ROOT=/abs/path/to/your/repo \
+MDA_STUDIO_GAME_CONCEPT_PATH=specs/concept/my-game.concept.md \
+MDA_STUDIO_GAME_PRIMARY_AESTHETIC=Fellowship \
+MDA_STUDIO_GAME_CONCEPT_TITLE="My Game" \
+pnpm install &amp;&amp; pnpm --filter @mda-studio/server dev
+
+# terminal 2 - UI
+pnpm --filter @mda-studio/ui dev</code></pre>
+          <p>Then open <code>http://127.0.0.1:3101</code>. Click your game card to enter its spec tree.</p>
+          <p>See the <a href="studio-operator.html">Studio Operator Guide</a> for the full reference.</p>
         </li>
       </ol>
 
@@ -160,6 +211,15 @@ src/                                # Runtime tools (Luau)
 ├── shared/MDALogger.luau           # Structured logging with MDA layer tagging
 └── tools/validate-specs.luau       # Legacy Luau spec validator
 
+mda-studio/                         # Operator surface (pnpm workspace)
+├── packages/shared/                # Zod wire-contracts (server &lt;-&gt; UI)
+├── server/                         # Express API + in-memory stores + SSE
+├── ui/                             # Vite + React spec-tree-first UI
+└── docs/                           # Operator + architecture guides
+
+design/mda-studio/                  # Design docs for the studio itself
+└── spec-tree-ui/plan.md            # The plan the UI was built against
+
 CLAUDE.md                           # AI instructions (read by Claude Code)</code></pre>
       </div>
 
@@ -185,6 +245,7 @@ CLAUDE.md                           # AI instructions (read by Claude Code)</cod
         <li>Follow the <a href="workflow.html">8-Step Workflow</a> to author specs</li>
         <li>See a full <a href="example.html">Walkthrough Example</a> from idea to implementation</li>
         <li>Read the <a href="cli.html">CLI Reference</a> for all available commands</li>
+        <li>Boot the <a href="studio.html">MDA Studio</a> to see your specs as a live, browsable tree</li>
       </ul>
 
       <div class="page-nav">
