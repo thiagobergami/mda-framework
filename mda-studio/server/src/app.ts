@@ -1,8 +1,23 @@
 import express, { type Express, type Request, type Response, type NextFunction } from "express";
 import { healthPath } from "@mda-studio/shared";
 import { requestId } from "./middleware/request-id.js";
+import { activityRouter } from "./routes/activity.js";
+import { approvalsRouter } from "./routes/approvals.js";
+import { costEventsRouter } from "./routes/cost-events.js";
+import { issuesRouter } from "./routes/issues.js";
+import { secondarySurfacesRouter } from "./routes/secondary-surfaces.js";
+import { specTreeRouter } from "./routes/spec-tree.js";
+import {
+  studioEventsRouter,
+  type StudioEventsRouterOptions,
+} from "./routes/studio-events.js";
+import { validatorRunsRouter } from "./routes/validator-runs.js";
 
-export function createApp(): Express {
+export interface CreateAppOptions {
+  studioEvents?: StudioEventsRouterOptions;
+}
+
+export function createApp(opts: CreateAppOptions = {}): Express {
   const app = express();
 
   app.use(express.json());
@@ -11,6 +26,15 @@ export function createApp(): Express {
   app.get(healthPath(), (_req: Request, res: Response) => {
     res.status(200).json({ status: "ok" });
   });
+
+  app.use(specTreeRouter());
+  app.use(issuesRouter());
+  app.use(costEventsRouter());
+  app.use(validatorRunsRouter());
+  app.use(approvalsRouter());
+  app.use(activityRouter());
+  app.use(secondarySurfacesRouter());
+  app.use(studioEventsRouter(opts.studioEvents));
 
   app.use((req: Request, res: Response) => {
     res.status(404).json({ error: `Not Found: ${req.method} ${req.path}` });
