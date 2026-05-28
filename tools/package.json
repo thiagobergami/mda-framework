@@ -4,11 +4,11 @@
   "description": "MDA spec-driven game development CLI",
   "type": "module",
   "bin": {
-    "mda": "./dist/cli.js"
+    "mda": "./bin/mda.cjs"
   },
   "scripts": {
-    "build": "tsc",
-    "dev": "tsc --watch"
+    "typecheck": "tsc --noEmit",
+    "test": "tsx --test src/scaffold.test.ts"
   },
   "dependencies": {
     "@inquirer/prompts": "^7.10.1",
@@ -20,6 +20,7 @@
   },
   "devDependencies": {
     "@types/node": "^22.0.0",
+    "tsx": "^4.19.0",
     "typescript": "^5.6.0"
   }
 }

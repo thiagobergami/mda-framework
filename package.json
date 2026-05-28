@@ -3,7 +3,7 @@
   "scripts": {
     "spec": "tsx design/pipeline/cli/index.ts",
     "spec:check": "tsc -p design/pipeline/cli/tsconfig.json",
-    "asset-plan": "tsx tools/src/cli.ts asset-plan",
+    "asset-plan": "mda asset-plan",
     "tools:check": "tsc -p tools/tsconfig.json --noEmit",
     "test:asset-plan": "tsx --test tools/src/asset-plan/profile.test.ts tools/src/asset-plan/routing.test.ts tools/src/asset-plan/intake.test.ts tools/src/asset-plan/compose.test.ts tools/src/asset-plan/state.test.ts tools/src/asset-plan/plan-parser.test.ts tools/src/asset-plan/execute.test.ts tools/src/asset-plan/engine-import.test.ts"
   },

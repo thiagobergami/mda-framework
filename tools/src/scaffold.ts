@@ -1,7 +1,10 @@
 import { readFile, writeFile, readdir } from "node:fs/promises";
 import { resolve, join } from "node:path";
+import matter from "gray-matter";
 import { parseAll } from "./parser.js";
 import type { SpecLayer } from "./types.js";
+
+export type FrontmatterOverrides = Record<string, unknown>;
 
 type ScaffoldLayer = "concept" | "aesthetic" | "dynamic" | "mechanic" | "tuning" | "asset" | "binding" | "level";
 
@@ -388,18 +391,34 @@ export interface ScaffoldResult {
   layer: ScaffoldLayer;
 }
 
+/** Merge frontmatter overrides into a generated template body */
+function applyOverrides(content: string, overrides: FrontmatterOverrides): string {
+  if (!overrides || Object.keys(overrides).length === 0) return content;
+  const parsed = matter(content);
+  // Reject overrides for the identity fields — those are scaffolder-owned.
+  const protectedKeys = new Set(["id"]);
+  const merged: Record<string, unknown> = { ...parsed.data };
+  for (const [key, value] of Object.entries(overrides)) {
+    if (protectedKeys.has(key)) continue;
+    merged[key] = value;
+  }
+  return matter.stringify(parsed.content, merged);
+}
+
 /** Create a new spec file from template */
 export async function scaffold(
   root: string,
   layer: ScaffoldLayer,
   name: string,
+  overrides: FrontmatterOverrides = {},
 ): Promise<ScaffoldResult> {
   const config = LAYER_MAP[layer];
   const id = await nextId(root, config.prefix);
   const slug = slugify(name);
   const fileName = `${slug}.${config.ext}`;
   const filePath = resolve(root, config.dir, fileName);
-  const content = template(layer, id, name);
+  const baseContent = template(layer, id, name);
+  const content = applyOverrides(baseContent, overrides);
 
   await writeFile(filePath, content);
 

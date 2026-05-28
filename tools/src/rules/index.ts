@@ -9,7 +9,15 @@ import { bindingCoverage } from "./binding-coverage.js";
 import { frontmatterSchema } from "./frontmatter-schema.js";
 import { levelReferences } from "./level-references.js";
 
-/** All built-in validation rules */
+/**
+ * Multi-engine binding coverage is deferred per
+ * `design/decisions/2026-05-27-multi-engine.md` (D6.MX1). The rule code stays
+ * in tree so a second engine target can re-enable it cheaply, but it does
+ * not run as part of the default rule set today.
+ */
+export const _deferredRules: ValidationRule[] = [bindingCoverage];
+
+/** All built-in validation rules. */
 export const allRules: ValidationRule[] = [
   traceResolution,
   noVacuo,
@@ -17,7 +25,6 @@ export const allRules: ValidationRule[] = [
   tuningCompleteness,
   uniqueIds,
   noOrphans,
-  bindingCoverage,
   frontmatterSchema,
   levelReferences,
 ];
