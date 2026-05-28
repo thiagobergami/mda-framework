@@ -1,0 +1,25 @@
+{
+  "name": "@mda-studio/cli",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "bin": {
+    "mda-studio": "./bin/mda-studio.cjs"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run --coverage",
+    "test:run": "vitest run"
+  },
+  "dependencies": {
+    "@mda-studio/db": "workspace:*",
+    "@mda-studio/shared": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/node": "^20.17.10",
+    "@vitest/coverage-v8": "^2.1.9",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.3",
+    "vitest": "^2.1.9"
+  }
+}
