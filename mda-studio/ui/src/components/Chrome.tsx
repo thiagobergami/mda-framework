@@ -24,6 +24,10 @@ interface ChromeProps {
   onOpenSettings?: () => void;
   /** Highlighted secondary surface (one of "costs"|"org"|"asset-plans"|"settings"|"approvals"). */
   activeView?: string | null;
+  /** Trigger a validator run via the mda-runner (D3.ST3). */
+  onRunValidator?: () => void;
+  /** Lifecycle state for the validate button. */
+  validatorState?: "idle" | "running" | "success" | "fail";
 }
 
 export function Chrome({
@@ -41,6 +45,8 @@ export function Chrome({
   onOpenAssetPlans,
   onOpenSettings,
   activeView,
+  onRunValidator,
+  validatorState = "idle",
 }: ChromeProps): JSX.Element {
   const navButton = (
     id: string,
@@ -78,8 +84,27 @@ export function Chrome({
       </button>
       {search ? <div className="chrome__search-slot">{search}</div> : null}
       <div className="chrome__spacer" />
+      {onRunValidator && (
+        <button
+          type="button"
+          className="chrome__selector"
+          onClick={onRunValidator}
+          disabled={validatorState === "running"}
+          aria-label="Run validator across this game"
+          data-validator-state={validatorState}
+          title="Run mda validate"
+        >
+          {validatorState === "running"
+            ? "Validating…"
+            : validatorState === "success"
+              ? "Validate ✓"
+              : validatorState === "fail"
+                ? "Validate ✗"
+                : "Validate"}
+        </button>
+      )}
       {navButton("costs", "Costs", onOpenCosts)}
-      {navButton("org", "Org", onOpenOrg)}
+      {navButton("org", "Assignees", onOpenOrg)}
       {navButton("asset-plans", "Asset Plans", onOpenAssetPlans)}
       {navButton("settings", "Settings", onOpenSettings)}
       {onOpenActivity && (

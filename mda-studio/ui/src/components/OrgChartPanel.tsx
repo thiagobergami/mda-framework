@@ -28,14 +28,14 @@ export function OrgChartPanel({ gameId }: OrgChartPanelProps): JSX.Element {
 
   if (status === "loading" || status === "idle") {
     return (
-      <section className="org-panel" aria-label="Org chart">
+      <section className="org-panel" aria-label="Observed assignees">
         <p className="muted">Loading roster…</p>
       </section>
     );
   }
   if (status === "error" || !data) {
     return (
-      <section className="org-panel" aria-label="Org chart">
+      <section className="org-panel" aria-label="Observed assignees">
         <p className="warn-badge" role="alert">
           Could not load roster: {error ?? "unknown error"}
         </p>
@@ -46,12 +46,12 @@ export function OrgChartPanel({ gameId }: OrgChartPanelProps): JSX.Element {
   const grouped = groupByLayer(data.agents);
 
   return (
-    <section className="org-panel" aria-label="Org chart">
+    <section className="org-panel" aria-label="Observed assignees">
       <header className="org-panel__head">
-        <h1>Org chart</h1>
+        <h1>Observed assignees</h1>
         <span className="muted">
-          {data.agents.length} agent{data.agents.length === 1 ? "" : "s"}{" "}
-          observed across issues
+          {data.agents.length} assignee{data.agents.length === 1 ? "" : "s"}{" "}
+          observed across issues. Agents will appear here once M3 lands.
         </span>
       </header>
       {data.agents.length === 0 ? (
