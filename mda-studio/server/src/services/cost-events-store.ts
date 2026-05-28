@@ -18,6 +18,7 @@ import {
 } from "@mda-studio/shared";
 import { recordActivity } from "./activity-log-store.js";
 import { publishStudioEvent } from "./studio-events.js";
+import { getCostEventsStore } from "./stores/cost-events-store.js";
 
 const events = new Map<string, CostEvent>();
 let seq = 0;
@@ -69,6 +70,7 @@ export function recordCostEvent(input: CostEventInput): RecordResult {
     createdAt: nowIso(),
   };
   events.set(id, event);
+  void getCostEventsStore().then((s) => s.record(input));
   publishStudioEvent({
     type: "cost-event",
     gameId: event.gameId,
@@ -101,4 +103,21 @@ export function listCostEventsForGame(
 export function clearCostEventsStore(): void {
   events.clear();
   seq = 0;
+  void getCostEventsStore().then((s) => s.clear());
+}
+
+/** Rehydrate the shadow Map from persistence on startup. */
+export async function rehydrateCostEventsFromStore(): Promise<void> {
+  const store = await getCostEventsStore();
+  const { listGames } = await import("./games-registry.js");
+  events.clear();
+  let maxSeq = 0;
+  for (const game of listGames()) {
+    for (const e of await store.listForGame(game.gameId)) {
+      events.set(e.id, e);
+      const m = /^COST-(\d+)$/.exec(e.id);
+      if (m) maxSeq = Math.max(maxSeq, Number(m[1]));
+    }
+  }
+  seq = maxSeq;
 }

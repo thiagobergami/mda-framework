@@ -17,6 +17,7 @@ import {
 } from "@mda-studio/shared";
 import { recordActivity } from "./activity-log-store.js";
 import { publishStudioEvent } from "./studio-events.js";
+import { getApprovalsStore } from "./stores/approvals-store.js";
 
 const approvals = new Map<string, ApprovalSummary>();
 let approvalSeq = 0;
@@ -53,6 +54,7 @@ export function createApproval(input: CreateApprovalInput): ApprovalSummary {
     resolution: null,
   };
   approvals.set(id, approval);
+  void getApprovalsStore().then((s) => s.create(input));
   publishStudioEvent({
     type: "approval-changed",
     studioId: input.studioId,
@@ -114,6 +116,13 @@ export function resolveApproval(
     resolution,
   };
   approvals.set(id, next);
+  void getApprovalsStore().then((s) =>
+    s.resolve(id, {
+      status: patch.status,
+      approverHandle: patch.approverHandle,
+      comment: patch.comment,
+    }),
+  );
   publishStudioEvent({
     type: "approval-changed",
     studioId: next.studioId,
@@ -159,4 +168,22 @@ export function countPendingApprovalsForStudio(studioId: string): number {
 export function clearApprovalsStore(): void {
   approvals.clear();
   approvalSeq = 0;
+  void getApprovalsStore().then((s) => s.clear());
+}
+
+/** Rehydrate the shadow Map from persistence on startup. */
+export async function rehydrateApprovalsFromStore(
+  studioIds: readonly string[],
+): Promise<void> {
+  const store = await getApprovalsStore();
+  approvals.clear();
+  let maxSeq = 0;
+  for (const studioId of studioIds) {
+    for (const a of await store.listForStudio(studioId)) {
+      approvals.set(a.id, a);
+      const m = /^APV-(\d+)$/.exec(a.id);
+      if (m) maxSeq = Math.max(maxSeq, Number(m[1]));
+    }
+  }
+  approvalSeq = maxSeq;
 }

@@ -11,3 +11,4 @@ export * from "./activity";
 export * from "./costs-detail";
 export * from "./agents";
 export * from "./asset-plans";
+export * from "./schemas/mda-cli";

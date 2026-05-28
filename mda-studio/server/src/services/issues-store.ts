@@ -1,10 +1,10 @@
 /**
- * In-memory issues store, plus comments and work products.
+ * Issues facade — sync shadow + async persistence (D5.DB1b).
  *
- * Phase U3 keeps this in-process to unblock the drawer UI before the
- * `issues` table lands. The shape mirrors the wire schemas in
- * `@mda-studio/shared/issues`. When the persistent store arrives this file
- * is replaced by a Drizzle-backed module that exposes the same methods.
+ * The Maps below are the read-path source of truth. Every mutation also
+ * persists to the configured store (memory or db) so a restart can
+ * rehydrate the shadow from disk. The shadow + async-write pattern keeps
+ * the existing free-function API intact so route files don't change.
  */
 
 import {
@@ -17,6 +17,7 @@ import {
 } from "@mda-studio/shared";
 import { recordActivity } from "./activity-log-store.js";
 import { publishStudioEvent } from "./studio-events.js";
+import { getIssuesStore } from "./stores/issues-store.js";
 
 const issues = new Map<string, IssueSummary>();
 const comments = new Map<string, CommentSummary>();
@@ -56,6 +57,7 @@ export function createIssue(input: CreateIssueInput): IssueSummary {
     updatedAt: nowIso(),
   };
   issues.set(id, issue);
+  void getIssuesStore().then((s) => s.createIssue(input));
   publishStudioEvent({
     type: "node-changed",
     gameId: issue.gameId,
@@ -111,6 +113,9 @@ export function updateIssue(
     updatedAt: nowIso(),
   };
   issues.set(id, next);
+  if (patch.status !== undefined && patch.status !== current.status) {
+    void getIssuesStore().then((s) => s.updateIssue(id, { status: patch.status }));
+  }
   if (patch.status !== undefined && patch.status !== current.status) {
     publishStudioEvent({
       type: "issue-status-changed",
@@ -243,4 +248,35 @@ export function clearIssuesStore(): void {
   issueSeq = 0;
   commentSeq = 0;
   workProductSeq = 0;
+  void getIssuesStore().then((s) => s.clear());
+}
+
+/**
+ * Rehydrate the shadow Maps from the persistence store. Called from
+ * `server/src/index.ts` after startup so DB-backed runs survive restarts.
+ */
+export async function rehydrateIssuesFromStore(): Promise<void> {
+  const store = await getIssuesStore();
+  // Only games we know about — issue rows for unregistered games would
+  // confuse the in-memory shadow.
+  // For V1 we just load every issue; the per-game filter happens at read.
+  // Rehydrate is expected to run once on boot.
+  const allByGame = new Map<string, IssueSummary[]>();
+  // Pull issues for every game we know about. The caller is expected to
+  // run this *after* the games-registry rehydrate so listForGame queries
+  // produce results.
+  const { listGames } = await import("./games-registry.js");
+  for (const game of listGames()) {
+    allByGame.set(game.gameId, await store.listForGame(game.gameId));
+  }
+  issues.clear();
+  let maxSeq = 0;
+  for (const [, list] of allByGame) {
+    for (const issue of list) {
+      issues.set(issue.id, issue);
+      const m = /^ISS-(\d+)$/.exec(issue.id);
+      if (m) maxSeq = Math.max(maxSeq, Number(m[1]));
+    }
+  }
+  issueSeq = maxSeq;
 }
