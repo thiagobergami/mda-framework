@@ -1,13 +1,18 @@
 /**
- * In-memory registry mapping game ids to workspace roots.
+ * Games registry — public facade for the rest of the server.
  *
- * Phase U2 keeps this in-process so the server has *something* to serve
- * without depending on a persisted `games` table yet. The configuration
- * comes from env vars resolved at startup (see `app.ts`).
+ * D5.DB1b: this module is now a thin wrapper around `GamesStore` (memory
+ * or DB, chosen by `MDA_STUDIO_PERSISTENCE`). The free-function API is
+ * preserved so route files don't change, but the underlying implementation
+ * is swappable.
  *
- * Real game registration moves into the `games` Drizzle table in a later
- * phase. The shape here (`gameId → specsRoot`) is forward-compatible.
+ * Game registration also starts a `spec-watcher` (D3.EN3) so the UI
+ * reflects on-disk edits. The watcher lives outside the store; the store
+ * is pure persistence.
  */
+
+import { startSpecWatcher, type SpecWatcherHandle } from "./spec-watcher.js";
+import { getGamesStore } from "./stores/games-store.js";
 
 export interface GameRegistration {
   gameId: string;
@@ -18,25 +23,61 @@ export interface GameRegistration {
   conceptTitle: string;
 }
 
-const games = new Map<string, GameRegistration>();
+const watchers = new Map<string, SpecWatcherHandle>();
+
+// Synchronous shadow cache. Most callers (routes, the SSE bus, the spec
+// tree assembler) consume registrations synchronously and would be painful
+// to refactor to await. The shadow stays consistent because every mutation
+// updates it inline alongside the async store write.
+const shadow = new Map<string, GameRegistration>();
 
 export function registerGame(reg: GameRegistration): void {
-  games.set(reg.gameId, reg);
+  shadow.set(reg.gameId, reg);
+  void getGamesStore().then((s) => s.register(reg));
+  stopWatcherFor(reg.gameId);
+  try {
+    watchers.set(reg.gameId, startSpecWatcher(reg.gameId, reg.specsRoot));
+  } catch {
+    /* watcher failed; manual refresh still works */
+  }
 }
 
 export function unregisterGame(gameId: string): void {
-  games.delete(gameId);
+  shadow.delete(gameId);
+  void getGamesStore().then((s) => s.unregister(gameId));
+  stopWatcherFor(gameId);
 }
 
 export function getGame(gameId: string): GameRegistration | undefined {
-  return games.get(gameId);
+  return shadow.get(gameId);
 }
 
 export function listGames(): GameRegistration[] {
-  return Array.from(games.values());
+  return Array.from(shadow.values());
 }
 
-/** Test-only convenience to reset the registry between specs. */
 export function clearGames(): void {
-  games.clear();
+  for (const gameId of shadow.keys()) stopWatcherFor(gameId);
+  shadow.clear();
+  void getGamesStore().then((s) => s.clear());
+}
+
+/**
+ * Reload the shadow cache from the persistent store. Tests with
+ * `MDA_STUDIO_PERSISTENCE=db` call this after restart simulations to
+ * verify rows survived.
+ */
+export async function rehydrateGamesFromStore(): Promise<void> {
+  const store = await getGamesStore();
+  shadow.clear();
+  for (const row of await store.list()) {
+    shadow.set(row.gameId, { ...row });
+  }
+}
+
+function stopWatcherFor(gameId: string): void {
+  const handle = watchers.get(gameId);
+  if (!handle) return;
+  watchers.delete(gameId);
+  handle.close().catch(() => {});
 }

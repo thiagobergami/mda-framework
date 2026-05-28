@@ -3,9 +3,12 @@ import { healthPath } from "@mda-studio/shared";
 import { requestId } from "./middleware/request-id.js";
 import { activityRouter } from "./routes/activity.js";
 import { approvalsRouter } from "./routes/approvals.js";
+import { assetPlanActionsRouter } from "./routes/asset-plan-actions.js";
 import { costEventsRouter } from "./routes/cost-events.js";
+import { gamesRouter } from "./routes/games.js";
 import { issuesRouter } from "./routes/issues.js";
 import { secondarySurfacesRouter } from "./routes/secondary-surfaces.js";
+import { specsRouter } from "./routes/specs.js";
 import { specTreeRouter } from "./routes/spec-tree.js";
 import {
   studioEventsRouter,
@@ -27,6 +30,9 @@ export function createApp(opts: CreateAppOptions = {}): Express {
     res.status(200).json({ status: "ok" });
   });
 
+  app.use(gamesRouter());
+  app.use(specsRouter());
+  app.use(assetPlanActionsRouter());
   app.use(specTreeRouter());
   app.use(issuesRouter());
   app.use(costEventsRouter());
