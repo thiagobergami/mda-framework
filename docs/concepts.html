@@ -196,6 +196,68 @@
         </p>
       </div>
 
+      <h2 id="dogfood">What a real cascade looks like</h2>
+      <p>
+        The repository ships a complete cascade as its dogfood reference:
+        <strong>Cozy Hide and Seek</strong> &mdash; a 60-second hide-and-seek
+        round for 2&ndash;4 friends. Read it whenever you need a concrete
+        example of how the layers chain together.
+      </p>
+
+      <div class="diagram">
+<pre><code>Concept       cozy-hide-and-seek.concept.md             (GAME-001)
+              "Cozy 60s rounds, no eliminations, role rotation on find."
+
+Aesthetics    round-fellowship.aes.md                   (AES-001)
+              Primary: Fellowship.  Proxies: post-find chat density &gt; 0.5,
+              &gt;=80% sessions reach round 4.  Anti-pattern: anyone gets stuck losing.
+
+              cozy-register.aes.md                      (AES-002)  Primary: Sensation
+              hiding-spot-discovery.aes.md              (AES-003)  Primary: Discovery
+
+Dynamics      round-tension-loop.dyn.md                 (DYN-001)
+              60s timer caps the tension spike.  INV-1: timer never exceeds 60s.
+
+              role-rotation-loop.dyn.md                 (DYN-002)
+              First found becomes next seeker.  INV-1: nobody is "out".
+
+              spot-novelty-loop.dyn.md                  (DYN-003)
+              Repeat-spot pressure across the session, not the round.
+
+Mechanics     round-lifecycle.mec.md                    (MEC-004)
+              5 rules: ready -&gt; round -&gt; find/timeout -&gt; summary -&gt; lobby.
+              Server-authoritative timer.  Find before role-swap calc.
+
+              hide-and-seek-actions.mec.md              (MEC-005)
+              5 rules: hide, persist, cancel, find (with LOS), spot-novelty track.
+
+              cozy-presentation-layer.mec.md            (MEC-006)
+              Hint UI fires when novelty threshold crosses; pastel palette only.
+
+Tuning        round-and-actions.tune.md                 (TUN-001)
+              roundDurationSeconds: 60 [45-90]   High sensitivity
+              findRangeStuds:        8 [5-15]    High sensitivity
+              hidingCapacityDefault: 1 [1-3]     Medium sensitivity
+              ... and four more
+
+Assets        cozy-hiding-spot.asset.md                 (AST-001)  5 variants, &lt;1.5K tris
+              cozy-hud-palette.asset.md                 (AST-002)  6 named colours, rounded UI
+
+Level         design/levels/sunlit-den.level.md         (LVL-001, blockout)
+              8x5 stud Den + Foyer + LobbyPad.  Refs: AES-001/2/3, DYN-001/2/3,
+              MEC-004/5/6, AST-001/2.</code></pre>
+      </div>
+
+      <p>
+        Run <code>npx mda validate</code> at the repo root &mdash; the
+        cascade exits 0. Read it as a worked example of every concept
+        below: the 8 aesthetic categories, observable proxies, feedback
+        loops with invariants, behavioural contracts, and parameter ranges.
+        The friction surfaced while authoring it lives at
+        <code>design/decisions/2026-05-27-dogfood-log.md</code> and feeds
+        the next round of CLI / wizard / schema fixes.
+      </p>
+
       <h2 id="aesthetics">The 8 Aesthetic Categories</h2>
       <p>
         The MDA paper replaces vague words like "fun" with a directed vocabulary of 8 aesthetic categories.
