@@ -60,46 +60,25 @@ pnpm install
 
 ### Register a game
 
-The studio needs to know where a game's `specs/` and `design/` live.
-For V1 this comes from environment variables, set when you boot the
-server. (When the persistent `games` table lands, this becomes a DB
-write — the env path remains as a bootstrap fallback.)
-
-The required variables:
-
-| Variable                            | What it is                                                  |
-|-------------------------------------|-------------------------------------------------------------|
-| `MDA_STUDIO_GAME_ID`                | URL-safe id, e.g. `virus-hunter`                            |
-| `MDA_STUDIO_GAME_NAME`              | Human label shown in chrome and game cards                  |
-| `MDA_STUDIO_GAME_SPECS_ROOT`        | Absolute path containing `specs/` and `design/`             |
-| `MDA_STUDIO_GAME_CONCEPT_PATH`      | Path to the concept doc, relative to `SPECS_ROOT`           |
-| `MDA_STUDIO_GAME_PRIMARY_AESTHETIC` | Free text, surfaced in chrome                               |
-| `MDA_STUDIO_GAME_CONCEPT_TITLE`     | Free text, the title shown on the game card and tree head   |
-| `MDA_STUDIO_SEED_FIXTURE_ISSUES`    | `true` to seed demo issues / costs / approvals on boot      |
-
-### Boot
-
-Two processes — the API server and the Vite dev UI:
+The studio's home screen has a **Register a game** form. Point it at any
+folder that contains `specs/concept/*.concept.md` and the studio adopts it:
+the `games-registry` indexes the workspace, starts a `spec-watcher`, and
+adds a card to the home grid.
 
 ```bash
 # terminal 1 — API at 127.0.0.1:3100
-MDA_STUDIO_GAME_ID=virus-hunter \
-MDA_STUDIO_GAME_NAME="Virus Hunter" \
-MDA_STUDIO_GAME_SPECS_ROOT=/abs/path/to/your/repo \
-MDA_STUDIO_GAME_CONCEPT_PATH=specs/concept/virus-hunter.concept.md \
-MDA_STUDIO_GAME_PRIMARY_AESTHETIC=Fellowship \
-MDA_STUDIO_GAME_CONCEPT_TITLE="Virus Hunter" \
-MDA_STUDIO_SEED_FIXTURE_ISSUES=true \
 pnpm --filter @mda-studio/server dev
 
 # terminal 2 — UI at 127.0.0.1:3101 (proxies /api → 3100)
 pnpm --filter @mda-studio/ui dev
 ```
 
-### Open
+Open <http://127.0.0.1:3101>, fill in the workspace path, and click
+**Register game**. The MDA spec tree is your home.
 
-Visit <http://127.0.0.1:3101>. You should see a single game card.
-Click it. The MDA spec tree is your home.
+> **API down?** The UI falls back to a bundled `virus-hunter` fixture
+> tree so the surface always renders. The chrome shows a `local fixture`
+> badge so the source is honest.
 
 > **API down?** The UI falls back to a bundled `virus-hunter` fixture
 > tree so the surface always renders. The chrome shows a `local fixture`
@@ -594,3 +573,35 @@ trigger it externally and POST the result, or seed via
 *This guide describes the spec-tree-first UI as of Phase U8. Future
 phases (persistent DB tables, cross-browser e2e) are tracked in
 `mda-studio/ui/README.md`.*
+
+---
+
+## Appendix — CI bootstrap (env vars)
+
+The interactive **Register a game** form (§ 2.3) is the right path for
+operators. CI and demo-seeding scripts can still bootstrap a game from
+environment variables read by `server/src/index.ts` on boot:
+
+| Variable                            | What it is                                                  |
+|-------------------------------------|-------------------------------------------------------------|
+| `MDA_STUDIO_GAME_ID`                | URL-safe id, e.g. `virus-hunter`                            |
+| `MDA_STUDIO_GAME_NAME`              | Human label shown in chrome and game cards                  |
+| `MDA_STUDIO_GAME_SPECS_ROOT`        | Absolute path containing `specs/` and `design/`             |
+| `MDA_STUDIO_GAME_CONCEPT_PATH`      | Path to the concept doc, relative to `SPECS_ROOT`           |
+| `MDA_STUDIO_GAME_PRIMARY_AESTHETIC` | Free text, surfaced in chrome                               |
+| `MDA_STUDIO_GAME_CONCEPT_TITLE`     | Free text, the title shown on the game card and tree head   |
+| `MDA_STUDIO_SEED_FIXTURE_ISSUES`    | `true` to seed demo issues / costs / approvals on boot      |
+
+```bash
+MDA_STUDIO_GAME_ID=virus-hunter \
+MDA_STUDIO_GAME_NAME="Virus Hunter" \
+MDA_STUDIO_GAME_SPECS_ROOT=/abs/path/to/your/repo \
+MDA_STUDIO_GAME_CONCEPT_PATH=specs/concept/virus-hunter.concept.md \
+MDA_STUDIO_GAME_PRIMARY_AESTHETIC=Fellowship \
+MDA_STUDIO_GAME_CONCEPT_TITLE="Virus Hunter" \
+MDA_STUDIO_SEED_FIXTURE_ISSUES=true \
+pnpm --filter @mda-studio/server dev
+```
+
+Operators authoring locally should use the form instead — env-var
+registration leaves no trace once the process exits.

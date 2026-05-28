@@ -13,6 +13,7 @@ import { CommandPalette } from "./components/CommandPalette";
 import { CostsDetailPanel } from "./components/CostsDetailPanel";
 import { EmptyTreeCta } from "./components/EmptyTreeCta";
 import { GameCardGrid } from "./components/GameCardGrid";
+import { NewGameForm } from "./components/NewGameForm";
 import { KeymapHelp } from "./components/KeymapHelp";
 import { LensBar } from "./components/LensBar";
 import { NodeDrawer } from "./components/NodeDrawer";
@@ -23,6 +24,7 @@ import { SpecTree } from "./components/SpecTree";
 import { fixtureGameCards } from "./fixtures/virus-hunter";
 import { useApprovals } from "./hooks/useApprovals";
 import { useGlobalShortcuts } from "./hooks/useGlobalShortcuts";
+import { useRegisteredGames } from "./hooks/useRegisteredGames";
 import { useSpecNodeDetail } from "./hooks/useSpecNodeDetail";
 import { useSpecTree, type SpecTreeSource } from "./hooks/useSpecTree";
 import { useStudioEvents } from "./hooks/useStudioEvents";
@@ -69,6 +71,32 @@ export function App(): JSX.Element {
   const openAssetPlans = useCallback(() => setView("asset-plans"), [setView]);
   const openSettings = useCallback(() => setView("settings"), [setView]);
   const closeView = useCallback(() => setView(null), [setView]);
+
+  // Validator-button lifecycle (D3.ST3). The button posts to
+  // `/api/games/:id/validator/runs` which now drives `mda validate --json`
+  // server-side; the result fans out via SSE so other tabs update too.
+  const [validatorState, setValidatorState] = useState<
+    "idle" | "running" | "success" | "fail"
+  >("idle");
+  const runValidator = useCallback(async () => {
+    if (!gameId) return;
+    setValidatorState("running");
+    try {
+      const res = await fetch(`/api/games/${gameId}/validator/runs`, {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: "{}",
+      });
+      if (!res.ok) {
+        setValidatorState("fail");
+        return;
+      }
+      const run = (await res.json()) as { warnings: { rule: string }[] };
+      setValidatorState(run.warnings.length === 0 ? "success" : "fail");
+    } catch {
+      setValidatorState("fail");
+    }
+  }, [gameId]);
 
   const setActivityOpen = useCallback(
     (open: boolean) => {
@@ -177,8 +205,13 @@ export function App(): JSX.Element {
     },
   });
 
+  // Real registered games come from /api/games. Fixture cards still show in
+  // demo mode (Q2) but the live list wins when both are present.
+  const registeredGames = useRegisteredGames();
   const currentGameName = gameId
-    ? fixtureGameCards.find((c) => c.gameId === gameId)?.name ?? null
+    ? registeredGames.data?.find((g) => g.gameId === gameId)?.name ??
+      fixtureGameCards.find((c) => c.gameId === gameId)?.name ??
+      null
     : null;
 
   const isSecondaryView =
@@ -237,6 +270,8 @@ export function App(): JSX.Element {
         onOpenAssetPlans={gameId ? openAssetPlans : undefined}
         onOpenSettings={openSettings}
         activeView={view}
+        onRunValidator={gameId ? runValidator : undefined}
+        validatorState={validatorState}
         search={
           showSearch ? (
             <SearchInput
@@ -270,7 +305,35 @@ export function App(): JSX.Element {
         ) : view === "settings" ? (
           <SettingsPanel />
         ) : !gameId ? (
-          <GameCardGrid cards={fixtureGameCards} onOpen={openGame} />
+          <div className="home">
+            {registeredGames.data && registeredGames.data.length > 0 ? (
+              <GameCardGrid
+                cards={registeredGames.data.map((g) => ({
+                  gameId: g.gameId,
+                  studioId: DEFAULT_STUDIO_ID,
+                  name: g.name,
+                  conceptSummary: g.conceptTitle,
+                  primaryAesthetic: g.primaryAesthetic,
+                  mtdSpendCents: 0,
+                  activeAgentCount: 0,
+                  openRecoveryIssueCount: 0,
+                }))}
+                onOpen={openGame}
+              />
+            ) : null}
+            {registeredGames.data && registeredGames.data.length === 0 ? (
+              <NewGameForm
+                onRegistered={(g) => {
+                  registeredGames.refetch();
+                  openGame(g.gameId);
+                }}
+              />
+            ) : null}
+            {/* Demo fixture cards still render in demo mode (D5.Q2). */}
+            {fixtureGameCards.length > 0 && (
+              <GameCardGrid cards={fixtureGameCards} onOpen={openGame} />
+            )}
+          </div>
         ) : (
           <GameContainer
             gameId={gameId}
@@ -489,7 +552,11 @@ function GameView({
             <span>{tree.nodes.length} specs</span>
           </div>
           {tree.nodes.length === 0 ? (
-            <EmptyTreeCta conceptTitle={tree.concept.title} />
+            <EmptyTreeCta
+              conceptTitle={tree.concept.title}
+              gameId={tree.gameId}
+              onCreated={onIssueChanged}
+            />
           ) : (
             <SpecTree
               nodes={tree.nodes}

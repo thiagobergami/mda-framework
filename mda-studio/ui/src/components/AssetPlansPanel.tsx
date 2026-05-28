@@ -1,11 +1,14 @@
 /**
- * Read-only asset-plan executor states (plan §14 U7).
+ * Asset-plan operator surface.
  *
  * Scans `<specsRoot>/design/asset-plans/<asset-id>/` on the server and
- * surfaces each per-asset directory's state. Triggering generate / exec
- * / import from the UI is deferred (plan §17 OQ5).
+ * surfaces each per-asset directory's state. D6.EN4 added live triggers
+ * for `generate` / `exec` / `import`; each row carries its own state
+ * machine so the operator can drive the pipeline without dropping to the
+ * CLI.
  */
 
+import { useState } from "react";
 import {
   type AssetPlanEntry,
   type AssetPlanState,
@@ -24,8 +27,54 @@ interface AssetPlansPanelProps {
   gameId: string;
 }
 
+type RowAction = "generate" | "exec" | "import";
+type RowStatus = "idle" | "running" | "ok" | "fail";
+
+interface RowFeedback {
+  status: RowStatus;
+  message: string | null;
+}
+
 export function AssetPlansPanel({ gameId }: AssetPlansPanelProps): JSX.Element {
-  const { status, data, error } = useAssetPlans({ gameId });
+  const { status, data, error, refetch } = useAssetPlans({ gameId });
+  const [feedback, setFeedback] = useState<Record<string, RowFeedback>>({});
+
+  const runAction = async (assetId: string, action: RowAction) => {
+    setFeedback((f) => ({
+      ...f,
+      [assetId]: { status: "running", message: `${action} running…` },
+    }));
+    try {
+      const res = await fetch(
+        `/api/games/${gameId}/asset-plans/${assetId}/${action}`,
+        { method: "POST", headers: { "content-type": "application/json" }, body: "{}" },
+      );
+      if (!res.ok) {
+        const body = (await res.json().catch(() => ({}))) as { error?: string };
+        setFeedback((f) => ({
+          ...f,
+          [assetId]: {
+            status: "fail",
+            message: body.error ?? `${action} failed (${res.status})`,
+          },
+        }));
+        return;
+      }
+      setFeedback((f) => ({
+        ...f,
+        [assetId]: { status: "ok", message: `${action} complete` },
+      }));
+      refetch?.();
+    } catch (err) {
+      setFeedback((f) => ({
+        ...f,
+        [assetId]: {
+          status: "fail",
+          message: err instanceof Error ? err.message : String(err),
+        },
+      }));
+    }
+  };
 
   if (status === "loading" || status === "idle") {
     return (
@@ -63,7 +112,12 @@ export function AssetPlansPanel({ gameId }: AssetPlansPanelProps): JSX.Element {
       ) : (
         <ul className="asset-plans-list">
           {data.entries.map((e) => (
-            <AssetPlanRow key={e.assetId} entry={e} />
+            <AssetPlanRow
+              key={e.assetId}
+              entry={e}
+              feedback={feedback[e.assetId] ?? null}
+              onAction={(action) => runAction(e.assetId, action)}
+            />
           ))}
         </ul>
       )}
@@ -71,7 +125,16 @@ export function AssetPlansPanel({ gameId }: AssetPlansPanelProps): JSX.Element {
   );
 }
 
-function AssetPlanRow({ entry }: { entry: AssetPlanEntry }): JSX.Element {
+function AssetPlanRow({
+  entry,
+  feedback,
+  onAction,
+}: {
+  entry: AssetPlanEntry;
+  feedback: RowFeedback | null;
+  onAction: (action: RowAction) => void;
+}): JSX.Element {
+  const busy = feedback?.status === "running";
   return (
     <li
       className="asset-plans-row"
@@ -94,6 +157,22 @@ function AssetPlanRow({ entry }: { entry: AssetPlanEntry }): JSX.Element {
           </code>
         )}
       </div>
+      <div className="asset-plans-row__actions">
+        <button type="button" disabled={busy} onClick={() => onAction("generate")}>
+          Generate
+        </button>
+        <button type="button" disabled={busy} onClick={() => onAction("exec")}>
+          Exec
+        </button>
+        <button type="button" disabled={busy} onClick={() => onAction("import")}>
+          Import
+        </button>
+      </div>
+      {feedback?.message && (
+        <p className="asset-plans-row__feedback" data-status={feedback.status}>
+          {feedback.message}
+        </p>
+      )}
     </li>
   );
 }

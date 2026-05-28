@@ -251,8 +251,14 @@ Onboarding level. References AES-001, DYN-001, MEC-001. Three beats:
 introduction → first downed player → first cooperative revive.`,
 };
 
-/** Studio home grid fixture. */
-export const fixtureGameCards: GameCard[] = [
+/**
+ * Studio home grid fixture (D5.Q2).
+ *
+ * Gated behind VITE_MDA_STUDIO_DEMO so production-style installs don't render
+ * the demo card alongside real games. Vitest builds set the flag through
+ * the test setup, so component tests still see the fixture.
+ */
+const DEMO_CARDS: GameCard[] = [
   {
     gameId: "virus-hunter",
     studioId: "studio-1",
@@ -264,3 +270,14 @@ export const fixtureGameCards: GameCard[] = [
     openRecoveryIssueCount: 2,
   },
 ];
+
+function demoEnabled(): boolean {
+  // Vitest sets `import.meta.env.MODE === "test"`; the demo flag opts in
+  // explicitly otherwise.
+  const env = (import.meta as unknown as { env?: Record<string, string> }).env ?? {};
+  if (env["VITE_MDA_STUDIO_DEMO"] === "1") return true;
+  if (env["MODE"] === "test") return true;
+  return false;
+}
+
+export const fixtureGameCards: readonly GameCard[] = demoEnabled() ? DEMO_CARDS : [];
