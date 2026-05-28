@@ -6,6 +6,14 @@ scope: framework-tool
 
 # MDA Logger — Structured Runtime Logging
 
+## Engine scope
+
+This mechanic ships as a Roblox / Luau module
+(`src/shared/MDALogger.luau`). Ports to Unity, Unreal, or any other engine
+are deferred until the multi-engine track re-opens — see
+[`design/decisions/2026-05-27-multi-engine.md`](../../design/decisions/2026-05-27-multi-engine.md)
+(D6.RT2).
+
 ## Purpose
 
 A development-time logging system that tags every runtime event with its MDA layer and spec ID.

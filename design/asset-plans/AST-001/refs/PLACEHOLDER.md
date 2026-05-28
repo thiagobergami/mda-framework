@@ -1,0 +1,1 @@
+Sketch / placeholder reference for AST-001 cozy hiding spot — replaced with real reference imagery before draft pass.

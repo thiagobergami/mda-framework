@@ -15,6 +15,26 @@ Bidirectional links between all spec layers. Use this to navigate in both direct
 
 | GAME-001 Don't get virus | — | — | — | — | Concept gate |
 
+| GAME-001 Cozy Hide and Seek | — | — | — | — | Concept gate |
+
+| AES-001 Round Fellowship | | | | | Proxy checks |
+
+| AES-002 Cozy Register | | | | | Proxy checks |
+
+| AES-003 Hiding Spot Discovery | | | | | Proxy checks |
+
+| | DYN-001 Round Tension Loop | | | | Invariant checks |
+
+| | DYN-002 Role Rotation Loop | | | | Invariant checks |
+
+| | DYN-003 Spot Novelty Loop | | | | Invariant checks |
+
+| | | MEC-004 Round Lifecycle | | | Contract tests |
+
+| | | MEC-005 Hide And Seek Actions | | | Contract tests |
+
+| | | MEC-006 Cozy Presentation Layer | | | Contract tests |
+
 ## Levels
 
 Level specs live in `design/levels/` (not `specs/`). They reference M/D/A specs by ID and
