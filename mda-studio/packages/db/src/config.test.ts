@@ -13,10 +13,11 @@ describe("resolveDatabaseConfig", () => {
     });
   });
 
-  it("returns kind=embedded with default dataDir when DATABASE_URL is unset", () => {
+  it("returns kind=embedded with pglite driver and default dataDir when DATABASE_URL is unset", () => {
     const cfg = resolveDatabaseConfig({ env: {}, home: "/home/user" });
     expect(cfg).toEqual({
       kind: "embedded",
+      driver: "pglite",
       dataDir: "/home/user/.mda-studio/instances/default/db",
     });
   });
@@ -28,8 +29,30 @@ describe("resolveDatabaseConfig", () => {
     });
     expect(cfg).toEqual({
       kind: "embedded",
+      driver: "pglite",
       dataDir: "/home/user/.mda-studio/instances/test-1/db",
     });
+  });
+
+  it("opts in to embedded-postgres when MDA_STUDIO_DB_DRIVER is set", () => {
+    const cfg = resolveDatabaseConfig({
+      env: { MDA_STUDIO_DB_DRIVER: "embedded-postgres" },
+      home: "/home/user",
+    });
+    expect(cfg).toEqual({
+      kind: "embedded",
+      driver: "embedded-postgres",
+      dataDir: "/home/user/.mda-studio/instances/default/db",
+    });
+  });
+
+  it("rejects unknown driver names", () => {
+    expect(() =>
+      resolveDatabaseConfig({
+        env: { MDA_STUDIO_DB_DRIVER: "sqlite" },
+        home: "/home/user",
+      }),
+    ).toThrow(/MDA_STUDIO_DB_DRIVER/);
   });
 
   it("rejects an empty DATABASE_URL as malformed", () => {
