@@ -132,10 +132,11 @@
         </p>
       </div>
 
-      <h2 id="layers">The three layers</h2>
+      <h2 id="layers">The five packages</h2>
       <p>
-        The studio is a pnpm workspace with one wire-contract package +
-        one server + one UI. Each layer has a single concern.
+        The studio is a pnpm workspace with five packages, each with a
+        single concern. V1-lite added the <code>db</code> and <code>cli</code>
+        packages to the original three.
       </p>
       <div class="diagram">
 <pre><code>+-------------------------------------------------------------+
@@ -145,16 +146,24 @@
 |  |  fetch + EventSource over /api  (Vite proxy -&gt; :3100)     |
 |  v                                                          |
 | @mda-studio/server  (Express + tsx)                         |
-| routes / services / in-memory stores / SSE publisher        |
-|  ^                                                          |
-|  |  workspace:* imports - shared zod schemas                 |
-|  v                                                          |
-| @mda-studio/shared  (TypeScript + zod)                      |
-| wire schemas + MDA vocabulary (layers/statuses/glyphs)      |
+| routes / services / stores (memory|db) / mda-runner /       |
+| spec-watcher / SSE publisher                                |
+|  ^                                  ^                       |
+|  |  workspace:* imports             |  subprocess via       |
+|  v                                  |  npx mda --json       |
+| @mda-studio/shared  (TypeScript + zod)        +-------------+
+| wire schemas + MDA vocabulary +               |  mda CLI    |
+| CLI JSON contracts (mda-cli.ts)               |  (tools/)   |
+|                                               +-------------+
+| @mda-studio/db                                              |
+| resolveDatabaseConfig (pglite|pg) + drizzle schema +        |
+| createClient                                                |
+|                                                             |
+| @mda-studio/cli  (mda-studio onboard)                       |
 +-------------------------------------------------------------+</code></pre>
       </div>
 
-      <p>Two rules hold this together:</p>
+      <p>Three rules hold this together:</p>
       <ol class="steps">
         <li>
           <strong>The wire contract is the only shared code.</strong> Every
@@ -164,9 +173,18 @@
           validation on the other.
         </li>
         <li>
+          <strong>The CLI is the only engine.</strong> The server never
+          re-implements validators, gates, or scaffolding. It spawns
+          <code>npx mda &lt;cmd&gt; --json</code> via the
+          <code>mda-runner</code> service and parses the output through the
+          shared CLI schemas (also in <code>@mda-studio/shared</code>, so
+          drift breaks one test suite immediately).
+        </li>
+        <li>
           <strong>No layer reaches over its peer.</strong> UI never imports
-          server code; server never imports UI code. Both depend only on
-          <code>shared</code>.
+          server code; server never imports UI code. Both depend on
+          <code>shared</code>; the server additionally depends on
+          <code>db</code>.
         </li>
       </ol>
 
@@ -259,35 +277,123 @@
       <p>
         <code>routes/</code> are thin Express handlers that parse
         params/body, call a service, and shape the response.
-        <code>services/</code> hold business logic + in-memory state with
-        no Express types. Each service is unit-testable in isolation; the
-        routes get integration tests against <code>createApp()</code>.
+        <code>services/</code> hold business logic + state with no Express
+        types. Each service is unit-testable in isolation; the routes get
+        integration tests against <code>createApp()</code>.
       </p>
 
-      <h3>In-memory stores</h3>
-      <p>Each rebuilt on process restart:</p>
+      <h3>Stores: facade + factory + memory / db</h3>
+      <p>
+        Each operational store has three files under
+        <code>services/stores/</code>:
+      </p>
+      <ul>
+        <li><code>&lt;name&gt;-store.ts</code> &mdash; an interface plus a tiny
+          factory that picks <code>memory</code> or <code>db</code> based on
+          <code>MDA_STUDIO_PERSISTENCE</code>.</li>
+        <li><code>&lt;name&gt;-store-memory.ts</code> &mdash; pure in-process
+          impl with plain <code>Map</code>s. Fast tests; nothing survives a
+          restart.</li>
+        <li><code>&lt;name&gt;-store-db.ts</code> &mdash; Drizzle-backed impl
+          using the <code>sql</code> tagged-template helper so the same SQL
+          works against pglite and node-postgres.</li>
+      </ul>
+
+      <p>
+        The legacy free-function files
+        (<code>games-registry.ts</code>, <code>issues-store.ts</code>,
+        <code>cost-events-store.ts</code>, <code>approvals-store.ts</code>)
+        are now <strong>facades</strong>: each holds a sync shadow
+        <code>Map</code> for the read path, schedules an async
+        write-through to the configured store, and exposes a
+        <code>rehydrate*FromStore()</code> function that
+        <code>server/src/index.ts</code> calls on boot to repopulate the
+        shadow. Routes never await &mdash; they keep their existing sync
+        imports.
+      </p>
+
       <table>
-        <thead><tr><th>Store</th><th>Backed by</th></tr></thead>
+        <thead><tr><th>Store</th><th>Memory shape</th><th>DB shape</th></tr></thead>
         <tbody>
-          <tr><td><code>games-registry</code></td><td><code>Map&lt;gameId, GameRegistration&gt;</code> populated from env at boot</td></tr>
-          <tr><td><code>spec-cache</code></td><td><code>Map&lt;gameId, CacheEntry&gt;</code> rebuilt on demand from disk</td></tr>
-          <tr><td><code>issues-store</code></td><td><code>Map&lt;id, IssueSummary&gt;</code> + comment/work-product maps</td></tr>
-          <tr><td><code>cost-events-store</code></td><td><code>Map&lt;id, CostEvent&gt;</code> with monotonic <code>COST-NNN</code> ids</td></tr>
-          <tr><td><code>approvals-store</code></td><td><code>Map&lt;id, ApprovalSummary&gt;</code> with pending counter</td></tr>
-          <tr><td><code>validator-runs-store</code></td><td><code>Map&lt;gameId, ValidatorRun&gt;</code> keeping only the latest</td></tr>
-          <tr><td><code>activity-log-store</code></td><td>Bounded ring buffer of <code>ActivityEntry</code></td></tr>
+          <tr><td><code>games-registry</code></td><td><code>Map&lt;gameId, GameRegistration&gt;</code></td><td><code>games</code> table</td></tr>
+          <tr><td><code>spec-cache</code></td><td><code>Map&lt;gameId, CacheEntry&gt;</code> rebuilt on demand from disk</td><td>(stays memory; rebuilt from <code>specs/</code>)</td></tr>
+          <tr><td><code>issues-store</code></td><td><code>Map&lt;id, IssueSummary&gt;</code> + comment / work-product maps</td><td><code>issues</code> table (comments + work-products stay in-process until the schema for them lands)</td></tr>
+          <tr><td><code>cost-events-store</code></td><td><code>Map&lt;id, CostEvent&gt;</code> with monotonic <code>COST-NNN</code> ids</td><td><code>cost_events</code> table</td></tr>
+          <tr><td><code>approvals-store</code></td><td><code>Map&lt;id, ApprovalSummary&gt;</code></td><td><code>approvals</code> table</td></tr>
+          <tr><td><code>validator-runs-store</code></td><td><code>Map&lt;gameId, ValidatorRun&gt;</code> (latest only)</td><td>(stays memory; rebuilt by the next runner invocation)</td></tr>
+          <tr><td><code>activity-log-store</code></td><td>Bounded ring buffer of <code>ActivityEntry</code></td><td>(stays memory)</td></tr>
         </tbody>
       </table>
 
-      <div class="callout tip">
-        <div class="callout-title">Forward-compatibility</div>
-        <p>
-          These stores are written as if they were the public surface of
-          a Drizzle-backed module. When the persistent tables land, one
-          file at a time gets a <code>@mda-studio/db</code>-backed
-          implementation; consumers don't change.
-        </p>
-      </div>
+      <p>
+        One <code>services/stores/stores.contract.test.ts</code> file
+        parameterises every behavior test across both impls (16 tests:
+        8 memory + 8 db).
+      </p>
+
+      <h3>Driving the engine: <code>mda-runner</code></h3>
+      <p>
+        <code>services/mda-runner.ts</code> is the only piece of code that
+        knows how to spawn the CLI. The generic <code>runMda&lt;T&gt;</code>
+        function:
+      </p>
+      <ol class="steps">
+        <li>Spawns <code>npx mda &lt;args&gt;</code> (override the binary with
+          <code>MDA_BIN</code> for tests).</li>
+        <li>Buffers stdout / stderr.</li>
+        <li>Streams NDJSON to an optional <code>onEvent</code> callback
+          (used by asset-plan exec to surface live progress).</li>
+        <li>Parses the last non-empty stdout line through a caller-supplied
+          zod schema (from <code>@mda-studio/shared</code>).</li>
+      </ol>
+      <p>
+        Per-command helpers: <code>runValidate</code>, <code>runGate</code>,
+        <code>runNew</code>, <code>runAssetPlanGenerate</code>,
+        <code>runAssetPlanExec</code>, <code>runAssetPlanImport</code>.
+        Adding a new command means: extend
+        <code>tools/src/cli.ts</code>, add a zod schema in
+        <code>@mda-studio/shared</code>, add a helper here, call from a
+        route.
+      </p>
+
+      <h3>Spec liveness: <code>spec-watcher</code></h3>
+      <p>
+        <code>services/spec-watcher.ts</code> attaches a chokidar watcher
+        per registered game. Files added, changed, or deleted under
+        <code>specs/**/*.md</code> or <code>design/levels/**/*.md</code>
+        publish a <code>node-changed</code> studio event with the game id;
+        the UI's SSE consumer invalidates the relevant queries.
+      </p>
+      <p>
+        Filenames starting with <code>_</code> (schema files) and files
+        without a <code>.md</code> extension are filtered out. WSL and
+        Windows hosts auto-enable polling mode because native fsevents are
+        unreliable on the 9P-backed filesystem.
+      </p>
+
+      <h3>The <code>@mda-studio/db</code> package</h3>
+      <p>
+        <code>resolveDatabaseConfig</code> reads three env vars:
+      </p>
+      <ul>
+        <li><code>DATABASE_URL</code> &mdash; if set, returns
+          <code>{ kind: "external", url }</code>.</li>
+        <li><code>MDA_STUDIO_DB_DRIVER</code> &mdash; otherwise picks the
+          embedded driver: <code>pglite</code> (default) or
+          <code>embedded-postgres</code> (opt-in; not yet wired).</li>
+        <li><code>MDA_STUDIO_INSTANCE</code> &mdash; picks which directory
+          under <code>~/.mda-studio/instances/</code> stores the embedded
+          DB.</li>
+      </ul>
+      <p>
+        <code>createClient(config)</code> returns a typed
+        <code>DbClient</code> with a Drizzle instance over node-postgres
+        (external) or pglite (embedded). Five tables defined:
+        <code>studios</code>, <code>games</code>, <code>issues</code>,
+        <code>cost_events</code>, <code>approvals</code>. Migrations live
+        under <code>packages/db/drizzle/</code> and are applied with
+        <code>pnpm --filter @mda-studio/db db:migrate</code>.
+      </p>
 
       <h3>The SSE publisher</h3>
       <p>
@@ -312,13 +418,18 @@
         <thead><tr><th>Method</th><th>Path</th><th>Returns</th></tr></thead>
         <tbody>
           <tr><td>GET</td><td><code>/api/health</code></td><td><code>{ status: "ok" }</code></td></tr>
+          <tr><td>GET</td><td><code>/api/games</code></td><td><code>{ games: GameRegistration[] }</code></td></tr>
+          <tr><td>POST</td><td><code>/api/games</code></td><td><code>GameRegistration</code> (parses workspace concept; 300 on ambiguity)</td></tr>
+          <tr><td>DELETE</td><td><code>/api/games/:gameId</code></td><td>204</td></tr>
+          <tr><td>POST</td><td><code>/api/games/:gameId/specs</code></td><td>Drives <code>mda new --json</code>; <code>{id,file,layer,name}</code></td></tr>
           <tr><td>GET</td><td><code>/api/games/:id/spec-tree</code></td><td><code>SpecTreeResponse</code></td></tr>
           <tr><td>GET</td><td><code>/api/games/:id/spec-tree/node/:specId</code></td><td><code>SpecNodeDetail</code></td></tr>
           <tr><td>POST</td><td><code>/api/games/:id/spec-tree/refresh</code></td><td><code>{ rebuiltAt, specCount, ... }</code></td></tr>
           <tr><td>GET</td><td><code>/api/games/:id/costs[?subtree=]</code></td><td><code>CostsDetailResponse</code></td></tr>
           <tr><td>GET</td><td><code>/api/games/:id/agents</code></td><td><code>AgentRosterResponse</code></td></tr>
           <tr><td>GET</td><td><code>/api/games/:id/asset-plans</code></td><td><code>AssetPlanListResponse</code></td></tr>
-          <tr><td>POST</td><td><code>/api/games/:id/validator/runs</code></td><td><code>ValidatorRun</code></td></tr>
+          <tr><td>POST</td><td><code>/api/games/:id/asset-plans/:assetId/{generate,exec,import}</code></td><td>Drives <code>mda asset-plan --json</code> via the runner</td></tr>
+          <tr><td>POST</td><td><code>/api/games/:id/validator/runs</code></td><td>Drives <code>mda validate --json</code> via the runner; returns <code>ValidatorRun</code></td></tr>
           <tr><td>GET</td><td><code>/api/games/:id/validator/warnings</code></td><td><code>ValidatorWarning[]</code></td></tr>
           <tr><td>GET / PATCH</td><td><code>/api/issues/:id</code></td><td><code>IssueSummary</code></td></tr>
           <tr><td>POST</td><td><code>/api/studios/:id/cost-events</code></td><td><code>CostEvent</code></td></tr>
