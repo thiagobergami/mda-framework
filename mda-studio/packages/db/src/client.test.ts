@@ -1,59 +1,48 @@
-import { describe, it, expect, vi } from "vitest";
-import { createClient, type DriverFactory } from "./client";
+import { describe, it, expect, afterEach } from "vitest";
+import { mkdtempSync, rmSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 
-describe("createClient", () => {
-  it("dispatches to the external driver factory when config.kind=external", async () => {
-    const externalDriver = vi.fn().mockResolvedValue({ kind: "external" });
-    const embeddedDriver = vi.fn().mockResolvedValue({ kind: "embedded" });
+import { createClient, type DbClient } from "./client";
 
-    const factory: DriverFactory = { external: externalDriver, embedded: embeddedDriver };
-    await createClient(
-      { kind: "external", url: "postgres://localhost/db" },
-      factory,
-    );
+const created: DbClient[] = [];
 
-    expect(externalDriver).toHaveBeenCalledWith({
-      kind: "external",
-      url: "postgres://localhost/db",
-    });
-    expect(embeddedDriver).not.toHaveBeenCalled();
-  });
+afterEach(async () => {
+  while (created.length > 0) {
+    const c = created.pop()!;
+    await c.close().catch(() => {});
+  }
+});
 
-  it("dispatches to the embedded driver factory when config.kind=embedded", async () => {
-    const externalDriver = vi.fn().mockResolvedValue({ kind: "external" });
-    const embeddedDriver = vi.fn().mockResolvedValue({ kind: "embedded" });
-
-    const factory: DriverFactory = { external: externalDriver, embedded: embeddedDriver };
-    await createClient(
-      { kind: "embedded", dataDir: "/tmp/x" },
-      factory,
-    );
-
-    expect(embeddedDriver).toHaveBeenCalledWith({
+describe("createClient(pglite)", () => {
+  it("creates a pglite-backed client and lets a trivial query run", async () => {
+    const dataDir = mkdtempSync(join(tmpdir(), "pglite-db-"));
+    const client = await createClient({
       kind: "embedded",
-      dataDir: "/tmp/x",
+      driver: "pglite",
+      dataDir,
     });
-    expect(externalDriver).not.toHaveBeenCalled();
-  });
-
-  it("returns whatever the driver factory returns (passthrough)", async () => {
-    const driverHandle = { meta: "test-handle" };
-    const factory: DriverFactory = {
-      external: vi.fn().mockResolvedValue(driverHandle),
-      embedded: vi.fn(),
+    created.push(client);
+    // Drizzle's pglite adapter exposes execute(sql) for raw round-trips.
+    const drizzle = client.drizzle as unknown as {
+      execute: (sql: { toString: () => string } | string) => Promise<unknown>;
     };
-
-    const result = await createClient(
-      { kind: "external", url: "postgres://x" },
-      factory,
-    );
-
-    expect(result).toBe(driverHandle);
+    const r = (await drizzle.execute("select 1 as one")) as {
+      rows: { one: number }[];
+    };
+    expect(r.rows[0]?.one).toBe(1);
+    await client.close();
+    created.length = 0;
+    rmSync(dataDir, { recursive: true, force: true });
   });
 
-  it.skip("TODO(phase-1.1-int): connects to a real embedded postgres and runs a SELECT 1", async () => {
-    // Integration test — runs once embedded-postgres dep + Paperclip patch are wired.
-    // Behavior: createClient with the real factory establishes a connection,
-    // runs a trivial SELECT 1, and tears down without leaving lock files.
+  it("rejects the embedded-postgres driver path until it is wired", async () => {
+    await expect(
+      createClient({
+        kind: "embedded",
+        driver: "embedded-postgres",
+        dataDir: "/tmp/never",
+      }),
+    ).rejects.toThrow(/embedded driver/);
   });
 });

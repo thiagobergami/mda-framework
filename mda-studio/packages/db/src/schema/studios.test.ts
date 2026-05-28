@@ -30,16 +30,6 @@ describe("studios table schema (spec §6.1, FR-1)", () => {
     expect(cols.issueCounter.notNull).toBe(true);
   });
 
-  it("has budget_monthly_cents (default 0, not null)", () => {
-    expect(cols.budgetMonthlyCents).toBeDefined();
-    expect(cols.budgetMonthlyCents.notNull).toBe(true);
-  });
-
-  it("has spent_monthly_cents (default 0, not null)", () => {
-    expect(cols.spentMonthlyCents).toBeDefined();
-    expect(cols.spentMonthlyCents.notNull).toBe(true);
-  });
-
   it("has created_at and updated_at timestamps", () => {
     expect(cols.createdAt).toBeDefined();
     expect(cols.createdAt.notNull).toBe(true);
@@ -47,8 +37,14 @@ describe("studios table schema (spec §6.1, FR-1)", () => {
     expect(cols.updatedAt.notNull).toBe(true);
   });
 
-  it("permits nullable description and pause_reason", () => {
+  it("permits a nullable description", () => {
     expect(cols.description.notNull).toBe(false);
-    expect(cols.pauseReason.notNull).toBe(false);
+  });
+
+  it("does not carry budget/pause columns (V1-lite — they return when M4 lands)", () => {
+    expect((cols as Record<string, unknown>).budgetMonthlyCents).toBeUndefined();
+    expect((cols as Record<string, unknown>).spentMonthlyCents).toBeUndefined();
+    expect((cols as Record<string, unknown>).pauseReason).toBeUndefined();
+    expect((cols as Record<string, unknown>).pausedAt).toBeUndefined();
   });
 });
