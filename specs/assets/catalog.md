@@ -48,9 +48,9 @@ game
 
 ### Environment
 
-| ID | Name | Spec | Mechanic | Aesthetic | Location | Status |
-|----|------|------|----------|-----------|----------|--------|
-| | | | | | | |
+| ID     | Name                       | Spec                          | Mechanic | Aesthetic       | Location                                       | Status  |
+|--------|----------------------------|-------------------------------|----------|-----------------|------------------------------------------------|---------|
+| AST-001 | Cozy Hiding Spot Variants | `cozy-hiding-spot.asset.md`   | MEC-005  | AES-002, AES-003 | `ReplicatedStorage.Assets.Props.HidingSpots/` | concept |
 
 ### Audio — Sound Effects
 
@@ -78,15 +78,15 @@ game
 
 ### UI
 
-| ID | Name | Spec | Mechanic | Aesthetic | Location | Status |
-|----|------|------|----------|-----------|----------|--------|
-| | | | | | | |
+| ID      | Name              | Spec                         | Mechanic                  | Aesthetic | Location                            | Status  |
+|---------|-------------------|------------------------------|---------------------------|-----------|-------------------------------------|---------|
+| AST-002 | Cozy HUD Palette  | `cozy-hud-palette.asset.md`  | MEC-004, MEC-005, MEC-006 | AES-002   | `ReplicatedStorage.Assets.UI.Cozy/` | concept |
 
 ## Status Summary
 
 | Status | Count | Meaning |
 |--------|-------|---------|
-| concept | 0 | Requirements defined, nothing created |
+| concept | 2 | Requirements defined, nothing created |
 | placeholder | 0 | Temporary stand-in, code-compatible |
 | draft | 0 | Created but not approved/optimized |
 | final | 0 | Approved, performance-validated |

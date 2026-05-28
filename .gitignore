@@ -3,5 +3,3 @@ node_modules/
 tools/dist/
 specs/.gate-status.json
 mda.pdf
-WORKFLOW_SIMULATION.md
-IMPROVEMENTS.md

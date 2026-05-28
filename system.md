@@ -647,6 +647,9 @@ A built-in routine fires `mda validate` per game on every git push (via webhook)
 
 ### 15.4 MDA runtime logs join the audit trail
 
+> **Status: deferred until M3 (agents) lands** — nothing consumes recovery
+> issues today, so the shipper has no downstream to feed (D6.RT1).
+
 The `MDALogger` (`src/shared/MDALogger.luau`, MEC-003) already emits structured `[LAYER:SPEC_ID] [LEVEL] [EVENT_TYPE]` lines. A log-shipper plugin tails Roblox playtest logs and:
 
 - materializes `[FAIL]` events as `recovery`-origin issues
