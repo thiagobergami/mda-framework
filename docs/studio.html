@@ -151,33 +151,48 @@
         <li>Filter the tree to one agent / status / layer to focus</li>
       </ul>
       <p>
-        Operators do <strong>not</strong> author specs here. Use
-        <code>mda new</code> or the <a href="pipeline.html">Spec Wizard</a>
-        from the repo root for that. The studio reflects the files;
-        it doesn't replace them.
+        Operators <strong>can</strong> author specs from the UI &mdash; the
+        empty-tree CTA and the "+" buttons on tree rows POST to
+        <code>/api/games/:id/specs</code>, which drives <code>mda new
+        --from-json --no-prompt --json</code> via the
+        <code>mda-runner</code>. The resulting file lands in the workspace
+        on disk and the <code>spec-watcher</code> publishes a
+        <code>node-changed</code> SSE event so the tree updates without
+        a reload. For deep authoring (large bodies, fine-grained edits) the
+        CLI / wizard are still the better tool.
       </p>
 
-      <h2>How it sits next to the CLI</h2>
+      <h2>One engine, two front doors</h2>
       <div class="diagram">
-<pre><code>You author specs              The studio reflects them
-       v                              ^
-+---------------+              +------------------+
-|  mda CLI      |              |  @mda-studio/    |
-|  npm run spec |              |  server + ui     |
-|  edit *.md    |              |                  |
-+---------------+              +------------------+
-       |                              ^
-       v                              |
+<pre><code>You author at the keyboard          You drive a UI for the team
+       v                                    v
++---------------+                    +------------------+
+|  mda CLI      |  &lt;-- subprocess -- |  @mda-studio/    |
+|  npm run spec |       via          |  server          |
+|  edit *.md    |     mda-runner     |  &amp; ui            |
++---------------+                    +------------------+
+       |                                    ^
+       v                                    | reads + writes
 +---------------------------------------------------+
 |  specs/  +  design/                               |
 |  (markdown files, version-controlled)             |
 +---------------------------------------------------+</code></pre>
       </div>
       <p>
-        The CLI writes; the studio reads. Both sides reference the
-        canonical M/D/A vocabulary, the same trace links, and the same
-        per-layer schemas. You can use the CLI without ever booting the
-        studio &mdash; the studio is purely additive.
+        The CLI is the authoring front door. The studio is the operating
+        front door &mdash; but it never re-implements validators, gates, or
+        scaffolding. Instead, the
+        <code>mda-runner</code> service in
+        <code>@mda-studio/server</code> spawns
+        <code>npx mda &lt;cmd&gt; --json</code> as a subprocess and parses the
+        output through zod schemas shared with the CLI. The result: a Validate
+        button in the chrome runs <em>the same</em> code as
+        <code>npx mda validate</code> at your terminal; a "+" CTA on a tree
+        node runs <em>the same</em> code as <code>npx mda new</code>.
+      </p>
+      <p>
+        See <a href="decisions.html">Decisions &middot; D0.1</a> for why
+        the framework went hybrid rather than studio-first.
       </p>
 
       <h2>What you get on the screen</h2>
@@ -222,13 +237,13 @@
         </div>
         <div class="feature-card">
           <span class="feature-icon">&#128104;</span>
-          <h3>Org chart</h3>
-          <p>Read-only roster of every agent observed in issues, grouped by their primary MDA layer.</p>
+          <h3>Observed assignees</h3>
+          <p>Read-only roster of every assignee handle seen across issues, grouped by primary MDA layer. (Agents appear here once M3 lands.)</p>
         </div>
         <div class="feature-card">
           <span class="feature-icon">&#127912;</span>
           <h3>Asset plans</h3>
-          <p>List of every <code>design/asset-plans/&lt;asset-id&gt;/</code> with state derived from on-disk shape.</p>
+          <p>One row per <code>design/asset-plans/&lt;asset-id&gt;/</code> with state from disk plus Generate / Exec / Import buttons that drive the CLI subcommands through <code>mda-runner</code>.</p>
         </div>
         <div class="feature-card">
           <span class="feature-icon">&#9881;</span>
@@ -288,22 +303,22 @@
       </div>
 
       <h2>Boot it</h2>
-      <p>From the <code>mda-studio/</code> workspace, with your game's repo path:</p>
-      <pre><code># terminal 1 - API at 127.0.0.1:3100
-MDA_STUDIO_GAME_ID=virus-hunter \
-MDA_STUDIO_GAME_NAME="Virus Hunter" \
-MDA_STUDIO_GAME_SPECS_ROOT=/abs/path/to/your/repo \
-MDA_STUDIO_GAME_CONCEPT_PATH=specs/concept/virus-hunter.concept.md \
-MDA_STUDIO_GAME_PRIMARY_AESTHETIC=Fellowship \
-MDA_STUDIO_GAME_CONCEPT_TITLE="Virus Hunter" \
-MDA_STUDIO_SEED_FIXTURE_ISSUES=true \
+      <p>From the <code>mda-studio/</code> workspace:</p>
+      <pre><code># first-run housekeeping (creates the embedded pglite instance)
+pnpm install
+pnpm mda-studio onboard --yes
+
+# terminal 1 - API at 127.0.0.1:3100
 pnpm --filter @mda-studio/server dev
 
-# terminal 2 - UI at 127.0.0.1:3101 (proxies /api -> 3100)
+# terminal 2 - UI at 127.0.0.1:3101 (proxies /api -&gt; 3100)
 pnpm --filter @mda-studio/ui dev</code></pre>
       <p>
-        Visit <code>http://127.0.0.1:3101</code>. The studio home shows
-        every registered game as a card; pick one to enter its spec tree.
+        Visit <code>http://127.0.0.1:3101</code>, fill in
+        <strong>Register a game</strong> with a path to a folder containing
+        <code>specs/concept/&lt;game&gt;.concept.md</code>, and click
+        <strong>Register</strong>. The studio scans the workspace, starts a
+        <code>spec-watcher</code>, and renders the live tree.
       </p>
 
       <div class="callout tip">
@@ -318,18 +333,25 @@ pnpm --filter @mda-studio/ui dev</code></pre>
 
       <h2>Where to go next</h2>
       <ul>
-        <li><a href="studio-operator.html">Operator Guide</a> &mdash; full reference for every surface, lens, shortcut, URL, and troubleshooting recipe</li>
-        <li><a href="studio-architecture.html">Architecture</a> &mdash; how the shared / server / UI layers fit together, the algorithms, and how to extend the system</li>
+        <li><a href="studio-operator.html">Operator Guide</a> &mdash; full reference for every surface, lens, shortcut, URL, and troubleshooting recipe.</li>
+        <li><a href="studio-architecture.html">Architecture</a> &mdash; how the shared / server / UI layers fit together, the algorithms, and how to extend the system.</li>
+        <li><a href="decisions.html">Decisions</a> &mdash; the ADRs behind the hybrid front door, the embedded DB choice, and what V1-lite delivered.</li>
       </ul>
 
       <h2>Status</h2>
       <p>
         Implementation phases U1&ndash;U8 of
         <code>design/mda-studio/spec-tree-ui/plan.md</code> are complete.
-        Persistence is in-memory today; the Drizzle tables that will back
-        each store land once <code>drizzle-kit</code> wiring arrives. See
-        the <a href="studio-architecture.html">Architecture</a> page for
-        the migration plan.
+        <strong>V1-lite shipped 2026-05-28</strong>: persistent storage
+        (<a href="decisions.html">pglite</a> embedded by default, external
+        Postgres via <code>DATABASE_URL</code>), the
+        <code>mda-runner</code> subprocess driver, the
+        chokidar <code>spec-watcher</code>, the Register-a-game form, the
+        Validate button, "+" CTAs, and the asset-plan UI all
+        operating against the same engine the CLI uses. M1&ndash;M6
+        (agent runtime, scheduler, watchdog, cost budgets) follows.
+        See the <a href="studio-architecture.html">Architecture</a> page for
+        the details.
       </p>
 
       <div class="page-nav">

@@ -125,49 +125,47 @@
       <h2 id="quickstart">Quickstart</h2>
       <h3>Prerequisites</h3>
       <ul>
-        <li>Node.js &ge; 20</li>
-        <li>pnpm 9.x (<code>corepack prepare pnpm@9.11.0 --activate</code>)</li>
-        <li>Optional: Postgres 14+ for external DB mode</li>
+        <li>Node.js &ge; 20.</li>
+        <li>pnpm 9.x (<code>corepack prepare pnpm@9.11.0 --activate</code>).</li>
+        <li>Optional: Postgres 14+ for external DB mode.</li>
       </ul>
 
-      <h3>Install</h3>
+      <h3>Install &amp; onboard</h3>
       <pre><code>cd mda-studio
-pnpm install</code></pre>
-
-      <h3>Register a game</h3>
+pnpm install
+pnpm mda-studio onboard --yes</code></pre>
       <p>
-        The studio needs to know where a game's <code>specs/</code> and
-        <code>design/</code> live. For V1 this comes from environment
-        variables set when you boot the server.
+        <code>mda-studio onboard</code> performs first-run housekeeping:
+        resolves the embedded instance directory
+        (<code>~/.mda-studio/instances/default/</code>), creates it if
+        missing, opens a <a href="decisions.html">pglite</a> database, runs
+        a smoke query, and prints next-step commands. Flags: <code>--yes</code>
+        for CI, <code>--demo</code> for a hint to seed fixture data.
       </p>
-      <table>
-        <thead><tr><th>Variable</th><th>What it is</th></tr></thead>
-        <tbody>
-          <tr><td><code>MDA_STUDIO_GAME_ID</code></td><td>URL-safe id, e.g. <code>virus-hunter</code></td></tr>
-          <tr><td><code>MDA_STUDIO_GAME_NAME</code></td><td>Human label shown in chrome and game cards</td></tr>
-          <tr><td><code>MDA_STUDIO_GAME_SPECS_ROOT</code></td><td>Absolute path containing <code>specs/</code> and <code>design/</code></td></tr>
-          <tr><td><code>MDA_STUDIO_GAME_CONCEPT_PATH</code></td><td>Path to concept doc, relative to <code>SPECS_ROOT</code></td></tr>
-          <tr><td><code>MDA_STUDIO_GAME_PRIMARY_AESTHETIC</code></td><td>Free text, surfaced in chrome</td></tr>
-          <tr><td><code>MDA_STUDIO_GAME_CONCEPT_TITLE</code></td><td>Free text, the title shown on the game card</td></tr>
-          <tr><td><code>MDA_STUDIO_SEED_FIXTURE_ISSUES</code></td><td><code>true</code> to seed demo issues / costs / approvals on boot</td></tr>
-        </tbody>
-      </table>
 
-      <h3>Boot</h3>
-      <p>Two processes &mdash; the API server and the Vite dev UI:</p>
+      <h3>Boot the API &amp; UI</h3>
       <pre><code># terminal 1 - API at 127.0.0.1:3100
-MDA_STUDIO_GAME_ID=virus-hunter \
-MDA_STUDIO_GAME_NAME="Virus Hunter" \
-MDA_STUDIO_GAME_SPECS_ROOT=/abs/path/to/your/repo \
-MDA_STUDIO_GAME_CONCEPT_PATH=specs/concept/virus-hunter.concept.md \
-MDA_STUDIO_GAME_PRIMARY_AESTHETIC=Fellowship \
-MDA_STUDIO_GAME_CONCEPT_TITLE="Virus Hunter" \
-MDA_STUDIO_SEED_FIXTURE_ISSUES=true \
 pnpm --filter @mda-studio/server dev
 
-# terminal 2 - UI at 127.0.0.1:3101 (proxies /api -> 3100)
+# terminal 2 - UI at 127.0.0.1:3101 (proxies /api -&gt; 3100)
 pnpm --filter @mda-studio/ui dev</code></pre>
-      <p>Visit <code>http://127.0.0.1:3101</code>.</p>
+
+      <h3>Register a game from the UI</h3>
+      <p>
+        Open <code>http://127.0.0.1:3101</code>. The home screen carries a
+        <strong>Register a game</strong> form &mdash; point it at any folder
+        that contains
+        <code>specs/concept/&lt;game&gt;.concept.md</code>. The server
+        indexes the workspace, starts a chokidar
+        <code>spec-watcher</code>, and adds a card to the home grid. Click
+        the card to enter the spec tree.
+      </p>
+      <p>
+        Behind the form is <code>POST /api/games</code> with body
+        <code>{ workspaceRoot, conceptId? }</code>. If a workspace contains
+        multiple concept specs, the response is HTTP 300 and the form
+        re-renders with a picker.
+      </p>
 
       <div class="callout tip">
         <div class="callout-title">API down?</div>
@@ -176,6 +174,32 @@ pnpm --filter @mda-studio/ui dev</code></pre>
           so the surface always renders. A <code>local fixture</code>
           badge in the tree header makes the source honest. Writes won't
           persist in fixture mode and SSE auto-disables.
+        </p>
+      </div>
+
+      <h3>Environment knobs</h3>
+      <table>
+        <thead><tr><th>Variable</th><th>Default</th><th>Effect</th></tr></thead>
+        <tbody>
+          <tr><td><code>PORT</code></td><td><code>3100</code></td><td>API port</td></tr>
+          <tr><td><code>HOST</code></td><td><code>127.0.0.1</code></td><td>API bind address (set <code>0.0.0.0</code> to expose on LAN)</td></tr>
+          <tr><td><code>DATABASE_URL</code></td><td>(unset)</td><td>If set, the studio uses external Postgres instead of pglite</td></tr>
+          <tr><td><code>MDA_STUDIO_INSTANCE</code></td><td><code>default</code></td><td>Picks the embedded instance directory</td></tr>
+          <tr><td><code>MDA_STUDIO_DB_DRIVER</code></td><td><code>pglite</code></td><td>Embedded driver. <code>embedded-postgres</code> is reserved as an opt-in path</td></tr>
+          <tr><td><code>MDA_STUDIO_PERSISTENCE</code></td><td><code>memory</code></td><td><code>memory</code> for tests; <code>db</code> writes through to the resolved driver</td></tr>
+          <tr><td><code>MDA_STUDIO_DEMO</code></td><td>(unset)</td><td><code>1</code> seeds demo issues / costs / approvals on boot</td></tr>
+        </tbody>
+      </table>
+
+      <div class="callout warn">
+        <div class="callout-title">CI bootstrap (legacy env vars)</div>
+        <p>
+          The previous env-var bootstrap (<code>MDA_STUDIO_GAME_ID</code>,
+          <code>MDA_STUDIO_GAME_SPECS_ROOT</code>, &hellip;) still works for
+          headless CI scripts &mdash; it lives under the
+          <em>"CI bootstrap (env vars)"</em> appendix in the operator guide
+          inside the repo (<code>mda-studio/docs/operator-guide.md</code>).
+          Operators should use the form.
         </p>
       </div>
 
@@ -368,17 +392,21 @@ pnpm --filter @mda-studio/ui dev</code></pre>
         Costs tab via the "See full breakdown" button.
       </p>
 
-      <h3>Org chart (<code>?view=org</code>)</h3>
+      <h3>Observed assignees (<code>?view=org</code>)</h3>
       <p>
-        V1 has no agents table; the roster is derived from observed issue
-        assignees. Agents are grouped under the MDA layer where most of
-        their issues land. Read-only, not interactive.
+        Read-only roster of every assignee handle seen across issues,
+        grouped under the MDA layer where most of their issues land.
+        Renamed from "Org chart" in V1-lite because the studio has no
+        agents table yet &mdash; the panel now carries an explicit
+        "agents will appear here once M3 lands" note.
       </p>
 
       <h3>Asset plans (<code>?view=asset-plans</code>)</h3>
       <p>
         Scans <code>&lt;specsRoot&gt;/design/asset-plans/&lt;asset-id&gt;/</code>
-        and lists each asset's state derived from on-disk shape:
+        and lists each asset's state derived from on-disk shape. Each row
+        carries three action buttons that drive the matching CLI
+        subcommand through <code>mda-runner</code>:
       </p>
       <table>
         <thead><tr><th>State</th><th>Meaning</th></tr></thead>
@@ -390,6 +418,11 @@ pnpm --filter @mda-studio/ui dev</code></pre>
           <tr><td><code>unknown</code></td><td>Directory unreadable</td></tr>
         </tbody>
       </table>
+      <ul>
+        <li><strong>Generate</strong> &rarr; POSTs to <code>/api/games/:id/asset-plans/:assetId/generate</code>; under the hood, <code>mda asset-plan generate --json</code>.</li>
+        <li><strong>Exec</strong> &rarr; walks milestones non-interactively (auto-skips prompts) and emits NDJSON events.</li>
+        <li><strong>Import</strong> &rarr; lands the artifact in the engine after exec succeeds.</li>
+      </ul>
 
       <h3>Settings (<code>?view=settings</code>)</h3>
       <p>
@@ -510,16 +543,42 @@ pnpm --filter @mda-studio/ui dev</code></pre>
       <h3>How it stays fresh</h3>
       <p>
         Live updates flow through an <code>EventSource</code> stream.
-        The server publishes <code>node-changed</code>,
-        <code>issue-status-changed</code>, <code>cost-event</code>,
-        <code>validator-run-completed</code>, and
-        <code>approval-changed</code> events; each invalidates the
-        relevant fetched data without a page reload. There is no polling.
+        Two publishers feed it:
+      </p>
+      <ul>
+        <li>
+          <strong>Mutation paths in the server.</strong> Every store mutation
+          (issue moved, cost recorded, approval resolved) publishes a
+          studio event of the matching kind.
+        </li>
+        <li>
+          <strong>The <code>spec-watcher</code></strong>. Each registered
+          game gets a chokidar watcher attached on registration; any add,
+          change, or delete under <code>specs/**/*.md</code> or
+          <code>design/levels/**/*.md</code> publishes a
+          <code>node-changed</code> event with the game id.
+        </li>
+      </ul>
+      <p>
+        Together: edit a spec at the keyboard, the studio re-renders the
+        relevant row within a second; resolve an issue in the drawer, the
+        chrome badge updates everywhere. No polling.
       </p>
 
+      <div class="callout tip">
+        <div class="callout-title">WSL / Windows latency</div>
+        <p>
+          On WSL2 and Windows, chokidar's native filesystem events are
+          unreliable. The watcher auto-detects and switches to polling
+          mode (interval 100 ms). Expect a small latency tax in exchange
+          for reliability. See the <a href="studio-architecture.html">architecture
+          page</a> for details.
+        </p>
+      </div>
+
       <h3>Manually rebuilding the spec cache</h3>
-      <p>If you've just edited specs on disk and want the studio to re-read them:</p>
-      <pre><code>curl -X POST http://127.0.0.1:3100/api/games/virus-hunter/spec-tree/refresh</code></pre>
+      <p>If you ever need to force a re-scan from disk:</p>
+      <pre><code>curl -X POST http://127.0.0.1:3100/api/games/&lt;gameId&gt;/spec-tree/refresh</code></pre>
 
       <hr>
 
@@ -529,9 +588,9 @@ pnpm --filter @mda-studio/ui dev</code></pre>
         <div class="callout-title">"Could not load spec tree"</div>
         <p>
           The server is unreachable or the requested game isn't registered.
-          Verify <code>curl http://127.0.0.1:3100/api/health</code> and
-          re-export your <code>MDA_STUDIO_GAME_*</code> env vars in the
-          same shell you ran the server from.
+          Verify <code>curl http://127.0.0.1:3100/api/health</code>, then
+          confirm the game shows up in <code>GET /api/games</code>. Use the
+          home screen's <strong>Register a game</strong> form to add it.
         </p>
       </div>
 
