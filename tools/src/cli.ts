@@ -55,7 +55,9 @@ program
       }
 
       if (opts.json) {
-        console.log(JSON.stringify({ scope: scopeName, ...result }, null, 2));
+        // One compact JSON object per scope (NDJSON when multi-scope) so the
+        // mda-runner in @mda-studio/server can parse line-by-line.
+        process.stdout.write(JSON.stringify({ scope: scopeName, ...result }) + "\n");
       } else {
         if (scopeEntries.length > 1) {
           console.log(`\nScope: ${scopeName}`);
@@ -117,7 +119,8 @@ program
     await writeFile(statusPath, JSON.stringify(status, null, 2) + "\n");
 
     if (opts.json) {
-      console.log(JSON.stringify(results, null, 2));
+      // Single compact JSON line so the runner can parse it directly.
+      process.stdout.write(JSON.stringify(results) + "\n");
     } else {
       for (const result of results) {
         const icon = result.passed ? chalk.green("PASS") : result.overridden ? chalk.yellow("OVERRIDE") : chalk.red("FAIL");
@@ -141,23 +144,77 @@ program
 
 program
   .command("new <layer> <name...>")
-  .description("Scaffold a new spec (concept, aesthetic, dynamic, mechanic, tuning, asset, binding)")
+  .description("Scaffold a new spec (concept, aesthetic, dynamic, mechanic, tuning, asset, binding, level)")
   .option("-d, --dir <path>", "Project root directory", ".")
-  .action(async (layer: string, nameParts: string[], opts: { dir: string }) => {
+  .option("--from-json <path>", "Load frontmatter overrides from a JSON file")
+  .option("--no-prompt", "Fail loudly on any missing required field instead of prompting")
+  .option("--json", "Emit a single JSON line describing the result (suppresses other output)")
+  .action(async (
+    layer: string,
+    nameParts: string[],
+    opts: { dir: string; fromJson?: string; prompt?: boolean; json?: boolean },
+  ) => {
+    const emit = (payload: Record<string, unknown>, ok: boolean): never => {
+      if (opts.json) {
+        process.stdout.write(JSON.stringify(payload) + "\n");
+      } else if (ok) {
+        const { id, file } = payload as { id: string; file: string };
+        console.log(chalk.green(`Created ${id}`) + ` → ${file}`);
+      } else {
+        console.error(chalk.red("Failed to scaffold:"), payload.error);
+      }
+      process.exit(ok ? 0 : 1);
+    };
+
     if (!VALID_LAYERS.includes(layer as any)) {
-      console.error(`Unknown layer: ${layer}. Valid layers: ${VALID_LAYERS.join(", ")}`);
-      process.exit(1);
+      return emit(
+        { ok: false, error: `Unknown layer: ${layer}. Valid layers: ${VALID_LAYERS.join(", ")}` },
+        false,
+      );
     }
 
-    const name = nameParts.join(" ");
-    const root = resolve(opts.dir);
+    let overrides: Record<string, unknown> = {};
+    if (opts.fromJson) {
+      try {
+        const raw = await readFile(resolve(opts.fromJson), "utf-8");
+        const parsed = JSON.parse(raw);
+        if (parsed == null || typeof parsed !== "object" || Array.isArray(parsed)) {
+          return emit(
+            { ok: false, error: `--from-json must point to a JSON object, got ${Array.isArray(parsed) ? "array" : typeof parsed}` },
+            false,
+          );
+        }
+        overrides = parsed as Record<string, unknown>;
+      } catch (err) {
+        return emit(
+          { ok: false, error: `--from-json read failed: ${err instanceof Error ? err.message : String(err)}` },
+          false,
+        );
+      }
+    }
 
+    const name = nameParts.join(" ").trim();
+    if (!name) {
+      return emit({ ok: false, error: "name is required" }, false);
+    }
+
+    // --no-prompt is currently advisory: `mda new` is already non-interactive
+    // for every layer. The flag remains a stable contract for callers that want
+    // to assert they cannot answer prompts.
+    void opts.prompt;
+
+    const root = resolve(opts.dir);
     try {
-      const result = await scaffold(root, layer as any, name);
-      console.log(chalk.green(`Created ${result.id}`) + ` → ${result.file}`);
+      const result = await scaffold(root, layer as any, name, overrides);
+      return emit(
+        { ok: true, id: result.id, file: result.file, layer: result.layer, name },
+        true,
+      );
     } catch (err) {
-      console.error(chalk.red("Failed to scaffold:"), err instanceof Error ? err.message : err);
-      process.exit(1);
+      return emit(
+        { ok: false, error: err instanceof Error ? err.message : String(err) },
+        false,
+      );
     }
   });
 

@@ -15,12 +15,15 @@ import { checkIntake, type IntakeReport } from "./intake.js";
 import { aggregateStyle } from "./style.js";
 import { composePlan } from "./compose.js";
 import { ASSET_PLAN_ROOT } from "./profile.js";
+import { type EventEmitter, makeEmitter } from "./json-events.js";
 
 export interface GenerateOptions {
   /** Reserved for future use (forking from approved); ignored in v1. */
   newVersion?: boolean;
   /** Engine target — defaults to "roblox". */
   engine?: string;
+  /** Stream NDJSON milestone events to stdout. */
+  events?: EventEmitter;
 }
 
 export interface GenerateResult {
@@ -43,6 +46,9 @@ export async function generatePlan(
   assetId: string,
   options: GenerateOptions = {},
 ): Promise<GenerateResult> {
+  const events = options.events ?? makeEmitter(false);
+  events.emit("generate-start", { assetId });
+
   const assetSpec = await findAssetSpec(root, assetId);
   const assetType = assetTypeOf(assetSpec);
   const override = toolOverrideOf(assetSpec);
@@ -54,6 +60,7 @@ export async function generatePlan(
     const missingList = intake.missing
       .map((m) => `  - ${m.kind} (required) — ${m.description}`)
       .join("\n");
+    events.emit("intake-missing", { assetId, missing: intake.missing });
     throw new Error(
       `Cannot generate plan for ${assetId}: missing required inputs.\n` +
         `Drop them into ${intake.refsDir} and re-run.\n\nMissing:\n${missingList}`,
@@ -88,5 +95,6 @@ export async function generatePlan(
   await mkdir(dirname(planPath), { recursive: true });
   await writeFile(planPath, markdown, "utf-8");
 
+  events.emit("plan-saved", { assetId, path: planPath, version });
   return { path: planPath, version, intake };
 }

@@ -8,9 +8,12 @@ import type { ParsedPlan, ParsedMilestone } from "./plan-parser.js";
 import { loadToolProfile } from "./profile.js";
 import { McpClient, type McpServerHandle } from "./mcp-client.js";
 import { transitionMilestone, transitionPlan, derivePlanStatus } from "./state.js";
+import { type EventEmitter, makeEmitter } from "./json-events.js";
 
 export interface ExecOptions {
   resume?: boolean;
+  /** Stream NDJSON milestone events to stdout (also disables interactive prompts). */
+  events?: EventEmitter;
 }
 
 export interface ExecResult {
@@ -33,6 +36,9 @@ export async function executePlan(
   assetId: string,
   options: ExecOptions = {},
 ): Promise<ExecResult> {
+  const events = options.events ?? makeEmitter(false);
+  events.emit("exec-start", { assetId });
+
   const latest = await findLatestPlan(root, assetId);
   if (!latest) {
     throw new Error(
@@ -41,9 +47,13 @@ export async function executePlan(
   }
 
   const plan = await readPlan(latest.path);
+  events.emit("plan-loaded", { assetId, path: latest.path, version: latest.version });
 
   if (plan.file.status === "imported") {
-    console.log(chalk.dim(`Plan ${plan.file.id} already imported. Nothing to do.`));
+    if (!events.jsonMode) {
+      console.log(chalk.dim(`Plan ${plan.file.id} already imported. Nothing to do.`));
+    }
+    events.emit("exec-noop", { assetId, reason: "already-imported" });
     return summary(plan, 0, 0, 0, 0);
   }
 
@@ -57,22 +67,28 @@ export async function executePlan(
   if (mcpAvailable) {
     try {
       server = await mcp.connect(profile.mcpRequired);
-      console.log(chalk.green(`Connected to MCP server "${profile.mcpRequired}".`));
+      if (!events.jsonMode) console.log(chalk.green(`Connected to MCP server "${profile.mcpRequired}".`));
     } catch (err) {
+      events.emit("mcp-connect-failed", { server: profile.mcpRequired, error: (err as Error).message });
+      if (!events.jsonMode) {
+        console.log(
+          chalk.yellow(
+            `MCP server "${profile.mcpRequired}" failed to connect (${(err as Error).message}). ` +
+              `Falling back to manual mode.`,
+          ),
+        );
+      }
+    }
+  } else if (profile.mcpRequired !== "none") {
+    events.emit("mcp-unavailable", { server: profile.mcpRequired });
+    if (!events.jsonMode) {
       console.log(
         chalk.yellow(
-          `MCP server "${profile.mcpRequired}" failed to connect (${(err as Error).message}). ` +
-            `Falling back to manual mode.`,
+          `MCP server "${profile.mcpRequired}" not configured. Running in manual mode — ` +
+            `MCP call blocks will be printed as instructions.`,
         ),
       );
     }
-  } else if (profile.mcpRequired !== "none") {
-    console.log(
-      chalk.yellow(
-        `MCP server "${profile.mcpRequired}" not configured. Running in manual mode — ` +
-          `MCP call blocks will be printed as instructions.`,
-      ),
-    );
   }
 
   let walked = 0;
@@ -98,7 +114,9 @@ export async function executePlan(
       }
 
       walked++;
-      const verdict = await runMilestone(plan, ref, milestoneBody, profile, server);
+      events.emit("milestone-start", { assetId, milestone: ref.id });
+      const verdict = await runMilestone(plan, ref, milestoneBody, profile, server, events);
+      events.emit("milestone-complete", { assetId, milestone: ref.id, verdict });
 
       switch (verdict) {
         case "accepted":
@@ -148,7 +166,17 @@ export async function executePlan(
   }
 
   const result = summary(plan, walked, accepted, rejected, skippedMcp);
-  printSummary(result);
+  if (!events.jsonMode) {
+    printSummary(result);
+  }
+  events.emit("exec-complete", {
+    assetId,
+    walked: result.walked,
+    accepted: result.accepted,
+    rejected: result.rejected,
+    skippedMcp: result.skippedMcp,
+    finalStatus: result.finalStatus,
+  });
   return result;
 }
 
@@ -164,8 +192,17 @@ async function runMilestone(
   body: ParsedMilestone,
   profile: ToolProfile,
   server: McpServerHandle | null,
+  events: EventEmitter,
 ): Promise<MilestoneOutcome> {
-  console.log("\n" + chalk.bold(`▶ ${ref.id} — ${body.description}`));
+  if (!events.jsonMode) {
+    console.log("\n" + chalk.bold(`▶ ${ref.id} — ${body.description}`));
+  }
+
+  if (events.jsonMode) {
+    // Non-interactive: emit a marker event and treat the milestone as skipped
+    // so the studio can offer the operator a chance to run it interactively.
+    return "skipped-mcp";
+  }
 
   if (!body.mcpCalls.trim()) {
     console.log(chalk.dim("  (no MCP calls declared for this milestone)"));

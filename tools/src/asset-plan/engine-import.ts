@@ -9,6 +9,11 @@ import type { ParsedPlan } from "./plan-parser.js";
 import { loadEngineProfile, ASSET_PLAN_ROOT } from "./profile.js";
 import { McpClient, type McpServerHandle } from "./mcp-client.js";
 import { transitionPlan } from "./state.js";
+import { type EventEmitter, makeEmitter } from "./json-events.js";
+
+export interface ImportOptions {
+  events?: EventEmitter;
+}
 
 export interface ImportResult {
   /** Where the artifact was placed in the engine, or "(manual mode)" */
@@ -34,7 +39,11 @@ export type AttributeValue = string | number | boolean;
 export async function runEngineImport(
   root: string,
   assetId: string,
+  options: ImportOptions = {},
 ): Promise<ImportResult> {
+  const events = options.events ?? makeEmitter(false);
+  events.emit("import-start", { assetId });
+
   const latest = await findLatestPlan(root, assetId);
   if (!latest) {
     throw new Error(`No plan found for ${assetId}.`);
@@ -43,7 +52,8 @@ export async function runEngineImport(
   const plan = await readPlan(latest.path);
 
   if (plan.file.status === "imported") {
-    console.log(chalk.dim(`Plan ${plan.file.id} already imported. Nothing to do.`));
+    if (!events.jsonMode) console.log(chalk.dim(`Plan ${plan.file.id} already imported. Nothing to do.`));
+    events.emit("import-noop", { assetId, reason: "already-imported" });
     return {
       target: "(already imported)",
       artifact: "",
@@ -91,23 +101,29 @@ export async function runEngineImport(
         server = await mcp.connect(engine.mcpRequired);
         await dispatchImport(server, artifactPath, target, assetSpec.name, tags, attributes);
         ranViaMcp = true;
-        console.log(chalk.green(`Imported ${basename(artifactPath)} to ${target}.`));
+        if (!events.jsonMode) console.log(chalk.green(`Imported ${basename(artifactPath)} to ${target}.`));
       } catch (err) {
+        events.emit("mcp-connect-failed", { server: engine.mcpRequired, error: (err as Error).message });
+        if (!events.jsonMode) {
+          console.log(
+            chalk.yellow(
+              `Engine MCP "${engine.mcpRequired}" failed: ${(err as Error).message}.\n` +
+                `Falling back to manual mode.`,
+            ),
+          );
+          printManualInstructions(artifactPath, target, tags, attributes);
+        }
+      }
+    } else {
+      events.emit("mcp-unavailable", { server: engine.mcpRequired });
+      if (!events.jsonMode) {
         console.log(
           chalk.yellow(
-            `Engine MCP "${engine.mcpRequired}" failed: ${(err as Error).message}.\n` +
-              `Falling back to manual mode.`,
+            `Engine MCP "${engine.mcpRequired}" not configured. Showing manual instructions:`,
           ),
         );
         printManualInstructions(artifactPath, target, tags, attributes);
       }
-    } else {
-      console.log(
-        chalk.yellow(
-          `Engine MCP "${engine.mcpRequired}" not configured. Showing manual instructions:`,
-        ),
-      );
-      printManualInstructions(artifactPath, target, tags, attributes);
     }
 
     if (ranViaMcp) {
@@ -120,7 +136,10 @@ export async function runEngineImport(
         notes: target,
       });
       await writePlan(plan);
-      printAssetStatusSuggestion(assetSpec);
+      if (!events.jsonMode) printAssetStatusSuggestion(assetSpec);
+      events.emit("import-complete", { assetId, target, artifact: artifactPath, ranViaMcp: true });
+    } else {
+      events.emit("import-manual", { assetId, artifact: artifactPath, target });
     }
   } finally {
     await mcp.closeAll();
