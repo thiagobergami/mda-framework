@@ -7,6 +7,21 @@ three causal layers before code is written.
 **Core principle: Games are artifacts, not media. The content of a game is its behavior — not
 the media that streams out of it towards the player.**
 
+**Front door — hybrid.** The MDA Framework has two equally-valid entry points. The `mda`
+CLI (`npx mda`, `npm run spec`) is the **authoring** path: solo developers writing concept →
+aesthetic → dynamic → mechanic → tuning → asset → level at the keyboard. **MDA Studio**
+(`mda-studio/`) is the **operating** path: a team-facing service that holds the state the
+CLI can't — registered games, issues, costs, approvals, and (later) agent runs. Authoring
+solo? Use the CLI. Coordinating with others, or driving long-running work? Use the studio.
+See [`design/decisions/2026-05-27-front-door.md`](design/decisions/2026-05-27-front-door.md)
+for the full rationale.
+
+The two front doors share one engine. The studio drives the CLI via subprocess (the
+`mda-runner` service in `mda-studio/server/`); it never re-implements validators, gates,
+or scaffolding. A change to `tools/src/*.ts` is immediately visible from both surfaces
+because there is no build step — the shim at `tools/bin/mda.cjs` runs the TypeScript
+sources through `tsx`.
+
 ## Project Structure
 
 ```
@@ -36,11 +51,13 @@ specs/                           # Canonical M/D/A truth — behavioral contract
 
 design/                          # Iterative artifacts that CONSUME specs — never define new primitives
 ├── README.md                    # Explains the boundary between specs/ and design/
+├── decisions/                   # ADR-style decision notes (front-door, embedded DB, dogfood, …)
 ├── levels/                      # Level / environment design
 │   ├── _schema.md               # How to write a level spec
 │   └── {level}.level.md         # Spatial layout, beat chart, encounters, affordances
 ├── flows/                       # Player journeys: onboarding, progression, retention
-│   └── {flow}.flow.md
+├── roadmap/                     # Parked roadmaps (e.g. multi-engine)
+├── walkthroughs/                # End-to-end walkthroughs of the framework
 ├── asset-plans/                 # MCP-driven asset implementation pipeline
 │   ├── spec.md                  # Feature spec (SDD)
 │   ├── plan.md                  # Implementation plan
@@ -57,12 +74,46 @@ src/
 ├── shared/MDALogger.luau        # Structured runtime logging (MEC-003)
 └── tools/validate-specs.luau    # Spec integrity validator
 
+tools/                           # The `mda` CLI — no build step (tsx via tools/bin/mda.cjs)
+├── README.md                    # Machine-readable JSON contracts
+├── bin/mda.cjs                  # Shim — runs src/cli.ts via tsx
+└── src/
+    ├── cli.ts                   # Commander entry point
+    ├── scaffold.ts              # Spec template generation + override merge
+    ├── asset-plan/              # Pipeline (generate/exec/import/list) with NDJSON events
+    ├── rules/                   # Validation rules (binding-coverage parked)
+    └── gates/                   # Quality gates
+
 mda-studio/                      # Operator surface — pnpm workspace, separate from root npm project
 ├── README.md                    # How to install, run, and configure the studio
-├── server/                      # @mda-studio/server: Express app, /api/health
-├── packages/shared/             # @mda-studio/shared: constants, api-path helpers
-└── packages/db/                 # @mda-studio/db: drizzle schema + DB config resolver
+├── server/                      # @mda-studio/server: Express + mda-runner + spec-watcher
+├── ui/                          # @mda-studio/ui: React 18 + Vite SPA
+├── cli/                         # @mda-studio/cli: `mda-studio onboard`
+└── packages/
+    ├── shared/                  # @mda-studio/shared: zod schemas (incl. CLI contracts)
+    └── db/                      # @mda-studio/db: drizzle schema + pglite/pg client
 ```
+
+### Where work happens — the three planes
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│  CONTENT plane   specs/  design/levels/  design/asset-plans │
+│  ENGINE plane    tools/  src/shared/MDALogger.luau          │
+│  SURFACE plane   mda-studio/  (operator UI + server + db)   │
+└─────────────────────────────────────────────────────────────┘
+```
+
+- **CONTENT** holds canonical M/D/A truth, level compositions, and asset plans. Authored by
+  hand (or with the wizard) and read by everything below it.
+- **ENGINE** holds the validator, the spec CLI, the scaffolder, and the Roblox runtime
+  logger. Engine code consumes content; the studio drives engine code via subprocess.
+- **SURFACE** is the studio: the operator UI, server, and database. Surface depends on
+  engine and reads content; never the other way around.
+
+When picking where new code goes: ask which plane it lives in. Cross-plane shortcuts
+(SURFACE writing directly into `specs/` without going through ENGINE; ENGINE depending on
+SURFACE state) are the wrong direction and should fail review.
 
 ## The Dual Perspective
 
@@ -144,6 +195,7 @@ Aesthetics → set the tone for → Dynamics → which expose → Mechanics
 - Tool profiles live in `design/asset-plans/_tools/{tool}.md`; engine profiles in `_engines/`
 - When MCP servers are absent, every command degrades gracefully — instructions print and
   state still tracks; re-run with `--resume` to continue
+- All four subcommands support `--json` and emit NDJSON event lines for studio consumption
 - See `design/asset-plans/spec.md` for the full feature spec, `plan.md` for the
   implementation plan
 
@@ -164,24 +216,74 @@ Aesthetics → set the tone for → Dynamics → which expose → Mechanics
   mechanic, or asset primitives there
 - See `design/README.md` for the full boundary rules
 
+### When working on the `mda` CLI (`tools/`):
+- **No build step.** The `bin` field in `tools/package.json` points at the shim
+  `tools/bin/mda.cjs`, which runs `src/cli.ts` through `tsx`. Don't add `tsc` build scripts
+  or `dist/` outputs.
+- Every command must support `--json`. The studio's `mda-runner` parses the last non-empty
+  stdout line as JSON — keep stdout clean in JSON mode and route diagnostics to stderr.
+- Zod schemas for every JSON contract live in
+  `mda-studio/packages/shared/src/schemas/mda-cli.ts`. Both the CLI emitter and the runner
+  import the same schema; drift breaks one of the two test suites immediately.
+- `binding-coverage` is in the rules folder but **not** in the default rule set (parked
+  under `_deferredRules` per the multi-engine deferral). Leave it in tree.
+- Tests use Node's built-in `node:test` runner via `tsx --test`; run them with
+  `npm test` from `tools/`.
+
 ### When working in `mda-studio/`:
 - It's a **pnpm workspace** (pinned to `pnpm@9.11.0`), NOT the root npm project. Run
-  `pnpm install` / `pnpm dev` / `pnpm test` from `mda-studio/`, never `npm` there
+  `pnpm install` / `pnpm dev` / `pnpm test` from `mda-studio/`, never `npm` there.
 - Packages cross-reference via `workspace:*` — when adding a package, register it in
-  `pnpm-workspace.yaml` (or under an existing glob) before adding deps that point to it
+  `pnpm-workspace.yaml` (or under an existing glob) before adding deps that point to it.
 - The studio is the *operator surface*: persistent state about studios, issue counters,
-  pauses, budgets, and (future) run telemetry. Specs in `specs/` remain the source of
-  truth for design — never move design primitives into the database
-- DB config resolves via `resolveDatabaseConfig` (`packages/db/src/config.ts`): set
-  `DATABASE_URL` for external Postgres, otherwise it falls back to embedded mode rooted
-  at `~/.mda-studio/instances/{MDA_STUDIO_INSTANCE | "default"}/db`
-- Schema lives in `packages/db/src/schema/`. The `studios` table is the only one defined;
-  `pnpm db:generate` / `pnpm db:migrate` are stubbed until drizzle-kit is wired
+  games, issues, cost events, approvals. Specs in `specs/` remain the source of
+  truth for design — never move design primitives into the database.
 - HTTP paths are built via `apiPath()` / `healthPath()` in `@mda-studio/shared` — don't
-  hardcode `/api/...` strings in the server
+  hardcode `/api/...` strings in the server.
 - Every package ships a `vitest.config.ts` and tests live next to source. Run
-  `pnpm --filter @mda-studio/<pkg> test` for a single package
-- See `mda-studio/README.md` for env vars, scripts, and the full schema reference
+  `pnpm --filter @mda-studio/<pkg> test` for a single package.
+- See `mda-studio/README.md` for env vars, scripts, and the full schema reference.
+
+#### Driving the engine from the studio (`mda-runner`)
+- The studio NEVER reads or writes `specs/` files directly. It spawns `npx mda <cmd> --json`
+  via the `mda-runner` service (`server/src/services/mda-runner.ts`) and parses the last
+  stdout line through the shared zod schema. New CLI work means: (1) add the command to
+  `tools/src/cli.ts`, (2) add a zod schema in `@mda-studio/shared`, (3) add a helper
+  (`runValidate`, `runGate`, `runNew`, …) in `mda-runner.ts`, (4) call from a route.
+- `MDA_BIN` env var overrides which binary the runner spawns. Tests set it to the
+  framework's local `mda` shim so subprocess calls don't hit npm registry resolution from a
+  fresh tmpdir.
+
+#### Persistence (`@mda-studio/db` + `services/stores/`)
+- `resolveDatabaseConfig` picks one of three drivers:
+  - `pglite` (default when `DATABASE_URL` is unset) — embedded, cross-platform.
+  - external Postgres via `DATABASE_URL`.
+  - `embedded-postgres` opt-in via `MDA_STUDIO_DB_DRIVER=embedded-postgres` (not yet wired;
+    throws a descriptive error today — see plan §5 for the follow-up).
+- Five tables defined: `studios`, `games`, `issues`, `cost_events`, `approvals`. Schema
+  files live in `packages/db/src/schema/`. Migrations are generated via
+  `pnpm --filter @mda-studio/db db:generate` and applied via `db:migrate`.
+- Each operational store has three files under `server/src/services/stores/`:
+  - `<name>-store.ts` — interface + factory
+  - `<name>-store-memory.ts` — pure in-process impl
+  - `<name>-store-db.ts` — Drizzle-backed impl
+- `MDA_STUDIO_PERSISTENCE=db` switches the runtime to the DB-backed impls; `memory` (the
+  default) keeps tests fast.
+- The legacy `services/{games-registry,issues-store,cost-events-store,approvals-store}.ts`
+  files are facades: a sync shadow Map for reads, an async write to the configured store,
+  and a `rehydrate*FromStore()` function called from `server/src/index.ts` on boot. Routes
+  consume the facades' free-function exports and never need to await.
+- Shared contract test: `services/stores/stores.contract.test.ts` runs every interface
+  test against both impls. Add a behavior here when you add it to either store.
+
+#### Spec-tree liveness (`spec-watcher`)
+- Every registered game gets a chokidar `spec-watcher` (`services/spec-watcher.ts`) that
+  publishes `node-changed` studio events when files under `specs/**/*.md` or
+  `design/levels/**/*.md` change. The UI's SSE bridge re-emits these so the spec tree
+  refreshes without F5.
+- WSL/Windows hosts auto-enable polling mode (10× the latency, but reliable). The two
+  fs-event integration tests are skipped by default; set
+  `VITEST_FS_WATCHER_INTEGRATION=1` to run them on a host with native inotify.
 
 ## The 8 Aesthetic Categories (Quick Reference)
 
@@ -266,10 +368,13 @@ Log.summary()
 
 ## Platform
 
-- Game runtime: Roblox (Luau)
-- Specs reference Roblox services, instances, and APIs where applicable
-- Logger module: `src/shared/MDALogger.luau` (MEC-003)
-- Validator: `src/tools/validate-specs.luau`
-- Spec CLI / wizard (`tools/`, `design/pipeline/cli/`): Node.js >= 18, run via `npm` from
-  the repo root
-- Studio service (`mda-studio/`): Node.js >= 20, run via `pnpm` from `mda-studio/`
+- Game runtime: Roblox (Luau). Multi-engine deferred per
+  [`design/decisions/2026-05-27-multi-engine.md`](design/decisions/2026-05-27-multi-engine.md).
+- Specs reference Roblox services, instances, and APIs where applicable.
+- Logger module: `src/shared/MDALogger.luau` (MEC-003), engine scope deferred for non-Roblox.
+- Validator: `src/tools/validate-specs.luau`.
+- Spec CLI / wizard (`tools/`, `design/pipeline/cli/`): Node.js >= 18. No build step — `tsx`
+  loads `tools/src/cli.ts` directly via the `tools/bin/mda.cjs` shim. Run via `npm` from
+  the repo root.
+- Studio service (`mda-studio/`): Node.js >= 20, run via `pnpm` from `mda-studio/`. First
+  run goes through `pnpm mda-studio onboard --yes` to create the embedded pglite instance.
