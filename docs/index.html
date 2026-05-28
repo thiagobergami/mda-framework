@@ -126,8 +126,10 @@
       <div class="hero">
         <h1>MDA Spec Framework</h1>
         <p class="tagline">
-          A spec-driven development framework for AI-assisted game development, built on the
-          MDA framework (Mechanics, Dynamics, Aesthetics) by Hunicke, LeBlanc &amp; Zubek.
+          A spec-driven development framework for AI-assisted game development,
+          built on the MDA framework (Mechanics, Dynamics, Aesthetics) by Hunicke,
+          LeBlanc &amp; Zubek. Authoring on the keyboard, operating in a UI &mdash;
+          one engine driving both.
         </p>
         <div class="hero-actions">
           <a href="getting-started.html" class="btn btn-primary">Get Started</a>
@@ -169,26 +171,34 @@
       </div>
 
       <h2>How It Works</h2>
-      <p>Every game feature is specified across the MDA causal chain before code is written:</p>
+      <p>
+        Every game feature is specified across the MDA causal chain before code
+        is written. The example below is the running dogfood game &mdash; see
+        <code>specs/concept/cozy-hide-and-seek.concept.md</code> in the repo for
+        the full cascade.
+      </p>
 
       <div class="diagram">
-<pre><code>Game Concept          "A cozy hide-and-seek game for young children"
+<pre><code>Game Concept          "A cozy hide-and-seek round for 2-4 friends, 60s rounds"
       |
       v
-Aesthetics (WHY)      "The player should feel the delight of discovery"
-      |                 Primary: Discovery | Secondary: Fantasy, Sensation
+Aesthetics (WHY)      "The round should feel like playing together as a single
+      |                 social unit, even though the surface is competitive."
+      |                 Primary: Fellowship | Secondary: Sensation
       v
-Dynamics (WHAT)       "A negative feedback loop ensures the player always finds
-      |                 the baby within 50 seconds via escalating hints"
+Dynamics (WHAT)       "A 60-second timer caps the round so no hider stays hidden
+      |                 forever; on find, the hider becomes next round's seeker
+      |                 so nobody is ever eliminated."
       v
-Mechanics (HOW)       "Rule 4: Hint system fires at [15s, 25s, 35s, 45s] with
-      |                 escalating cues. discoveryRange = 8 studs."
+Mechanics (HOW)       "Rule 4: Find Detection fires when seeker is within
+      |                 findRange studs AND has line-of-sight AND presses
+      |                 interact. findRange = TUN-001."
       v
-Tuning (BALANCE)      "hintTier1Time: 15s [10-25], sensitivity: High
-      |                 discoveryRange: 8 studs [5-15], sensitivity: High"
+Tuning (BALANCE)      "findRangeStuds: 8 [5-15], sensitivity: High
+      |                 roundDurationSeconds: 60 [45-90], sensitivity: High"
       v
-Assets (CONTENT)      "Baby character: 5k tri, R15 rig, 8 emotion blendshapes
-                        Status: placeholder | Emotional intent: warmth"</code></pre>
+Assets (CONTENT)      "Cozy hiding-spot variants: 5 distinct silhouettes,
+                        pastel palette, &lt; 1500 tris each. Status: concept."</code></pre>
       </div>
 
       <p>
@@ -196,9 +206,9 @@ Assets (CONTENT)      "Baby character: 5k tri, R15 rig, 8 emotion blendshapes
         <strong>bottom-up</strong> (A&rarr;D&rarr;M) to trace problems when debugging.
       </p>
 
-      <h2>Two sides: authoring and operating</h2>
+      <h2>Front door &mdash; hybrid</h2>
       <p>
-        The framework has two halves that share the same MDA vocabulary:
+        The framework has two equally-valid entry points that share one engine:
       </p>
 
       <div class="features">
@@ -208,79 +218,130 @@ Assets (CONTENT)      "Baby character: 5k tri, R15 rig, 8 emotion blendshapes
           <p>
             <code>npx mda</code> and <a href="pipeline.html"><code>npm run spec</code></a> scaffold,
             validate, and gate the markdown specs under <code>specs/</code> and <code>design/</code>.
-            Files are the source of truth and live in version control.
+            Files are the source of truth and live in version control. Solo developers
+            stay here.
           </p>
         </div>
         <div class="feature-card">
           <span class="feature-icon">&#128187;</span>
           <h3>Operating (<a href="studio.html">MDA Studio</a>)</h3>
           <p>
-            A web UI that reads those same specs and renders the MDA tree
-            as the home for every game, with live issues, costs, validator
-            warnings, approvals, and an activity log. Boot once and survey
-            every game's design state at a glance.
+            A team-facing service that holds the state the CLI can't &mdash;
+            registered games, issues, costs, approvals, asset-plan execution.
+            Reach for it when more than one person needs the same view, or when
+            state has to survive a restart.
           </p>
         </div>
       </div>
 
       <p>
-        The CLI writes; the studio reads. You can use the CLI without ever
-        booting the studio &mdash; the studio is purely additive.
+        The studio drives the CLI as a subprocess via the <code>mda-runner</code>
+        service &mdash; it never re-implements validators, gates, or scaffolding.
+        Editing <code>tools/src/*.ts</code> changes both surfaces immediately
+        because there is no build step (the shim at <code>tools/bin/mda.cjs</code>
+        runs the TypeScript through <code>tsx</code>). See
+        <a href="decisions.html">Decisions &middot; D0.1</a> for the rationale.
       </p>
 
-      <h2>Key Features</h2>
+      <h2>What's in the box today</h2>
 
       <div class="features">
         <div class="feature-card">
           <span class="feature-icon">&#128736;</span>
-          <h3>CLI Tooling</h3>
-          <p>Validate specs, run quality gates, and scaffold new specs from the command line with <code>npx mda</code>.</p>
+          <h3>CLI tooling</h3>
+          <p>
+            Validate specs, run quality gates, and scaffold new specs from the
+            command line. Every command supports <code>--json</code> so external
+            programs (including the studio) can drive it. See
+            <a href="cli.html">CLI Reference</a>.
+          </p>
         </div>
         <div class="feature-card">
           <span class="feature-icon">&#129518;</span>
-          <h3>Guided Wizard</h3>
-          <p><a href="pipeline.html"><code>npm run spec</code></a> walks you through Concept &rarr; Aesthetics &rarr; Dynamics &rarr; Mechanics &rarr; Assets &rarr; Tuning &rarr; Levels with branching prompts.</p>
+          <h3>Guided wizard</h3>
+          <p>
+            <a href="pipeline.html"><code>npm run spec</code></a> walks Concept
+            &rarr; Aesthetics &rarr; Dynamics &rarr; Mechanics &rarr; Assets
+            &rarr; Tuning &rarr; Levels with branching prompts and frontmatter
+            pre-fill.
+          </p>
         </div>
         <div class="feature-card">
           <span class="feature-icon">&#128506;</span>
-          <h3>Level Composition</h3>
-          <p><a href="spec-levels.html">Level specs</a> orchestrate existing M/D/A primitives into spatial and temporal arrangements &mdash; blockouts, beat charts, encounters, and affordances.</p>
-        </div>
-        <div class="feature-card">
-          <span class="feature-icon">&#128202;</span>
-          <h3>Structured Logging</h3>
-          <p>MDALogger tags every runtime event with its MDA layer and spec ID for traceable debugging.</p>
-        </div>
-        <div class="feature-card">
-          <span class="feature-icon">&#127918;</span>
-          <h3>Multi-Engine</h3>
-          <p>Engine-agnostic behavioral specs with binding layers for Roblox, Unity, and Unreal Engine.</p>
-        </div>
-        <div class="feature-card">
-          <span class="feature-icon">&#128279;</span>
-          <h3>Full Traceability</h3>
-          <p>Bidirectional links between all spec layers. Every mechanic traces to a dynamic and an aesthetic.</p>
-        </div>
-        <div class="feature-card">
-          <span class="feature-icon">&#128682;</span>
-          <h3>Quality Gates</h3>
-          <p>Automated checks ensure specs are complete before proceeding to the next layer.</p>
-        </div>
-        <div class="feature-card">
-          <span class="feature-icon">&#129302;</span>
-          <h3>AI-Optimized</h3>
-          <p>Designed for AI assistants to read and implement with full design context via CLAUDE.md.</p>
+          <h3>Level composition</h3>
+          <p>
+            <a href="spec-levels.html">Level specs</a> orchestrate existing
+            M&middot;D&middot;A primitives into spatial and temporal arrangements
+            &mdash; blockouts, beat charts, encounters, and affordances.
+          </p>
         </div>
         <div class="feature-card">
           <span class="feature-icon">&#127765;</span>
-          <h3>Spec-Tree Studio</h3>
+          <h3>Operator studio</h3>
           <p>
-            <a href="studio.html">MDA Studio</a> renders every game as a
-            live MDA tree with drawers, lenses, command palette, deep links,
-            and SSE-driven live updates.
+            Register a game from the UI, validate via subprocess, scaffold from
+            inline CTAs, drive the asset-plan pipeline, and watch the spec tree
+            update live via SSE. Pglite-backed persistence is built in. See
+            <a href="studio.html">MDA Studio</a>.
+          </p>
+        </div>
+        <div class="feature-card">
+          <span class="feature-icon">&#128202;</span>
+          <h3>Structured logging</h3>
+          <p>
+            MDALogger tags every runtime event with its MDA layer and spec ID
+            for traceable debugging. Filter by <code>cid=N</code> to trace a
+            full causal chain across M&middot;D&middot;A.
+          </p>
+        </div>
+        <div class="feature-card">
+          <span class="feature-icon">&#128279;</span>
+          <h3>Full traceability</h3>
+          <p>
+            Bidirectional links between all spec layers. Every mechanic traces
+            to a dynamic and an aesthetic. The validator catches drift on
+            every run.
+          </p>
+        </div>
+        <div class="feature-card">
+          <span class="feature-icon">&#128682;</span>
+          <h3>Quality gates</h3>
+          <p>
+            Automated checks ensure specs are complete before proceeding to the
+            next layer. Gates read the markdown body, not just frontmatter.
+          </p>
+        </div>
+        <div class="feature-card">
+          <span class="feature-icon">&#129302;</span>
+          <h3>AI-optimised</h3>
+          <p>
+            Designed for AI assistants to read and implement with full design
+            context via <code>CLAUDE.md</code>.
           </p>
         </div>
       </div>
+
+      <h2>What's deferred</h2>
+
+      <p>
+        Two pieces are intentionally <strong>not</strong> in tree today:
+      </p>
+
+      <ul>
+        <li>
+          <strong>Multi-engine bindings.</strong> Roblox is the only engine the
+          framework targets today. The binding schema and parked rule stay in
+          tree for cheap revival. See
+          <a href="decisions.html">Decisions &middot; D0.2</a> and
+          <a href="multi-engine.html">Multi-Engine Support</a>.
+        </li>
+        <li>
+          <strong>Agent runtime.</strong> The studio's persistent state and the
+          engine adapter (<code>mda-runner</code>) shipped in V1-lite; the agent
+          scheduler, watchdog, and cost budgets are M3+ work. See
+          <a href="decisions.html">Decisions &middot; D0.4</a>.
+        </li>
+      </ul>
 
       <h2>Based On</h2>
       <p>

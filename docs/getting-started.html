@@ -123,139 +123,254 @@
 
     <main class="content">
       <h1>Getting Started</h1>
-      <p class="subtitle">Install the framework, scaffold your first game concept, and validate it in under 5 minutes.</p>
+      <p class="subtitle">
+        Install the framework, scaffold your first game concept, and validate
+        it in under 5 minutes &mdash; either at the keyboard, in the browser,
+        or both.
+      </p>
 
       <h2>Prerequisites</h2>
       <ul>
-        <li><a href="https://nodejs.org/">Node.js</a> &gt;= 18 (for the CLI and Spec Wizard)</li>
-        <li>npm (comes with Node.js)</li>
-        <li>Optional, for the <a href="studio.html">MDA Studio</a>: Node.js &ge; 20 and pnpm 9.x</li>
+        <li><a href="https://nodejs.org/">Node.js</a> &ge; 18 for the CLI and Spec Wizard.</li>
+        <li>npm (comes with Node.js).</li>
+        <li>For the <a href="studio.html">MDA Studio</a>: Node.js &ge; 20 and pnpm 9.x (the workspace pins <code>pnpm@9.11.0</code>).</li>
       </ul>
 
-      <h2>Installation</h2>
+      <h2>Install</h2>
       <pre><code>git clone &lt;this-repo&gt;
 cd framework
 npm install</code></pre>
-      <p>This installs the <code>mda</code> CLI tool locally. All commands are run via <code>npx mda</code>.</p>
+      <p>
+        Installs the <code>mda</code> CLI and the wizard's dependencies.
+        <strong>There is no build step.</strong> The <code>bin</code> field in
+        <code>tools/package.json</code> points at <code>tools/bin/mda.cjs</code>,
+        a tiny shim that runs <code>tools/src/cli.ts</code> through
+        <a href="https://tsx.is/"><code>tsx</code></a>. Editing
+        <code>tools/src/*.ts</code> and re-invoking <code>npx mda</code> picks
+        up the change immediately.
+      </p>
 
-      <h2>Quick Start</h2>
+      <h2>Choose a front door</h2>
+      <p>
+        The framework has two equally-valid entry points that share one
+        engine. Pick one to start; you can switch any time.
+      </p>
+
+      <h3>Path A &mdash; Authoring solo (CLI)</h3>
+      <p>
+        The fastest path from "I have a game idea" to "I have validated
+        specs". One install at the repo root, no service to keep running.
+      </p>
+
       <ol class="steps">
         <li>
-          <strong>Scaffold a game concept</strong>
-          <pre><code>npx mda new concept "My Game"</code></pre>
-          <p>This creates <code>specs/concept/my-game.concept.md</code> with a full template and auto-assigned ID.</p>
-        </li>
-        <li>
-          <strong>Fill in the template</strong>
-          <p>Open the generated file and fill in each section: Vision, Aesthetic Profile, Core Loop, Target Audience, Feature Map, and Boundaries. See the <a href="spec-concept.html">Concept Schema</a> for guidance.</p>
-        </li>
-        <li>
-          <strong>Run the concept readiness gate</strong>
-          <pre><code>npx mda gate concept</code></pre>
-          <p>The gate checks 6 quality criteria. Fix any failures before proceeding.</p>
-        </li>
-        <li>
-          <strong>Scaffold the next layer</strong>
-          <pre><code>npx mda new aesthetic "Core Feature"</code></pre>
-          <p>Continue through the layers: aesthetic &rarr; dynamic &rarr; mechanic &rarr; tuning &rarr; asset &rarr; binding.</p>
-        </li>
-        <li>
-          <strong>Validate all specs</strong>
-          <pre><code>npx mda validate</code></pre>
-          <p>Runs 8 validation rules to check structural integrity across all spec layers.</p>
-        </li>
-        <li>
-          <strong>(Optional) Boot the Studio to see your tree</strong>
+          <strong>Launch the wizard</strong>
+          <pre><code>npm run spec</code></pre>
           <p>
-            Once you have a few specs, the <a href="studio.html">MDA Studio</a>
-            renders them as a live tree with issues, costs, validator
-            warnings, approvals, and an activity log. From the
-            <code>mda-studio/</code> workspace, in two terminals:
+            The wizard walks Concept &rarr; Aesthetics &rarr; Dynamics &rarr;
+            Mechanics &rarr; Assets &rarr; Tuning &rarr; Levels, branches its
+            menu off what already exists under <code>specs/</code>, and
+            pre-fills frontmatter from your answers. Hand-author at any
+            point with <code>npx mda new &lt;layer&gt; "&lt;name&gt;"</code>.
           </p>
-          <pre><code># terminal 1 - API server (registers your game from env vars)
-cd mda-studio
-MDA_STUDIO_GAME_ID=my-game \
-MDA_STUDIO_GAME_NAME="My Game" \
-MDA_STUDIO_GAME_SPECS_ROOT=/abs/path/to/your/repo \
-MDA_STUDIO_GAME_CONCEPT_PATH=specs/concept/my-game.concept.md \
-MDA_STUDIO_GAME_PRIMARY_AESTHETIC=Fellowship \
-MDA_STUDIO_GAME_CONCEPT_TITLE="My Game" \
-pnpm install &amp;&amp; pnpm --filter @mda-studio/server dev
-
-# terminal 2 - UI
-pnpm --filter @mda-studio/ui dev</code></pre>
-          <p>Then open <code>http://127.0.0.1:3101</code>. Click your game card to enter its spec tree.</p>
-          <p>See the <a href="studio-operator.html">Studio Operator Guide</a> for the full reference.</p>
+        </li>
+        <li>
+          <strong>Validate</strong>
+          <pre><code>npx mda validate</code></pre>
+          <p>
+            Runs every rule across <code>specs/</code> and
+            <code>design/levels/</code>. Exit 0 on pass.
+          </p>
+        </li>
+        <li>
+          <strong>Run a quality gate</strong>
+          <pre><code>npx mda gate concept</code></pre>
+          <p>
+            Gates check the markdown body, not just frontmatter. They tell
+            you whether a layer is complete enough to author the next one.
+          </p>
+        </li>
+        <li>
+          <strong>(Optional) Generate an asset plan</strong>
+          <pre><code>npx mda asset-plan generate AST-001</code></pre>
+          <p>
+            Reads the asset spec, the concept, the aesthetic specs it
+            traces to, and the style guide; emits
+            <code>design/asset-plans/AST-001/AST-001.v1.plan.md</code>.
+            See <a href="cli.html">the CLI reference</a> for
+            <code>exec</code>, <code>import</code>, and the NDJSON event
+            stream that powers the studio's progress UI.
+          </p>
         </li>
       </ol>
 
+      <h3>Path B &mdash; Operating with the studio</h3>
+      <p>
+        The studio is a small Express + React service under
+        <code>mda-studio/</code> that holds operator state the CLI can't:
+        registered games, issues, costs, approvals, asset-plan execution.
+        Reach for it when more than one person needs the same view or when
+        state has to survive a restart.
+      </p>
+
+      <ol class="steps">
+        <li>
+          <strong>First-run housekeeping</strong>
+          <pre><code>cd mda-studio
+pnpm install
+pnpm mda-studio onboard --yes</code></pre>
+          <p>
+            <code>mda-studio onboard</code> resolves the embedded instance
+            directory (<code>~/.mda-studio/instances/default/</code>),
+            opens a <a href="decisions.html">pglite</a> database under it,
+            runs a smoke query, and prints the next-step commands.
+          </p>
+        </li>
+        <li>
+          <strong>Start the API and the UI</strong>
+          <pre><code># terminal 1 - API on 127.0.0.1:3100
+pnpm --filter @mda-studio/server dev
+
+# terminal 2 - UI on 127.0.0.1:3101 (proxies /api -&gt; 3100)
+pnpm --filter @mda-studio/ui dev</code></pre>
+        </li>
+        <li>
+          <strong>Open <code>http://127.0.0.1:3101</code> and register a game</strong>
+          <p>
+            The home screen shows a <strong>Register a game</strong> form.
+            Point it at any folder that contains
+            <code>specs/concept/&lt;game&gt;.concept.md</code>. The studio
+            indexes the workspace, starts a chokidar
+            <code>spec-watcher</code>, and adds a card to the home grid.
+            Clicking it renders the live spec tree.
+          </p>
+        </li>
+        <li>
+          <strong>Drive the engine from the UI</strong>
+          <p>
+            Once your game is registered, the chrome's
+            <strong>Validate</strong> button calls <code>mda validate
+            --json</code> via the <code>mda-runner</code> subprocess driver
+            and surfaces diagnostics as warning badges on the affected
+            spec rows. The "+" CTAs on tree nodes scaffold new specs via
+            <code>mda new --from-json</code>. The Asset Plans panel ships
+            Generate / Exec / Import buttons per asset.
+          </p>
+        </li>
+      </ol>
+
+      <div class="callout tip">
+        <div class="callout-title">Mixing the two paths</div>
+        <p>
+          You don't have to pick. Authors typically use the wizard for the
+          first cascade, then keep the studio open in a tab to track issues
+          and validator warnings while they iterate. Because the studio
+          drives the same CLI you'd use at the keyboard, the two paths
+          never disagree.
+        </p>
+      </div>
+
+      <h2>The dogfood example</h2>
+      <p>
+        The repo ships a full M / D / A cascade as its dogfood reference:
+        <strong>Cozy Hide and Seek</strong>, a 60-second hide-and-seek round
+        for 2&ndash;4 friends. Read it as the canonical example of what a
+        validated specs tree looks like:
+      </p>
+
+      <ul>
+        <li><code>specs/concept/cozy-hide-and-seek.concept.md</code> &mdash; the root</li>
+        <li><code>specs/aesthetics/round-fellowship.aes.md</code> &mdash; primary aesthetic (AES-001)</li>
+        <li><code>specs/dynamics/round-tension-loop.dyn.md</code> &mdash; the 60-second loop (DYN-001)</li>
+        <li><code>specs/mechanics/round-lifecycle.mec.md</code> &mdash; the state machine (MEC-004)</li>
+        <li><code>specs/tuning/round-and-actions.tune.md</code> &mdash; every tunable parameter (TUN-001)</li>
+        <li><code>specs/assets/cozy-hiding-spot.asset.md</code> &mdash; the hiding-spot variants (AST-001)</li>
+        <li><code>design/levels/sunlit-den.level.md</code> &mdash; the playable arena (LVL-001)</li>
+      </ul>
+
+      <p>
+        Run <code>npx mda validate</code> from the repo root; the cascade
+        exits 0. The friction surfaced while authoring it lives at
+        <code>design/decisions/2026-05-27-dogfood-log.md</code> and feeds
+        the next round of CLI / wizard / schema fixes.
+      </p>
+
       <h2>Project Structure</h2>
       <div class="diagram">
-<pre><code>specs/                              # Specification layer
-├── WORKFLOW.md                     # 8-step process: idea -&gt; implementation
-├── glossary.md                     # Shared MDA vocabulary
-├── traceability.md                 # Bidirectional links between all specs
-├── concept/_schema.md              # Game vision, aesthetic profile, feature map
-├── aesthetics/_schema.md           # Player experience goals (observable proxies)
-├── dynamics/_schema.md             # Feedback systems, invariants, interaction patterns
-├── mechanics/_schema.md            # Player affordances, rules, behavioral contracts
-├── tuning/_schema.md               # Parameter ranges, trade-offs, iteration logs
-├── assets/_schema.md               # Emotional intent, technical reqs, placeholders
-└── bindings/
-    ├── _schema.md                  # Engine-specific mapping specs
-    └── equivalence.md              # Cross-engine concept mapping table
+<pre><code>specs/                              # Canonical M/D/A truth
+&#x251c;&#x2500;&#x2500; WORKFLOW.md                     # 8-step process: idea -&gt; implementation
+&#x251c;&#x2500;&#x2500; glossary.md                     # Shared MDA vocabulary
+&#x251c;&#x2500;&#x2500; traceability.md                 # Bidirectional links between all specs
+&#x251c;&#x2500;&#x2500; concept/                        # Game vision, aesthetic profile, feature map
+&#x251c;&#x2500;&#x2500; aesthetics/                     # Player experience goals (observable proxies)
+&#x251c;&#x2500;&#x2500; dynamics/                       # Feedback systems, invariants, interaction patterns
+&#x251c;&#x2500;&#x2500; mechanics/                      # Player affordances, rules, behavioral contracts
+&#x251c;&#x2500;&#x2500; tuning/                         # Parameter ranges, trade-offs, iteration logs
+&#x251c;&#x2500;&#x2500; assets/                         # Emotional intent, technical reqs, placeholders
+&#x2514;&#x2500;&#x2500; bindings/                       # Engine-specific specs (parked: multi-engine deferred)
 
-tools/                              # CLI tooling (TypeScript)
-├── src/
-│   ├── cli.ts                      # Commander-based CLI entry point
-│   ├── parser.ts                   # Frontmatter parser with scope discovery
-│   ├── graph.ts                    # Spec adjacency-list graph builder
-│   ├── reporter.ts                 # Terminal and JSON output formatting
-│   ├── scaffold.ts                 # Spec template generation
-│   ├── types.ts                    # Core type definitions
-│   ├── rules/                      # 8 validation rules
-│   └── gates/                      # 5 quality gates
-└── dist/                           # Compiled output (git-ignored)
+design/                             # Iterative artifacts that consume specs
+&#x251c;&#x2500;&#x2500; decisions/                      # ADRs (front-door, embedded DB, dogfood, ...)
+&#x251c;&#x2500;&#x2500; levels/                         # Spatial layouts, beat charts, encounters
+&#x251c;&#x2500;&#x2500; roadmap/                        # Parked roadmaps
+&#x251c;&#x2500;&#x2500; walkthroughs/                   # Scripted authoring passes
+&#x251c;&#x2500;&#x2500; asset-plans/                    # MCP-driven asset implementation pipeline
+&#x2514;&#x2500;&#x2500; pipeline/                       # `npm run spec` wizard
 
-src/                                # Runtime tools (Luau)
-├── shared/MDALogger.luau           # Structured logging with MDA layer tagging
-└── tools/validate-specs.luau       # Legacy Luau spec validator
+tools/                              # The `mda` CLI (TypeScript, run through tsx)
+&#x251c;&#x2500;&#x2500; README.md                       # Machine-readable JSON contracts
+&#x251c;&#x2500;&#x2500; bin/mda.cjs                     # Shim that runs src/cli.ts via tsx
+&#x2514;&#x2500;&#x2500; src/                            # No build step
+    &#x251c;&#x2500;&#x2500; cli.ts                      # Commander entry point
+    &#x251c;&#x2500;&#x2500; scaffold.ts                 # Spec template generation + override merge
+    &#x251c;&#x2500;&#x2500; asset-plan/                 # Pipeline (generate/exec/import/list)
+    &#x251c;&#x2500;&#x2500; rules/                      # Validation rules
+    &#x2514;&#x2500;&#x2500; gates/                      # Quality gates
 
 mda-studio/                         # Operator surface (pnpm workspace)
-├── packages/shared/                # Zod wire-contracts (server &lt;-&gt; UI)
-├── server/                         # Express API + in-memory stores + SSE
-├── ui/                             # Vite + React spec-tree-first UI
-└── docs/                           # Operator + architecture guides
+&#x251c;&#x2500;&#x2500; server/                         # @mda-studio/server (Express + mda-runner + spec-watcher)
+&#x251c;&#x2500;&#x2500; ui/                             # @mda-studio/ui (React 18 + Vite SPA)
+&#x251c;&#x2500;&#x2500; cli/                            # @mda-studio/cli (`mda-studio onboard`)
+&#x2514;&#x2500;&#x2500; packages/
+    &#x251c;&#x2500;&#x2500; shared/                     # @mda-studio/shared (zod schemas, incl. CLI contracts)
+    &#x2514;&#x2500;&#x2500; db/                         # @mda-studio/db (drizzle schema + pglite/pg client)
 
-design/mda-studio/                  # Design docs for the studio itself
-└── spec-tree-ui/plan.md            # The plan the UI was built against
+src/                                # Runtime tools (Luau)
+&#x251c;&#x2500;&#x2500; shared/MDALogger.luau           # Structured logging with MDA layer tagging
+&#x2514;&#x2500;&#x2500; tools/validate-specs.luau       # Legacy Luau spec validator
 
 CLAUDE.md                           # AI instructions (read by Claude Code)</code></pre>
       </div>
 
       <h2>Working with AI</h2>
       <p>
-        The framework is designed to be used with AI coding assistants, particularly
-        <a href="https://claude.ai/code">Claude Code</a>. The <code>CLAUDE.md</code> file in the
-        project root contains comprehensive instructions that Claude reads automatically.
+        The framework is designed to be used with AI coding assistants,
+        particularly <a href="https://claude.ai/code">Claude Code</a>. The
+        <code>CLAUDE.md</code> file in the project root contains comprehensive
+        instructions that Claude reads automatically &mdash; including the
+        rules for when to drive the engine from the studio versus authoring
+        at the keyboard, and the persistence / runner contracts the studio
+        depends on.
       </p>
 
       <div class="callout tip">
         <div class="callout-title">Tip</div>
         <p>
-          When using Claude Code, just describe your game idea. Claude will read the CLAUDE.md
-          instructions, follow the workflow, create specs layer by layer, run gates, and implement
-          the code &mdash; all while maintaining full MDA traceability.
+          When using Claude Code, just describe your game idea. Claude will
+          read the <code>CLAUDE.md</code> instructions, follow the workflow,
+          create specs layer by layer, run gates, and implement the
+          code &mdash; all while maintaining full MDA traceability.
         </p>
       </div>
 
       <h2>Next Steps</h2>
       <ul>
-        <li>Learn the <a href="concepts.html">Core Concepts</a> behind the MDA framework</li>
-        <li>Follow the <a href="workflow.html">8-Step Workflow</a> to author specs</li>
-        <li>See a full <a href="example.html">Walkthrough Example</a> from idea to implementation</li>
-        <li>Read the <a href="cli.html">CLI Reference</a> for all available commands</li>
-        <li>Boot the <a href="studio.html">MDA Studio</a> to see your specs as a live, browsable tree</li>
+        <li>Learn the <a href="concepts.html">Core Concepts</a> behind the MDA framework.</li>
+        <li>Follow the <a href="workflow.html">8-Step Workflow</a> to author specs.</li>
+        <li>See a full <a href="example.html">Walkthrough Example</a> from idea to implementation.</li>
+        <li>Read the <a href="cli.html">CLI Reference</a> for every command and JSON contract.</li>
+        <li>Open the <a href="studio.html">MDA Studio</a> to see your specs as a live, browsable tree.</li>
+        <li>Skim the <a href="decisions.html">Decisions</a> to understand why the framework looks like this.</li>
       </ul>
 
       <div class="page-nav">
