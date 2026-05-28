@@ -28,7 +28,7 @@ format: spec-driven-development (plan.md)
 | ORM | Drizzle | Codegen + raw SQL escape hatch; matches Paperclip |
 | Database | PostgreSQL (embedded via `embedded-postgres@18.1.0-beta.16` for dev; external `DATABASE_URL` for prod) | Zero-config local; prod-ready via env |
 | Auth | `lucia` (sessions) + bearer keys hashed with `argon2id` | Session for board users, hashed bearer for agents |
-| UI | React 18 + Vite + TanStack Router + TanStack Query | Solid SPA defaults; minimal opinion |
+| UI | React 18 + Vite + native History API + native `fetch` | Vanilla wins until routing/cache complexity demands more (TanStack Router/Query deferred until then) |
 | UI styling | Tailwind + shadcn/ui | Fast component scaffolding; matches modern board-app pattern |
 | Schemas / validation | Zod | Reused across DB ↔ HTTP ↔ UI; lives in `packages/shared` |
 | CLI lib | `commander` + `@inquirer/prompts` | Same libs as `mda` CLI |
@@ -275,6 +275,47 @@ describe("tryCheckout (spec FR-21..23)", () => {
 `it.todo` is the **planning step**: it makes the intent reviewable as a PR
 *before* the production code exists. The next commit converts each `todo` into a
 real assertion that **fails**, then the implementation commit makes them pass.
+
+---
+
+### Milestone V1-lite — Operator front door  *(~6 weeks — this plan's first cut)* — **SHIPPED 2026-05-28**
+
+Sanctioned by [`../decisions/2026-05-27-v1-lite.md`](../decisions/2026-05-27-v1-lite.md).
+V1-lite delivers the **operator front door with persistent state but no agent runtime**.
+It is what `plan.html` weeks 2–6 ship; M1–M6 below resume after V1-lite lands.
+
+> **Status**: shipped. Every scope bullet below landed; see
+> [`../../plan.html`](../../plan.html) for the per-task ID matrix and
+> [`../decisions/2026-05-27-dogfood-log.md`](../decisions/2026-05-27-dogfood-log.md)
+> for the friction the build surfaced.
+
+**Scope** (full list in the ADR):
+
+- CLI machine-readable flags on `mda new / validate / gate / asset-plan` (`--json`,
+  `--no-prompt`, `--from-json`).
+- `mda-runner` service in `server/src/services/` that spawns the CLI and parses its JSON
+  output; per-command helpers (`runValidate`, `runGate`, `runNew`, `runAssetPlan*`).
+- Chokidar-based spec-tree watcher with debounced cache invalidation, fanned out over the
+  existing SSE bus.
+- "Validate" button + per-row "Run gate" in the studio chrome.
+- "Register a game" form on studio home (replaces env-var bootstrap as the primary path).
+- "+" CTA on tree nodes creates real specs via `mda new` from the UI.
+- Drizzle-kit wired with four tables — `games`, `issues`, `cost_events`, `approvals` —
+  and the embedded driver default switched to **pglite** per
+  [`../decisions/2026-05-27-embedded-db.md`](../decisions/2026-05-27-embedded-db.md).
+- `mda-studio onboard --demo` single command from clean clone to populated studio in
+  under 60 s.
+- Asset-plan generate / exec / import surfaced in the UI with NDJSON streaming via SSE.
+
+**Out of V1-lite** (deferred to M3+): agent runtime, scheduler, watchdog, cost budgets,
+`claude_local` / `codex_local` adapters, log shipper plugin, multi-engine
+(see [`../decisions/2026-05-27-multi-engine.md`](../decisions/2026-05-27-multi-engine.md)).
+
+**Exit check.** Fresh `pnpm install` → `pnpm mda-studio onboard --yes --demo` → browser
+opens on a populated home in under 60 s; an operator can register a game, create a spec,
+log a cost event, restart the server, and find everything intact; asset-plan
+generate/exec/import can be driven from the UI on a real AST spec; `npx mda validate
+--json` and `npx mda gate <layer> --json` are driveable by an external program.
 
 ---
 
@@ -794,14 +835,22 @@ who hasn't read this plan can name the next action.
 ## 5. Sequencing & critical path
 
 ```
+V1-lite (operator front door, ~6 weeks)
+  │
+  ▼
 M1 ──► M2 ──► M3 ──► M4 ──► M5 ──► M6
                               │
         Phase 5.1 (mda adapter) ◄── coordinated additive
                               │     change to tools/ CLI
-                              │     (--json, --no-prompt)
+                              │     (--json, --no-prompt) — landed during
+                              │     V1-lite week 2
                               │
         Phase 6.1 (claude_local) — only true blocker for AC-3, AC-4
 ```
+
+V1-lite ships first and stands alone; M1 picks up against a CLI that already speaks
+`--json` and a server that already has the `mda-runner`, spec watcher, and four core
+tables. The original M1–M6 timeline assumes those exist.
 
 - **Critical path:** straight M1 → M6 (≈ 10–11 weeks).
 - **Parallelizable:** Phase 2.5 (UI) can start during 2.1–2.4 with mock data;
