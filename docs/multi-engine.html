@@ -94,6 +94,16 @@
         <div class="nav-group">
           <div class="nav-group-title">
             <svg class="chevron" viewBox="0 0 12 12" fill="currentColor"><path d="M4.7 2.3a1 1 0 00-1.4 1.4L6.6 7l-3.3 3.3a1 1 0 001.4 1.4l4-4a1 1 0 000-1.4l-4-4z"/></svg>
+            Reference
+          </div>
+          <ul class="nav-items">
+            <li><a href="decisions.html">Decisions</a></li>
+          </ul>
+        </div>
+
+        <div class="nav-group">
+          <div class="nav-group-title">
+            <svg class="chevron" viewBox="0 0 12 12" fill="currentColor"><path d="M4.7 2.3a1 1 0 00-1.4 1.4L6.6 7l-3.3 3.3a1 1 0 001.4 1.4l4-4a1 1 0 000-1.4l-4-4z"/></svg>
             Community
           </div>
           <ul class="nav-items">
@@ -106,11 +116,61 @@
     <main class="content">
       <h1>Multi-Engine Support</h1>
       <p class="subtitle">
-        The framework separates behavioral specs (what the game does) from engine bindings (how a specific engine implements it),
-        enabling the same game design to target multiple engines.
+        Status: <strong>deferred</strong>. Roblox is the only engine the
+        framework targets today.
       </p>
 
-      <h2>Architecture</h2>
+      <div class="callout warn">
+        <div class="callout-title">Why this is parked</div>
+        <p>
+          The framework was designed for multi-engine work, but
+          <code>specs/bindings/</code> has no instances and no real game is
+          asking for a second engine target yet. Multi-engine reopens when
+          a real game ships against Roblox <em>and</em> a second-engine target
+          arrives with a motivating game attached. Until then this page is
+          <strong>reference</strong>, not roadmap.
+        </p>
+        <p>
+          The rule code (<code>binding-coverage</code>) and the equivalence
+          tables below stay in tree so the work is cheap to revive. See
+          <a href="decisions.html">Decisions &middot; D0.2</a> and the parked
+          roadmap at <code>design/roadmap/multi-engine.md</code>.
+        </p>
+      </div>
+
+      <h2>What "deferred" means in practice</h2>
+      <ul>
+        <li>
+          <strong>Validator</strong>: the <code>binding-coverage</code> rule is
+          excluded from <code>allRules</code> and parked under
+          <code>_deferredRules</code> in <code>tools/src/rules/index.ts</code>.
+          Re-enabling is a one-line change.
+        </li>
+        <li>
+          <strong>Specs</strong>: <code>specs/bindings/</code> is empty.
+          <a href="spec-bindings.html">The binding schema</a> stays documented
+          so the shape is ready when the work resumes.
+        </li>
+        <li>
+          <strong>Logger</strong>: <code>MDALogger</code> ships as Roblox / Luau
+          only (MEC-003 carries an explicit "Engine scope" note). Ports to
+          Unity / Unreal wait on the same trigger.
+        </li>
+        <li>
+          <strong>Asset plans</strong>: engine profiles under
+          <code>design/asset-plans/_engines/</code> remain in tree so the
+          plug-in shape is preserved; routing today only resolves
+          <code>roblox</code>.
+        </li>
+      </ul>
+
+      <h2>What stays as reference (when it reopens)</h2>
+      <p>
+        The original architecture intent and equivalence tables are preserved
+        below so that whoever picks this back up has the starting point.
+      </p>
+
+      <h2>Architecture (parked)</h2>
       <ul>
         <li><strong>Behavioral specs</strong> (<code>specs/mechanics/</code>, <code>specs/dynamics/</code>, etc.) are engine-agnostic</li>
         <li><strong>Binding specs</strong> (<code>specs/bindings/</code>) map behavioral contracts to engine-specific APIs</li>

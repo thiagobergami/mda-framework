@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Decisions - MDA Spec Framework</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header class="site-header">
+    <button class="menu-toggle" aria-label="Toggle menu">
+      <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 010 2H4a1 1 0 01-1-1zm0 5a1 1 0 011-1h12a1 1 0 010 2H4a1 1 0 01-1-1zm0 5a1 1 0 011-1h12a1 1 0 010 2H4a1 1 0 01-1-1z" clip-rule="evenodd"/></svg>
+    </button>
+    <a href="index.html" class="header-logo">
+      <span class="logo-icon">M</span>
+      MDA Framework
+    </a>
+    <nav class="header-nav">
+      <a href="getting-started.html">Guide</a>
+      <a href="cli.html">CLI</a>
+      <a href="logger.html">Logger API</a>
+      <a href="https://github.com">GitHub</a>
+    </nav>
+  </header>
+
+  <div class="layout">
+    <aside class="sidebar">
+            <nav>
+        <div class="nav-group">
+          <div class="nav-group-title">
+            <svg class="chevron" viewBox="0 0 12 12" fill="currentColor"><path d="M4.7 2.3a1 1 0 00-1.4 1.4L6.6 7l-3.3 3.3a1 1 0 001.4 1.4l4-4a1 1 0 000-1.4l-4-4z"/></svg>
+            Introduction
+          </div>
+          <ul class="nav-items">
+            <li><a href="index.html">Overview</a></li>
+            <li><a href="getting-started.html">Getting Started</a></li>
+            <li><a href="concepts.html">Core Concepts</a></li>
+          </ul>
+        </div>
+
+        <div class="nav-group">
+          <div class="nav-group-title">
+            <svg class="chevron" viewBox="0 0 12 12" fill="currentColor"><path d="M4.7 2.3a1 1 0 00-1.4 1.4L6.6 7l-3.3 3.3a1 1 0 001.4 1.4l4-4a1 1 0 000-1.4l-4-4z"/></svg>
+            Workflow
+          </div>
+          <ul class="nav-items">
+            <li><a href="workflow.html">8-Step Process</a></li>
+            <li><a href="example.html">Walkthrough Example</a></li>
+          </ul>
+        </div>
+
+        <div class="nav-group">
+          <div class="nav-group-title">
+            <svg class="chevron" viewBox="0 0 12 12" fill="currentColor"><path d="M4.7 2.3a1 1 0 00-1.4 1.4L6.6 7l-3.3 3.3a1 1 0 001.4 1.4l4-4a1 1 0 000-1.4l-4-4z"/></svg>
+            Spec Schemas
+          </div>
+          <ul class="nav-items">
+            <li><a href="spec-concept.html">Game Concept</a></li>
+            <li><a href="spec-aesthetics.html">Aesthetics</a></li>
+            <li><a href="spec-dynamics.html">Dynamics</a></li>
+            <li><a href="spec-mechanics.html">Mechanics</a></li>
+            <li><a href="spec-tuning.html">Tuning</a></li>
+            <li><a href="spec-assets.html">Assets</a></li>
+            <li><a href="spec-bindings.html">Engine Bindings</a></li>
+            <li><a href="spec-levels.html">Levels</a></li>
+          </ul>
+        </div>
+
+        <div class="nav-group">
+          <div class="nav-group-title">
+            <svg class="chevron" viewBox="0 0 12 12" fill="currentColor"><path d="M4.7 2.3a1 1 0 00-1.4 1.4L6.6 7l-3.3 3.3a1 1 0 001.4 1.4l4-4a1 1 0 000-1.4l-4-4z"/></svg>
+            Design
+          </div>
+          <ul class="nav-items">
+            <li><a href="pipeline.html">Spec Wizard</a></li>
+          </ul>
+        </div>
+
+        <div class="nav-group">
+          <div class="nav-group-title">
+            <svg class="chevron" viewBox="0 0 12 12" fill="currentColor"><path d="M4.7 2.3a1 1 0 00-1.4 1.4L6.6 7l-3.3 3.3a1 1 0 001.4 1.4l4-4a1 1 0 000-1.4l-4-4z"/></svg>
+            Tools
+          </div>
+          <ul class="nav-items">
+            <li><a href="cli.html">CLI Reference</a></li>
+            <li><a href="logger.html">MDA Logger</a></li>
+            <li><a href="multi-engine.html">Multi-Engine Support</a></li>
+          </ul>
+        </div>
+
+        <div class="nav-group">
+          <div class="nav-group-title">
+            <svg class="chevron" viewBox="0 0 12 12" fill="currentColor"><path d="M4.7 2.3a1 1 0 00-1.4 1.4L6.6 7l-3.3 3.3a1 1 0 001.4 1.4l4-4a1 1 0 000-1.4l-4-4z"/></svg>
+            Studio
+          </div>
+          <ul class="nav-items">
+            <li><a href="studio.html">Overview</a></li>
+            <li><a href="studio-operator.html">Operator Guide</a></li>
+            <li><a href="studio-architecture.html">Architecture</a></li>
+          </ul>
+        </div>
+
+        <div class="nav-group">
+          <div class="nav-group-title">
+            <svg class="chevron" viewBox="0 0 12 12" fill="currentColor"><path d="M4.7 2.3a1 1 0 00-1.4 1.4L6.6 7l-3.3 3.3a1 1 0 001.4 1.4l4-4a1 1 0 000-1.4l-4-4z"/></svg>
+            Reference
+          </div>
+          <ul class="nav-items">
+            <li><a href="decisions.html">Decisions</a></li>
+          </ul>
+        </div>
+
+        <div class="nav-group">
+          <div class="nav-group-title">
+            <svg class="chevron" viewBox="0 0 12 12" fill="currentColor"><path d="M4.7 2.3a1 1 0 00-1.4 1.4L6.6 7l-3.3 3.3a1 1 0 001.4 1.4l4-4a1 1 0 000-1.4l-4-4z"/></svg>
+            Community
+          </div>
+          <ul class="nav-items">
+            <li><a href="contributing.html">Contributing</a></li>
+          </ul>
+        </div>
+      </nav>
+    </aside>
+
+    <main class="content">
+      <h1>Decisions</h1>
+      <p class="subtitle">
+        Architecture Decision Records (ADRs) capture the rationale behind every
+        load-bearing choice in the framework. Each record names the question,
+        the chosen path, the rejected alternatives, and the trigger that
+        re-opens the decision.
+      </p>
+
+      <p>
+        ADRs live in the repository under
+        <code>design/decisions/</code>. Every record is dated; the date is the
+        record's identity. To revise a decision, write a new ADR that supersedes
+        the old one rather than editing in place &mdash; the history is the
+        evidence.
+      </p>
+
+      <h2>V1-lite decisions (2026-05-27)</h2>
+      <p>
+        The five decisions below were captured before Week 1 of the V1-lite cut
+        and shape every subsequent commit on this branch.
+      </p>
+
+      <h3>D0.1 &mdash; Front door: hybrid</h3>
+      <p>
+        The MDA Framework has two equally-valid entry points: the
+        <a href="cli.html"><code>mda</code> CLI</a> for solo authoring and
+        <a href="studio.html">MDA Studio</a> for team operations. The studio
+        drives the CLI as a subprocess (one engine, two front doors). Studio-first
+        is the long-term goal but premature today &mdash; agents and persistence
+        had to land first.
+      </p>
+      <p>
+        <strong>Trigger to revisit:</strong> when the studio's agent runtime
+        (M3) lands, the CLI becomes a back-end rather than a front door for
+        most users.
+      </p>
+      <p>
+        <em>File:</em> <code>design/decisions/2026-05-27-front-door.md</code>
+      </p>
+
+      <h3>D0.2 &mdash; Multi-engine: deferred</h3>
+      <p>
+        Roblox is the only engine the framework targets today. The binding
+        directory (<code>specs/bindings/</code>) has no instances; the
+        <code>binding-coverage</code> validator rule has nothing to enforce.
+        Multi-engine work re-opens when a real second-engine target arrives
+        with a motivating game attached.
+      </p>
+      <p>
+        The rule code stays in tree (parked under
+        <code>_deferredRules</code>) so re-enabling is a one-line change.
+      </p>
+      <p>
+        <strong>Trigger to revisit:</strong> a real game ships against a second
+        engine target.
+      </p>
+      <p>
+        <em>File:</em> <code>design/decisions/2026-05-27-multi-engine.md</code>
+        &middot; see also <a href="multi-engine.html">Multi-Engine Support</a>.
+      </p>
+
+      <h3>D0.3 &mdash; Embedded DB: pglite default</h3>
+      <p>
+        The studio's embedded persistence uses
+        <a href="https://pglite.dev/"><code>pglite</code></a> (in-process
+        Postgres-on-Wasm). Smaller blast radius than patched
+        <code>embedded-postgres</code>, no native compilation on WSL or Windows,
+        and the same SQL dialect as the external Postgres path.
+        <code>embedded-postgres</code> remains opt-in behind
+        <code>MDA_STUDIO_DB_DRIVER=embedded-postgres</code> for users who want
+        native performance and have a working build.
+      </p>
+      <p>
+        <strong>Trigger to revisit:</strong> if pglite proves slow at the studio's
+        actual write volumes once agent run telemetry lands.
+      </p>
+      <p>
+        <em>File:</em> <code>design/decisions/2026-05-27-embedded-db.md</code>
+      </p>
+
+      <h3>D0.4 &mdash; V1-lite is the intermediate cut</h3>
+      <p>
+        Persistence + the engine adapter + an onboard CLI but no agents. Six
+        weeks of work. The full V1 (agents, scheduler, watchdog, cost budgets)
+        is post-V1-lite, picking up at M3 of the studio plan.
+      </p>
+      <p>
+        <strong>Status:</strong> SHIPPED 2026-05-28. See
+        <a href="studio-architecture.html">Studio architecture</a> for what
+        landed and the studio plan in the repo for what's next.
+      </p>
+      <p>
+        <em>File:</em> <code>design/decisions/2026-05-27-v1-lite.md</code>
+      </p>
+
+      <h3>D0.5 &mdash; Dogfood before more surface area</h3>
+      <p>
+        Authoring one real game end-to-end forces every CLI / wizard / schema
+        friction to surface before more features pile on top. The chosen game
+        is a 60-second cozy hide-and-seek prototype, now living under
+        <code>specs/concept/cozy-hide-and-seek.concept.md</code> with the full
+        M / D / A cascade.
+      </p>
+      <p>
+        The friction the build surfaced is captured as a living log at
+        <code>design/decisions/2026-05-27-dogfood-log.md</code> &mdash; it is
+        the backlog for the next round of CLI / wizard / schema fixes.
+      </p>
+      <p>
+        <em>Files:</em>
+        <code>design/decisions/2026-05-27-dogfood-target.md</code>,
+        <code>design/decisions/2026-05-27-dogfood-log.md</code>
+      </p>
+
+      <h2>Where ADRs live in the repo</h2>
+      <p>
+        Every record is a self-contained markdown file. The naming convention
+        is <code>YYYY-MM-DD-slug.md</code>; the date is the record's identity
+        and never changes.
+      </p>
+
+      <pre><code>design/
+&#x251c;&#x2500;&#x2500; decisions/
+&#x2502;   &#x251c;&#x2500;&#x2500; 2026-05-27-front-door.md
+&#x2502;   &#x251c;&#x2500;&#x2500; 2026-05-27-multi-engine.md
+&#x2502;   &#x251c;&#x2500;&#x2500; 2026-05-27-embedded-db.md
+&#x2502;   &#x251c;&#x2500;&#x2500; 2026-05-27-v1-lite.md
+&#x2502;   &#x251c;&#x2500;&#x2500; 2026-05-27-dogfood-target.md
+&#x2502;   &#x2514;&#x2500;&#x2500; 2026-05-27-dogfood-log.md      &larr; living friction log
+&#x251c;&#x2500;&#x2500; roadmap/
+&#x2502;   &#x2514;&#x2500;&#x2500; multi-engine.md                 &larr; parked roadmap (was IMPROVEMENTS.md)
+&#x2514;&#x2500;&#x2500; walkthroughs/
+    &#x2514;&#x2500;&#x2500; v1-end-to-end.md                &larr; scripted authoring pass</code></pre>
+
+      <h2>When to write a new ADR</h2>
+      <p>
+        Write one whenever a choice would surprise a contributor reading the
+        code six months later. Concretely:
+      </p>
+
+      <ul>
+        <li>A new dependency or runtime is adopted.</li>
+        <li>An existing decision is reversed or scoped down.</li>
+        <li>A non-obvious trade-off is made between two reasonable options.</li>
+        <li>A piece of code is left in tree as a parked option (so future
+          readers know it's intentional, not dead).</li>
+      </ul>
+
+      <p>
+        The record's job is to make the rejected options visible. A bare
+        "we chose pglite" is less useful than "we chose pglite because the
+        embedded-postgres native build kept breaking on WSL".
+      </p>
+
+      <div class="page-nav">
+        <a href="studio-architecture.html" class="prev">
+          <span class="label">Previous</span>
+          <span class="title">&larr; Studio architecture</span>
+        </a>
+        <a href="contributing.html" class="next">
+          <span class="label">Next</span>
+          <span class="title">Contributing &rarr;</span>
+        </a>
+      </div>
+    </main>
+  </div>
+
+  <script src="js/main.js"></script>
+</body>
+</html>
